@@ -1,6 +1,8 @@
 # dweep-gen
 Version of old Dweep shareware game on Sega Genesis (using SGDK)
 
+![Screenshot of the game](screenshot.png "Game screenshot")
+
 ## About
 
 This is a SGDK port of the old shareware game Dweep.
