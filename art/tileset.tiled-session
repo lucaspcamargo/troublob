@@ -1,0 +1,96 @@
+{
+    "Map/SizeTest": {
+        "height": 4300,
+        "width": 2
+    },
+    "activeFile": "map/map_1.tmx",
+    "expandedProjectPaths": [
+        ".",
+        "map",
+        "spr"
+    ],
+    "file.lastUsedOpenFilter": "Todos os Arquivos (*)",
+    "fileStates": {
+        "blockset/field_a.tsx": {
+            "scaleInDock": 1,
+            "scaleInEditor": 2
+        },
+        "map/map_0.tmx": {
+            "scale": 3,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 154.99999999999997,
+                "y": 56.66666666666666
+            }
+        },
+        "map/map_1.tmx": {
+            "expandedObjectLayers": [
+                3
+            ],
+            "scale": 3,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 163.66666666666669,
+                "y": 66.66666666666666
+            }
+        },
+        "map/map_H.tmx": {
+            "scale": 2.87671875,
+            "selectedLayer": 0,
+            "viewCenter": {
+                "x": 157.47107707348866,
+                "y": -37.19515507033839
+            }
+        },
+        "spr/collection.tsx": {
+            "dynamicWrapping": true,
+            "scaleInDock": 1,
+            "scaleInEditor": 1
+        },
+        "spr/tileset0.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 4,
+            "scaleInEditor": 5.5
+        },
+        "spr/tilesetH.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 4,
+            "scaleInEditor": 5.5
+        }
+    },
+    "last.imagePath": "/home/camargo/proj/dweep-gen/art/spr",
+    "last.worldFilePath": "/home/camargo/proj/dweep-gen/art/map",
+    "loadedWorlds": [
+        "/home/camargo/proj/dweep-gen/art/map/world.world"
+    ],
+    "map.fixedSize": true,
+    "map.height": 4,
+    "map.lastUsedFormat": "tmx",
+    "map.tileHeight": 8,
+    "map.tileWidth": 8,
+    "map.width": 40,
+    "openFiles": [
+        "map/map_1.tmx",
+        "map/map_H.tmx",
+        "spr/tileset0.tsx",
+        "spr/tilesetH.tsx"
+    ],
+    "project": "tileset.tiled-project",
+    "property.type": "int",
+    "recentFiles": [
+        "spr/tilesetH.tsx",
+        "spr/tileset0.tsx",
+        "map/map_H.tmx",
+        "map/map_1.tmx",
+        "spr/collection.tsx",
+        "blockset/field_a.tsx",
+        "map/map_0.tmx"
+    ],
+    "tileset.lastUsedFormat": "tsx",
+    "tileset.tileSize": {
+        "height": 8,
+        "width": 8
+    },
+    "tileset.type": 0,
+    "tileset.useTransparentColor": false
+}
