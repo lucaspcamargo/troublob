@@ -27,6 +27,8 @@ void PCTRL_set_source(u8 line, u16* data, bool hud)
 
 void PCTRL_step()
 {
+    if(PAL_isDoingFade())
+        return;
     PAL_setColors(0, PCTRL_src_lines, PCTRL_PAL_TOTAL, CPU);
 }
 

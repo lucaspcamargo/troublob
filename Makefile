@@ -112,11 +112,11 @@ boot/rom_head.o: boot/rom_head.c
 	@echo "Linking $@"
 	@$(CC) -o $@ $(LDFLAGS) boot/sega.o $(OBJS) $(LIBS)
 
-%.o: %.c
+%.o: %.c Makefile src/*.h
 	@echo "CC $<"
 	@$(CC) $(CCFLAGS) $(OPTIONS) $(INCS) -c $< -o $@
 
-%.o: %.cpp
+%.o: %.cpp Makefile
 	@echo "CXX $<"
 	@$(CXX) $(CXXFLAGS) $(OPTIONS) $(INCS) -c $< -o $@
 
@@ -124,7 +124,7 @@ boot/rom_head.o: boot/rom_head.c
 	@echo "AS $<"
 	@$(AS) $(ASFLAGS) $< -o $@
 
-%.s: %.res
+%.s: %.res res/* res/sfx/* res/vgm/* art/* art/spr/* art/map/*
 	$(RESCOMP) $< $@
 
 # For asm target

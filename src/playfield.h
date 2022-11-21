@@ -33,10 +33,23 @@ enum PlfLaserBits {
 };
 
 typedef struct {
+    u8 ident;
     u8 attrs;
     u8 laser;
 } PlfTile;
 
+static const u8 tileset_attr_mapping[] = {
+    /*0: Wall (covered) */ PLF_ATTR_SOLID,
+    /*1: Wall (uncovered) */ PLF_ATTR_SOLID,
+    /*2: Ice  */ PLF_ATTR_COLD,
+    /*3: Broken_Machine */ NULL,
+    /*4: Grass */ 0,
+    /*5: Pentagram */ 0,
+    /*6: Lava */ PLF_ATTR_HOT,
+    /*7: Item */ PLF_ATTR_OBJ,
+    /*8: ??? */ NULL,
+    /*9: Laser */ PLF_ATTR_OBJ,
+};
 
 // VAR DEFINITIONS
 
@@ -76,12 +89,39 @@ void PLF_init()
 
     // init plane data
     PLF_update_scroll(TRUE);
+
+    // convert plane data into field data
+    for(u16 x = 0; x < plf_w; x++)
+        for(u16 y = 0; y < plf_h; y++)
+        {
+            u16 meta = MAP_getMetaTile(m_b,x,y);
+            u8 tileAttr = (meta<sizeof(tileset_attr_mapping))?
+                    tileset_attr_mapping[meta] :
+                    0xFF; // not found
+            PlfTile tile;
+            tile.ident = meta<<4;
+            tile.attrs = tileAttr;
+            tile.laser = 0;
+            plf_tiles[x + y*plf_w] = tile;
+            if (DEBUG_METATILES)
+            {
+                // debug metatile using layer A:
+                VDP_setTileMapXY(BG_A, TILE_ATTR_FULL(PAL0,0,0,0,meta+(meta>9?0x05C1:0x05B0)), x*2, y*2);
+                if(tileAttr != 0xFF)
+                    VDP_setTileMapXY(BG_B, TILE_ATTR_FULL(PAL0,0,0,0,tileAttr+(tileAttr>9?0x05C1:0x05B0)), x*2+1, y*2);
+            }
+        }
 }
 
 void PLF_cam_to(fix16 cx, fix16 cy)
 {
     plf_cam_cx = cx;
     plf_cam_cy = cy;
+}
+
+PlfTile PLF_get_tile(u16 pf_x, u16 pf_y)
+{
+    return plf_tiles[pf_x + pf_y*plf_w];
 }
 
 /*
@@ -104,7 +144,10 @@ void PLF_update_scroll(bool forceRedraw)
     if (forceRedraw)
         SYS_doVBlankProcess();
 
-    char buf[40];
-    sprintf(buf, "@%d,%d   ", fix16ToRoundedInt(plf_cam_cx), fix16ToRoundedInt(plf_cam_cy));
-    VDP_drawTextBG(BG_A, buf, 1, 26);
+    if(DEBUG_CAMERA)
+    {
+        char buf[40];
+        sprintf(buf, "@%d,%d   ", fix16ToRoundedInt(plf_cam_cx), fix16ToRoundedInt(plf_cam_cy));
+        VDP_drawTextBG(BG_A, buf, 0, 27);
+    }
 }

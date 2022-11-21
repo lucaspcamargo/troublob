@@ -5,6 +5,8 @@ IMAGE title "title.png" 0
 # SPRITES_CORE
 #
 SPRITE spr_dweep ../art/spr/dweep.png 2 2 2
+SPRITE spr_shadow ../art/spr/shadow.png 2 1 2
+SPRITE spr_cursor ../art/spr/mouse.png 2 2 2
 
 #
 #  TILESETS

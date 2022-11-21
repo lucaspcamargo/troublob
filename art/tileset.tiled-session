@@ -5,8 +5,8 @@
     },
     "activeFile": "map/map_1.tmx",
     "expandedProjectPaths": [
-        ".",
         "map",
+        ".",
         "spr"
     ],
     "file.lastUsedOpenFilter": "Todos os Arquivos (*)",
@@ -38,8 +38,8 @@
             "scale": 2.87671875,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 157.47107707348866,
-                "y": -37.19515507033839
+                "x": 159.90440497528652,
+                "y": 16.164249633371355
             }
         },
         "spr/collection.tsx": {
