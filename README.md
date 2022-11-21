@@ -6,8 +6,15 @@ Version of old Dweep shareware game on Sega Genesis (using SGDK)
 ## About
 
 This is a SGDK port of the old shareware game Dweep.
-
-Not much to talk about for now, still getting used to the tools and drawing assets and stuff.
+Not much to talk about for now, still in the beginning.
+Next major milestones would be:
+- A* navigation for Dweep
+- Collision with walls etc
+- Lasers
+- Items and inventory
+- Player States
+- Game states (victory, defeat)
+- Menu
 
 
 Music was converted using libOPNMIDI (midi2vgm).
