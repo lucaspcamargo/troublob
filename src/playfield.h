@@ -43,12 +43,13 @@ static const u8 tileset_attr_mapping[] = {
     /*1: Wall (uncovered) */ PLF_ATTR_SOLID,
     /*2: Ice  */ PLF_ATTR_COLD,
     /*3: Broken_Machine */ NULL,
-    /*4: Grass */ 0,
+    /*4: Ground */ 0,
     /*5: Pentagram */ 0,
     /*6: Lava */ PLF_ATTR_HOT,
     /*7: Item */ PLF_ATTR_OBJ,
     /*8: ??? */ NULL,
     /*9: Laser */ PLF_ATTR_OBJ,
+    /*10: Ground */ 0
 };
 
 // VAR DEFINITIONS
@@ -100,15 +101,15 @@ void PLF_init()
                     0xFF; // not found
             PlfTile tile;
             tile.ident = meta<<4;
-            tile.attrs = tileAttr;
+            tile.attrs = tileAttr==0xFF? 0 : tileAttr;
             tile.laser = 0;
             plf_tiles[x + y*plf_w] = tile;
             if (DEBUG_METATILES)
             {
                 // debug metatile using layer A:
-                VDP_setTileMapXY(BG_A, TILE_ATTR_FULL(PAL0,0,0,0,meta+(meta>9?0x05C1:0x05B0)), x*2, y*2);
+                VDP_setTileMapXY(BG_A, TILE_ATTR_FULL(PAL0,0,0,0,meta+(meta>9?0x05C1-10:0x05B0)), x*2, y*2);
                 if(tileAttr != 0xFF)
-                    VDP_setTileMapXY(BG_B, TILE_ATTR_FULL(PAL0,0,0,0,tileAttr+(tileAttr>9?0x05C1:0x05B0)), x*2+1, y*2);
+                    VDP_setTileMapXY(BG_A, TILE_ATTR_FULL(PAL0,0,0,0,tileAttr+(tileAttr>9?0x05C1-10:0x05B0)), x*2+1, y*2);
             }
         }
 }
