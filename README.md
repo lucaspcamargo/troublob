@@ -11,7 +11,7 @@ Next major milestones would be:
 - A* navigation for Dweep
 - Collision with walls etc
 - Lasers
-- Items and inventory
+- Some items and inventory
 - Player States
 - Game states (victory, defeat)
 - Menu
@@ -20,6 +20,8 @@ Next major milestones would be:
 Music was converted using libOPNMIDI (midi2vgm).
 SFX was converted by rescomp.
 Art uses LibreSprite for tilesets and sprites, and Tiled for tilemaps.
+
+The original Dweep was created and programmed by Steve Pavlina, with music by Michael Huang.
 
 ## Building
 

@@ -58,7 +58,7 @@ int main() {
 	scaleShadow();
 
 	//Start play the level's song
-	XGM_startPlay(bgm_stage_4);
+	XGM_startPlay(bgm_stage_1);
 
 	u32 framecounter = 0;
 
@@ -147,6 +147,27 @@ int main() {
 			u16 tmp = PCTRL_src_lines[PAL_LINE_BG_1*16+15];
 			PCTRL_src_lines[PAL_LINE_BG_1*16+15] = PCTRL_src_lines[PAL_LINE_BG_1*16+14];
 			PCTRL_src_lines[PAL_LINE_BG_1*16+14] = tmp;
+		}
+
+		if(FALSE)//framecounter % 6 == 0)
+		{
+			// TODO add this functionality to PCTRL in generic fashion
+			u16 tmp = PCTRL_src_lines[PAL_LINE_BG_0*16+17];
+			PCTRL_src_lines[PAL_LINE_BG_0*16+17] = PCTRL_src_lines[PAL_LINE_BG_0*16+18];
+			PCTRL_src_lines[PAL_LINE_BG_0*16+18] = PCTRL_src_lines[PAL_LINE_BG_0*16+19];
+			PCTRL_src_lines[PAL_LINE_BG_0*16+19] = PCTRL_src_lines[PAL_LINE_BG_0*16+20];
+			PCTRL_src_lines[PAL_LINE_BG_0*16+20] = PCTRL_src_lines[PAL_LINE_BG_0*16+21];
+			PCTRL_src_lines[PAL_LINE_BG_0*16+21] = tmp;
+		}
+
+		if(FALSE)//framecounter % 4 == 0)
+		{
+			// TODO add this functionality to PCTRL in generic fashion
+			u16 tmp = PCTRL_src_lines[PAL_LINE_BG_0*16+8];
+			PCTRL_src_lines[PAL_LINE_BG_0*16+8] = PCTRL_src_lines[PAL_LINE_BG_0*16+9];
+			PCTRL_src_lines[PAL_LINE_BG_0*16+9] = PCTRL_src_lines[PAL_LINE_BG_0*16+10];
+			PCTRL_src_lines[PAL_LINE_BG_0*16+10] = PCTRL_src_lines[PAL_LINE_BG_0*16+11];
+			PCTRL_src_lines[PAL_LINE_BG_0*16+11] = tmp;
 		}
 
 		PLF_update_scroll(FALSE); // update playfield scroll (no force redraw)
