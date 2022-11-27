@@ -1,7 +1,6 @@
 #pragma once
 
 #include <genesis.h>
-#include "pctrl_ops/iface.h"
 
 #define PCTRL_PAL_COUNT 4
 #define PCTRL_PAL_LEN 16
