@@ -6,11 +6,18 @@
 #define GAME_NAME "DWEEP GENESIS"
 #define GAME_VERSION "v 0.1"
 
-// Debug Switchews
+// Debug Switches
+#define DEBUG_CPU_LOAD 1
 #define DEBUG_METATILES 0
 #define DEBUG_MOUSE 0
 #define DEBUG_CAMERA 0
+#define DEBUG_PATHFINDING 0
+#define DEBUG_PATHFINDING_SLOW 3
 #define FORCE_MOUSE 1
+#define FORCE_MOUSE_ABSOLUTE 1
+
+// Disable switches
+#define DISABLE_SFX 1
 
 // Game constants
 #define PLAYFIELD_STD_W 20

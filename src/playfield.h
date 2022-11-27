@@ -4,6 +4,7 @@
 
 #include "dweep_config.h"
 #include "resources.h"
+#include "pathfind.h"
 
 // TYPE DFINITIONS
 
@@ -12,7 +13,7 @@ enum PlfAttrBits {
     PLF_ATTR_SOLID = 1 << 0,    // is solid
     PLF_ATTR_HOT   = 1 << 1,    // is hot plate
     PLF_ATTR_COLD  = 1 << 2,    // is cold plate
-    PLF_ATTR_OBJ   = 1 << 3,    // contains solid object
+    PLF_ATTR_OBJ   = 1 << 3,    // contains object, can be solid or not
     PLF_ATTR_DIR_FLIP = 1 << 4, // for every flippable object (incl mirrors)
     PLF_ATTR_DIR_VERT = 1 << 5, // four-way objects like lasers and fans, stacks with _FLIP
     PLF_ATTR_EXTRA_A  = 1 << 6, // reserved
@@ -48,21 +49,21 @@ static const u8 tileset_attr_mapping[] = {
     /*6: Lava */ PLF_ATTR_HOT,
     /*7: Item */ PLF_ATTR_OBJ,
     /*8: ??? */ NULL,
-    /*9: Laser */ PLF_ATTR_OBJ,
+    /*9: Laser */ PLF_ATTR_OBJ|PLF_ATTR_SOLID,
     /*10: Ground */ 0
 };
 
 // VAR DEFINITIONS
 
-static u16 plf_w = PLAYFIELD_STD_W;
-static u16 plf_h = PLAYFIELD_STD_H;
-static PlfTile plf_tiles[PLAYFIELD_STD_SZ];
+u16 plf_w = PLAYFIELD_STD_W;
+u16 plf_h = PLAYFIELD_STD_H;
+PlfTile plf_tiles[PLAYFIELD_STD_SZ];
 
-static Map* m_a;
-static Map* m_b;
+Map* m_a;
+Map* m_b;
 
-static fix16 plf_cam_cx = FIX16(16*(PLAYFIELD_STD_W/2));
-static fix16 plf_cam_cy = FIX16(16*(PLAYFIELD_STD_H/2));
+fix16 plf_cam_cx = FIX16(16*(PLAYFIELD_STD_W/2));
+fix16 plf_cam_cy = FIX16(16*(PLAYFIELD_STD_H/2));
 
 
 // fwd decls
@@ -74,16 +75,28 @@ void PLF_init()
 {
     // setup palette
     PCTRL_set_source(PAL_LINE_BG_0, pal_tset_0.data, FALSE);
-    PCTRL_set_source(PAL_LINE_BG_0, pal_tset_0.data, TRUE);
     PCTRL_set_source(PAL_LINE_BG_1, pal_tset_0.data+(pal_tset_0.length/4), FALSE);
-    PCTRL_set_source(PAL_LINE_BG_1, pal_tset_0.data+(pal_tset_0.length/4), TRUE);
+
+
+    // TODO store these palette ops with tileset somehow?
+    PalCtrlOperatorDescriptor pal_op =
+    {
+        PCTRL_OP_CYCLE,
+        44, 3, 0x1f, NULL, NULL
+    };
+    PCTRL_op_add(&pal_op);
+    pal_op.idx_base = 62;
+    pal_op.len = 2;
+    pal_op.period_mask = 0x03;
+    PCTRL_op_add(&pal_op);
+
 
     // load bg graphics
     VDP_loadTileSet(&tset_0, TILE_USER_INDEX, DMA);
 
     // load map data
-    m_a = MAP_create(&map_1_a, BG_A, TILE_ATTR_FULL(PAL_LINE_BG_0, 0, 0, 1, TILE_USER_INDEX));
-    m_b = MAP_create(&map_1_b, BG_B, TILE_ATTR_FULL(PAL_LINE_BG_0, 0, 0, 1, TILE_USER_INDEX));
+    m_a = MAP_create(&map_2_a, BG_A, TILE_ATTR_FULL(PAL_LINE_BG_0, 1, 0, 0, TILE_USER_INDEX));
+    m_b = MAP_create(&map_2_b, BG_B, TILE_ATTR_FULL(PAL_LINE_BG_0, 0, 0, 0, TILE_USER_INDEX));
 
     // init camera
     PLF_cam_to( FIX16(16*(PLAYFIELD_STD_W/2)),FIX16(16*(PLAYFIELD_STD_H/2)) );
@@ -123,6 +136,23 @@ void PLF_cam_to(fix16 cx, fix16 cy)
 PlfTile PLF_get_tile(u16 pf_x, u16 pf_y)
 {
     return plf_tiles[pf_x + pf_y*plf_w];
+}
+
+bool PLF_player_pathfind(u16 px, u16 py, u16 destx, u16 desty)
+{
+    // NOTE if/when scrolling levels are implemented, we'll need to do some coordinate conversion here
+    //      and limit the pathfinding to the current screen via stride_y
+    //      for now, just convert to u8
+    enum PathfindingResult res = PATH_find(PLAYFIELD_STD_W, PLAYFIELD_STD_H, (u8)px, (u8)py, (u8)destx, (u8)desty,
+                                           ((u8*)plf_tiles)+1, sizeof(PlfTile), sizeof(PlfTile)*PLAYFIELD_STD_W, PLF_ATTR_SOLID);
+
+    if(DEBUG_PATHFINDING)
+    {
+        char buf[16] = "PATH RES ";
+        intToHex(res, buf+9, 1);
+        VDP_drawText(buf, 20, 27);
+    }
+    return res==PATH_FOUND;
 }
 
 /*

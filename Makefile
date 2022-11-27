@@ -124,7 +124,7 @@ boot/rom_head.o: boot/rom_head.c
 	@echo "AS $<"
 	@$(AS) $(ASFLAGS) $< -o $@
 
-%.s: %.res res/* res/sfx/* res/vgm/* art/* art/spr/* art/map/*
+%.s: %.res res/*[!o] res/sfx/* res/vgm/* art/* art/spr/* art/map/*
 	$(RESCOMP) $< $@
 
 # For asm target

@@ -27,6 +27,7 @@ enum SfxId {
     SFX_END
 };
 
+#if !DISABLE_SFX
 static const u8 * SFX_REF[] = {
     sfx_boom,
     sfx_burn,
@@ -92,16 +93,21 @@ static const u16 SFX_CH[] = {
     SOUND_PCM_CH1, //sfx_water),
     SOUND_PCM_CH1  //sfx_wrench)
 };
+#endif
 
 void SFX_register_all()
 {
+#if !DISABLE_SFX
     for(u8 i = SFX_USER_OFFSET; i < SFX_END; i++)
         XGM_setPCM(i, SFX_REF[i-SFX_USER_OFFSET], SFX_SZ[i-SFX_USER_OFFSET]);
+#endif
 }
 
 #define SFX_play(ID) SFX_play_prio((ID),0)
 
 void SFX_play_prio(u8 id, u8 prio)
 {
+#if !DISABLE_SFX
     XGM_startPlayPCM(id, prio, SFX_CH[id-SFX_USER_OFFSET]);
+#endif
 }

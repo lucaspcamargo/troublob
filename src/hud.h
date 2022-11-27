@@ -5,10 +5,14 @@
 #include "dweep_config.h"
 #include "resources.h"
 
-// HACK +256 for single bg tileset loaded at TILE_USER_INDEX, find better
+// HACK +256 for single bg tileset loaded at TILE_USER_INDEX
+//      Need mechanism for managing VDP tile memory
 #define TILE_HUD_INDEX (TILE_USER_INDEX+256)
 
-static TileMap * hud_tm;
+// TODO use window plane for HUD?
+//      seems like would make future field scroling much easier
+//      however, window plane seems to have a rather large, fixed size
+//      we could use only part of the mappings and use the rest as tile storage, I've read...
 
 void HUD_draw();
 
@@ -19,7 +23,6 @@ void HUD_init()
 
     // load HUD tiles
     VDP_loadTileSet(&tset_hud, TILE_HUD_INDEX, DMA);
-    DMA_waitCompletion();
 
     // draw HUD
     HUD_draw();
@@ -34,6 +37,7 @@ void HUD_draw()
     // wait till transfer done
     DMA_waitCompletion();
     //VDP_setTileMap(BG_A, &map_hud, 0, 24, 40, 4, CPU);
+    VDP_drawTextBG(BG_A, "MOVE", 32, 26);
 }
 
 
