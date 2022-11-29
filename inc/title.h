@@ -16,12 +16,6 @@ void TITLE_main()
     PCTRL_set_source(2, sgdk_logo.palette->data, FALSE);
 
     PCTRL_fade_in(FADE_DUR);
-
-    SYS_doVBlankProcess();
-
-    SYS_doVBlankProcess();
-    SYS_doVBlankProcess();
-
     for(int i = 0; i < 40; i++)
         SYS_doVBlankProcess();
 

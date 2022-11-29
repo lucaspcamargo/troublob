@@ -10,8 +10,6 @@ bool mouse_present = FALSE;
 u16 mouse_last_joy_state = 0;
 bool mouse_last_clicked = FALSE;
 
-void MOUSE_do_move_delta( s16 dx, s16 dy );
-
 void MOUSE_handler( u16 joy, u16 changed, u16 state)
 {
     // just save curr state for movement handling in callback
@@ -21,12 +19,11 @@ void MOUSE_handler( u16 joy, u16 changed, u16 state)
         if(changed & state & BUTTON_A)
             mouse_last_clicked = TRUE;
     }
-
 }
 
 void MOUSE_init()
 {
-    JOY_setSupport(PORT_1, JOY_SUPPORT_MOUSE);
+    //JOY_setSupport(PORT_1, JOY_SUPPORT_3BTN|JOY_SUPPORT_6BTN|JOY_SUPPORT_MOUSE);
     u8 port_type = JOY_getPortType(PORT_1);
     u8 joy_type = JOY_getJoypadType(JOY_1);
 
@@ -34,7 +31,7 @@ void MOUSE_init()
     {
         char buf[40];
         sprintf(buf, "port %d joy %d", port_type, joy_type);
-        VDP_drawTextBG(BG_A, buf, 0, 27);
+        VDP_drawTextBG(BG_A, buf, 1, 25);
     }
 
     if( FORCE_MOUSE || ( joy_type==JOY_TYPE_MOUSE && port_type == PORT_TYPE_MOUSE ))
@@ -46,8 +43,6 @@ void MOUSE_init()
 
     JOY_setEventHandler(&MOUSE_handler);
 }
-
-#define MOUSE_do_move_delta( dx, dy ) MOUSE_do_move_abs(mouse_x+dx, mouse_y+dx)
 
 void MOUSE_do_move_abs( s16 mx, s16 my, bool do_clamp )
 {
@@ -67,9 +62,11 @@ void MOUSE_do_move_abs( s16 mx, s16 my, bool do_clamp )
                 (int) JOY_getJoypadType(JOY_1),
                 (int) mx,
                 (int) my);
-        VDP_drawText(buf, 0, 1);
+        VDP_drawTextBG(BG_A, buf, 0, 1);
     }
 }
+
+#define MOUSE_do_move_delta( dx, dy ) MOUSE_do_move_abs(mouse_x+dx, mouse_y+dy, TRUE)
 
 bool MOUSE_step()
 {
@@ -99,7 +96,7 @@ bool MOUSE_step()
     dy += (jp&BUTTON_DOWN?MOUSE_SPEED:0);
 
 
-    if (dx || dy)
+    //if (dx || dy)
         MOUSE_do_move_delta(dx, dy);
 #endif
 

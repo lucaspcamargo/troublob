@@ -1,45 +1,12 @@
-#pragma once
+#include "playfield.h"
+#include "palette_ctrl.h"
 
-#include <genesis.h>
 
-#include "dweep_config.h"
-#include "resources.h"
-#include "pathfind.h"
+// TODO metatile indices seem to be stored in map according to how they are shown on screen
+//      the actual tilemap does not matter for metatile index
+//      need to be able to get metatile information per the tileset it came from
 
-// TYPE DFINITIONS
-
-// uniform attributes for every playfield tile
-enum PlfAttrBits {
-    PLF_ATTR_SOLID = 1 << 0,    // is solid
-    PLF_ATTR_HOT   = 1 << 1,    // is hot plate
-    PLF_ATTR_COLD  = 1 << 2,    // is cold plate
-    PLF_ATTR_OBJ   = 1 << 3,    // contains object, can be solid or not
-    PLF_ATTR_DIR_FLIP = 1 << 4, // for every flippable object (incl mirrors)
-    PLF_ATTR_DIR_VERT = 1 << 5, // four-way objects like lasers and fans, stacks with _FLIP
-    PLF_ATTR_EXTRA_A  = 1 << 6, // reserved
-    PLF_ATTR_EXTRA_B = 1 << 7   // reserved
-};
-
-// laser attributes for every playfield tile
-// for every quadrant direction we can have lasers in and out of the tile
-enum PlfLaserBits {
-    PLF_LASER_IN_R  = 1 << 0,
-    PLF_LASER_IN_L  = 1 << 1,
-    PLF_LASER_IN_U  = 1 << 2,
-    PLF_LASER_IN_D  = 1 << 3,
-    PLF_LASER_OUT_R = 1 << 4,
-    PLF_LASER_OUT_L = 1 << 5,
-    PLF_LASER_OUT_U = 1 << 6,
-    PLF_LASER_OUT_D = 1 << 7
-};
-
-typedef struct {
-    u8 ident;
-    u8 attrs;
-    u8 laser;
-} PlfTile;
-
-static const u8 tileset_attr_mapping[] = {
+static const u8 tileset_attr_mapping[] = {  // FOR MAP 1
     /*0: Wall (covered) */ PLF_ATTR_SOLID,
     /*1: Wall (uncovered) */ PLF_ATTR_SOLID,
     /*2: Ice  */ PLF_ATTR_COLD,
@@ -53,30 +20,42 @@ static const u8 tileset_attr_mapping[] = {
     /*10: Ground */ 0
 };
 
-// VAR DEFINITIONS
+//static const u8 tileset_attr_mapping[] = {  // FOR MAP 3
+//    PLF_ATTR_SOLID,
+//    0,
+//    PLF_ATTR_SOLID,
+//    NULL,
+//    0,
+//    0,
+//    PLF_ATTR_HOT,
+//    PLF_ATTR_OBJ,
+//    NULL,
+//    PLF_ATTR_OBJ|PLF_ATTR_SOLID,
+//    0
+//};
 
-u16 plf_w = PLAYFIELD_STD_W;
-u16 plf_h = PLAYFIELD_STD_H;
+// VARS
+u16 plf_w;
+u16 plf_h;
 PlfTile plf_tiles[PLAYFIELD_STD_SZ];
-
 Map* m_a;
 Map* m_b;
-
-fix16 plf_cam_cx = FIX16(16*(PLAYFIELD_STD_W/2));
-fix16 plf_cam_cy = FIX16(16*(PLAYFIELD_STD_H/2));
-
-
-// fwd decls
-void PLF_update_scroll(bool forceRedraw);
-void PLF_cam_to(fix16 cx, fix16 cy);
-
+fix16 plf_cam_cx;
+fix16 plf_cam_cy;
 
 void PLF_init()
 {
-    // setup palette
-    PCTRL_set_source(PAL_LINE_BG_0, pal_tset_0.data, FALSE);
-    PCTRL_set_source(PAL_LINE_BG_1, pal_tset_0.data+(pal_tset_0.length/4), FALSE);
+    // init playfield vars
+    plf_w = PLAYFIELD_STD_W;
+    plf_h = PLAYFIELD_STD_H;
+    m_a = NULL;
+    m_b = NULL;
+    plf_cam_cx = FIX16(16*(PLAYFIELD_STD_W/2));
+    plf_cam_cy = FIX16(16*(PLAYFIELD_STD_H/2));
 
+    // setup palettes
+    PCTRL_set_source(PAL_LINE_BG_0, pal_tset_0.data, FALSE);
+    PCTRL_set_source(PAL_LINE_BG_1, pal_tset_0.data+16, FALSE);
 
     // TODO store these palette ops with tileset somehow?
     PalCtrlOperatorDescriptor pal_op =
@@ -95,8 +74,8 @@ void PLF_init()
     VDP_loadTileSet(&tset_0, TILE_USER_INDEX, DMA);
 
     // load map data
-    m_a = MAP_create(&map_2_a, BG_A, TILE_ATTR_FULL(PAL_LINE_BG_0, 1, 0, 0, TILE_USER_INDEX));
-    m_b = MAP_create(&map_2_b, BG_B, TILE_ATTR_FULL(PAL_LINE_BG_0, 0, 0, 0, TILE_USER_INDEX));
+    m_a = MAP_create(&map_1_a, BG_A, TILE_ATTR_FULL(PAL_LINE_BG_0, 1, 0, 0, TILE_USER_INDEX));
+    m_b = MAP_create(&map_1_b, BG_B, TILE_ATTR_FULL(PAL_LINE_BG_0, 0, 0, 0, TILE_USER_INDEX));
 
     // init camera
     PLF_cam_to( FIX16(16*(PLAYFIELD_STD_W/2)),FIX16(16*(PLAYFIELD_STD_H/2)) );
@@ -108,21 +87,24 @@ void PLF_init()
     for(u16 x = 0; x < plf_w; x++)
         for(u16 y = 0; y < plf_h; y++)
         {
-            u16 meta = MAP_getMetaTile(m_b,x,y);
-            u8 tileAttr = (meta<sizeof(tileset_attr_mapping))?
-                    tileset_attr_mapping[meta] :
+            u16 metaIdx = MAP_getMetaTile(m_b,x,y) & 0x07FF;
+            u8 tileAttr = (metaIdx<sizeof(tileset_attr_mapping))?
+                    tileset_attr_mapping[metaIdx] :
                     0xFF; // not found
             PlfTile tile;
-            tile.ident = meta<<4;
+            tile.ident = metaIdx<<4;
             tile.attrs = tileAttr==0xFF? 0 : tileAttr;
             tile.laser = 0;
             plf_tiles[x + y*plf_w] = tile;
-            if (DEBUG_METATILES)
+            if (DEBUG_TILES)
             {
                 // debug metatile using layer A:
-                VDP_setTileMapXY(BG_A, TILE_ATTR_FULL(PAL0,0,0,0,meta+(meta>9?0x05C1-10:0x05B0)), x*2, y*2);
-                if(tileAttr != 0xFF)
-                    VDP_setTileMapXY(BG_A, TILE_ATTR_FULL(PAL0,0,0,0,tileAttr+(tileAttr>9?0x05C1-10:0x05B0)), x*2+1, y*2);
+                //VDP_setTileMapXY(BG_A, TILE_ATTR_FULL(PAL0,0,0,0,meta+(meta>9?0x05C1-10:0x05B0)), x*2, y*2);
+                char buf[4];
+                intToHex(metaIdx,buf,2);
+                VDP_drawTextBG(BG_A, buf, x*2, y*2);
+                //if(tileAttr != 0xFF)
+                    //VDP_setTileMapXY(BG_A, TILE_ATTR_FULL(PAL0,0,0,0,tileAttr+(tileAttr>9?0x05C1-10:0x05B0)), x*2+1, y*2);
             }
         }
 }
@@ -148,11 +130,23 @@ bool PLF_player_pathfind(u16 px, u16 py, u16 destx, u16 desty)
 
     if(DEBUG_PATHFINDING)
     {
-        char buf[16] = "PATH RES ";
-        intToHex(res, buf+9, 1);
-        VDP_drawText(buf, 20, 27);
+        char buf[20];
+        sprintf(buf, "%d,%d to %d,%d: %d(%d)", (int) px, (int) py, (int) destx, (int) desty, (int) res, (int) PATH_curr_node_count() );
+        VDP_drawText(buf, 16, 27);
     }
     return res==PATH_FOUND;
+}
+
+bool PLF_player_path_next(u16 px, u16 py, u16 *nextx, u16 *nexty)
+{
+    u8 bufx, bufy;
+    bool ret = PATH_next(PLAYFIELD_STD_W, PLAYFIELD_STD_H, (u8)px, (u8)py, &bufx, &bufy);
+    if(ret)
+    {
+        *nextx = bufx;
+        *nexty = bufy;
+    }
+    return ret;
 }
 
 /*

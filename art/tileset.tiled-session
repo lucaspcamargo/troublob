@@ -3,11 +3,11 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "map/map_2.tmx",
+    "activeFile": "map/map_H.tmx",
     "expandedProjectPaths": [
         "spr",
-        ".",
-        "map"
+        "map",
+        "."
     ],
     "file.lastUsedOpenFilter": "Todos os Arquivos (*)",
     "fileStates": {
@@ -30,8 +30,8 @@
             "scale": 3,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 165.66666666666669,
-                "y": 81.66666666666666
+                "x": 159.99999999999997,
+                "y": 112
             }
         },
         "map/map_2.tmx": {
@@ -42,12 +42,20 @@
                 "y": 96.29026125685729
             }
         },
+        "map/map_3.tmx": {
+            "scale": 3,
+            "selectedLayer": 2,
+            "viewCenter": {
+                "x": 155.99999999999997,
+                "y": 81.33333333333333
+            }
+        },
         "map/map_H.tmx": {
             "scale": 2.87671875,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 159.90440497528652,
-                "y": 16.164249633371355
+                "x": 160.2520232469719,
+                "y": 16.338058769214058
             }
         },
         "spr/collection.tsx": {
@@ -78,20 +86,22 @@
     "map.tileWidth": 16,
     "map.width": 20,
     "openFiles": [
-        "map/map_1.tmx",
-        "map/map_H.tmx",
-        "spr/tileset0.tsx",
-        "spr/tilesetH.tsx",
-        "map/map_2.tmx"
-    ],
-    "project": "tileset.tiled-project",
-    "property.type": "int",
-    "recentFiles": [
-        "map/map_1.tmx",
+        "map/map_3.tmx",
         "map/map_H.tmx",
         "spr/tileset0.tsx",
         "spr/tilesetH.tsx",
         "map/map_2.tmx",
+        "map/map_1.tmx"
+    ],
+    "project": "tileset.tiled-project",
+    "property.type": "int",
+    "recentFiles": [
+        "map/map_3.tmx",
+        "map/map_1.tmx",
+        "map/map_2.tmx",
+        "spr/tilesetH.tsx",
+        "spr/tileset0.tsx",
+        "map/map_H.tmx",
         "spr/collection.tsx",
         "blockset/field_a.tsx",
         "map/map_0.tmx"

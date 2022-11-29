@@ -13,6 +13,11 @@
 #include "sfx.h"
 
 
+enum PlayerState {
+    PLR_STATE_IDLE = 0,
+    PLR_STATE_MOVING_PATH
+};
+
 int main(bool hard) {
 
     if(!hard)
@@ -43,12 +48,15 @@ int main(bool hard) {
     Sprite *spr_player_shadow = SPR_addSprite(&spr_shadow, 0, 0, PAL_LINE_SPR_A<<TILE_ATTR_PALETTE_SFT);
     SPR_setPriority(spr_player_shadow, FALSE);
     SPR_setAlwaysVisible(spr_player, 1);
-    fix16 player_pf_x = FIX16(3);
-    fix16 player_pf_y = FIX16(2);
+    fix16 player_pf_x = FIX16(17);
+    fix16 player_pf_y = FIX16(10);
     fix16 player_pf_z = FIX16(0);
     fix16 dest_pf_x = player_pf_x;
     fix16 dest_pf_y = player_pf_y;
+    fix16 final_dest_pf_x = player_pf_x;
+    fix16 final_dest_pf_y = player_pf_y;
     bool player_float = FALSE;
+    enum PlayerState player_state = PLR_STATE_IDLE;
 
 #define positionPlayer() SPR_setPosition(spr_player, \
     fix16ToRoundedInt(fix16Mul(player_pf_x, FIX16(16))), \
@@ -63,8 +71,9 @@ int main(bool hard) {
     positionShadow();
     scaleShadow();
 
-    //Start play the level's song
-    XGM_startPlay(bgm_stage_1);
+    //Play a song
+    const void * const songs[] = {bgm_stage_1, bgm_stage_3, bgm_stage_5, bgm_stage_4, bgm_stage_2};
+    XGM_startPlay(songs[random()%5]);
 
     u32 framecounter = 0;
 
@@ -95,17 +104,31 @@ int main(bool hard) {
 
             if(click_pf_y < 12)
             {
+                // field click
                 PlfTile tile = PLF_get_tile(click_pf_x, click_pf_y);
-                if(0)//tile.attrs & PLF_ATTR_SOLID)
+                if(tile.attrs & PLF_ATTR_SOLID)
                 {
-                    SFX_play(SFX_burn);
+                    SFX_play(SFX_no);
                 }
                 else
                 {
-                    SFX_play(SFX_go4);
-                    dest_pf_x = FIX16(click_pf_x);
-                    dest_pf_y = FIX16(click_pf_y);
-                    PLF_player_pathfind(fix16ToInt(player_pf_x),fix16ToInt(player_pf_y),fix16ToInt(dest_pf_x),fix16ToInt(dest_pf_y));
+                    bool found = PLF_player_pathfind(fix16ToInt(player_pf_x),fix16ToInt(player_pf_y), click_pf_x, click_pf_y);
+                    if (found)
+                    {
+                        SFX_play(SFX_go1+(random()%3));
+                        player_state = PLR_STATE_MOVING_PATH;
+                        final_dest_pf_x = FIX16(click_pf_x);
+                        final_dest_pf_y = FIX16(click_pf_y);
+                        u16 bufx, bufy;
+                        bool found_next_pos = PLF_player_path_next(fix16ToInt(player_pf_x), fix16ToInt(player_pf_y), &bufx, &bufy);
+                        if(found_next_pos)
+                        {
+                            dest_pf_x = FIX16(bufx);
+                            dest_pf_y = FIX16(bufy);
+                        }
+                    }
+                    else
+                        SFX_play(SFX_water);
                 }
             }
             else
@@ -115,34 +138,46 @@ int main(bool hard) {
             }
         }
 
-        bool changed = FALSE;
-
-        if(player_pf_x != dest_pf_x)
+        if(player_state == PLR_STATE_MOVING_PATH)
         {
-            fix16 delta = ((player_pf_x < dest_pf_x)?PLAYER_SPEED:-PLAYER_SPEED);
-            player_pf_x += delta;
-            changed = TRUE;
-            SPR_setHFlip(spr_player, delta<0);
-        }
-
-        if(player_pf_y != dest_pf_y)
-        {
-            player_pf_y += ((player_pf_y < dest_pf_y)?PLAYER_SPEED:-PLAYER_SPEED);
-            changed = TRUE;
-        }
-
-        if(changed && fix16Frac(player_pf_x)==0 && fix16Frac(player_pf_y)==0)
-        {
-            // arrived on a tile
-            if(player_pf_x == FIX16(17) && player_pf_y == FIX16(10))
+            bool changed = FALSE;
+            if(player_pf_x != dest_pf_x)
             {
-                //XGM_setLoopNumber(0);
+                fix16 delta = ((player_pf_x < dest_pf_x)?PLAYER_SPEED:-PLAYER_SPEED);
+                player_pf_x += delta;
+                changed = TRUE;
+                SPR_setHFlip(spr_player, delta<0);
             }
-            else
+            if(player_pf_y != dest_pf_y)
             {
-                // get arrived tile attrs
-                PlfTile tile = PLF_get_tile(fix16ToInt(player_pf_x), fix16ToInt(player_pf_y));
-                player_float = (tile.attrs & PLF_ATTR_HOT)? TRUE : FALSE;
+                player_pf_y += ((player_pf_y < dest_pf_y)?PLAYER_SPEED:-PLAYER_SPEED);
+                changed = TRUE;
+            }
+
+            if(changed && fix16Frac(player_pf_x)==0 && fix16Frac(player_pf_y)==0)
+            {
+                // arrived on a tile
+                //PlfTile tile = PLF_get_tile(fix16ToInt(player_pf_x), fix16ToInt(player_pf_y));
+                //player_float = (tile.attrs & PLF_ATTR_HOT)? TRUE : FALSE;
+                if(player_pf_x == dest_pf_x && player_pf_y == dest_pf_y)
+                {
+                    // arrived at immediate dest, either we arrived at final destination, or we find our next imm. dest.
+                    if(player_pf_x == final_dest_pf_x && player_pf_y == final_dest_pf_y)
+                    {
+                        player_state = PLR_STATE_IDLE;
+                    }
+                    else
+                    {
+                        u16 bufx, bufy;
+                        bool found_next_pos = PLF_player_path_next(fix16ToInt(player_pf_x), fix16ToInt(player_pf_y), &bufx, &bufy);
+                        if(found_next_pos)
+                        {
+                            dest_pf_x = FIX16(bufx);
+                            dest_pf_y = FIX16(bufy);
+                        }
+                        else player_state = PLR_STATE_IDLE;
+                    }
+                }
             }
         }
 
@@ -150,13 +185,29 @@ int main(bool hard) {
         positionShadow();
         scaleShadow();
 
-        PLF_update_scroll(FALSE); // update playfield scroll (no force redraw)
-        SPR_update(); // step sprite system
+        if(DEBUG_PLAYER)
+        {
+            char buf[20];
+            sprintf(buf, "S%X@%X,%X,%X",
+                    (int) player_state,
+                    (int) player_pf_x, (int) player_pf_y, (int) player_pf_z);
+            VDP_drawText(buf, 0, 24);
+            sprintf(buf, "%X,%X", (int) dest_pf_x, (int) dest_pf_y);
+            VDP_drawText(buf, 20, 24);
+            sprintf(buf, "%X,%X", (int) final_dest_pf_x, (int) final_dest_pf_y);
+            VDP_drawText(buf, 30, 24);
+        }
+
         PCTRL_step(framecounter); // evaluate palettes for next frame
 
         if (DEBUG_CPU_LOAD)
             SYS_showFrameLoad(FALSE);
 
+        // BUG: calling the below every frame crashes the game!!!!
+        //      if I ever make scrolling levels, will need to figure out why
+        //PLF_update_scroll(FALSE); // update playfield scroll (no force redraw)
+
+        SPR_update(); // step sprite system
         SYS_doVBlankProcess();
         framecounter++;
     }

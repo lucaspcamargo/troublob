@@ -9,9 +9,9 @@ const ROMHeader rom_header = {
 #else
     "SEGA MEGA DRIVE ",
 #endif
-    "(C)LPC 2021     ",
-    "DWEEP GENESIS DEMO                              ",
-    "DWEEP GENESIS DEMO                              ",
+    "(C)SGDK 2022    ",
+    "DWEEP GENESIS ALPHA                             ",
+    "DWEEP GENESIS ALPHA                             ",
     "GM 00000000-00",
     0x000,
     "JD              ",
@@ -28,6 +28,6 @@ const ROMHeader rom_header = {
     0x00200000,
     0x0020FFFF,
     "            ",
-    "FAN GAME, DO NOT SELL. BY LUCAS CAMARGO ",
+    "FANGAME: DO NOT SELL. BY LUCAS P CAMARGO",
     "JUE             "
 };

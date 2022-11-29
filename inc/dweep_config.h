@@ -8,22 +8,24 @@
 
 // Debug Switches
 #define DEBUG_CPU_LOAD 1
-#define DEBUG_METATILES 0
+#define DEBUG_TILES 0
 #define DEBUG_MOUSE 0
 #define DEBUG_CAMERA 0
-#define DEBUG_PATHFINDING 0
-#define DEBUG_PATHFINDING_SLOW 3
+#define DEBUG_PLAYER 0
+#define DEBUG_PATHFINDING 1
+#define DEBUG_PATHFINDING_FIELD 0
+#define DEBUG_PATHFINDING_SLOW 5
 #define FORCE_MOUSE 1
-#define FORCE_MOUSE_ABSOLUTE 1
+#define FORCE_MOUSE_ABSOLUTE 0
 
-// Disable switches
-#define DISABLE_SFX 1
+// Feature switches
+#define DISABLE_SFX 0
 
 // Game constants
 #define PLAYFIELD_STD_W 20
 #define PLAYFIELD_STD_H 12
 #define PLAYFIELD_STD_SZ (PLAYFIELD_STD_W*PLAYFIELD_STD_H)
-#define PLAYER_SPEED 2
+#define PLAYER_SPEED 4
 #define MOUSE_MIN 1
 #define MOUSE_X_MAX 318
 #define MOUSE_Y_MAX 222

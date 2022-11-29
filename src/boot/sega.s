@@ -49,9 +49,8 @@ _Vecteurs_68K:
         dc.l    _INT,_INT,_INT,_INT,_INT,_INT,_INT,_INT
 
 rom_header:
-        .incbin "boot/rom_head.bin", 0, 0x100
+        .incbin "out/rom_head.bin", 0, 0x100
 
-_start:
 _Entry_Point:
         move    #0x2700,%sr
         tst.l   0xa10008
@@ -495,4 +494,3 @@ ltuns:
         move.l  %d3,%d0
         move.l  %a2,%d3           /* restore d3 */
         rts
-		
