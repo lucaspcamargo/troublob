@@ -25,5 +25,5 @@ The original Dweep was created and programmed by Steve Pavlina, with music by Mi
 
 ## Building
 
-The current makefile came from the SGDK marsdev example. If using another toolchain you may have to change/replace the makefile.
-Should not be different to build than any other SGDK project.
+Should not be different to build than any other SGDK project. After [installing the toolchain](https://github.com/Stephane-D/SGDK/wiki/SGDK-Installation),
+check the [usage documentation](https://github.com/Stephane-D/SGDK/wiki/SGDK-Usage).
