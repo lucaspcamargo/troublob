@@ -4,9 +4,10 @@ IMAGE title "title.png" 0
 # 
 # SPRITES_CORE
 #
-SPRITE spr_dweep ../art/spr/dweep.png 2 2 2
-SPRITE spr_shadow ../art/spr/shadow.png 2 1 2
-SPRITE spr_cursor ../art/spr/mouse.png 2 2 2
+SPRITE spr_cursor ../art/spr/mouse.png 2 2 BEST
+SPRITE spr_dweep ../art/spr/dweep.png 2 2 FAST 0
+SPRITE spr_shadow ../art/spr/shadow.png 2 1 NONE 0
+SPRITE spr_laser  ../art/spr/laser.png 2 2 BEST 0 NONE SPRITE
 
 #
 #  TILESETS
@@ -21,9 +22,12 @@ PALETTE pal_tset_0 ../art/spr/tileset0.png
 #  MAPS
 #
 TILEMAP map_hud ../art/map/map_H.tmx SINGLE AUTO AUTO
+MAP map_0_a ../art/map/map_0.tmx A AUTO AUTO
+MAP map_0_b ../art/map/map_0.tmx B AUTO AUTO
+OBJECTS map_0_o ../art/map/map_0.tmx OBJ type:u16;x:u16;y:u16;width:u16;height:u16
 MAP map_1_a ../art/map/map_1.tmx A AUTO AUTO
 MAP map_1_b ../art/map/map_1.tmx B AUTO AUTO
-OBJECTS map_1_o ../art/map/map_1.tmx OBJ x:u16;y:u16
+OBJECTS map_1_o ../art/map/map_1.tmx OBJ type:u16;x:u16;y:u16;width:u16;height:u16
 MAP map_2_a ../art/map/map_2.tmx A AUTO AUTO
 MAP map_2_b ../art/map/map_2.tmx B AUTO AUTO
 # OBJECTS map_2_o ../art/map/map_2.tmx OBJ x:u16;y:u16 -- NOT PRESENT

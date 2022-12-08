@@ -38,9 +38,6 @@ bool PATH_find( const u8 pfw, const u8 pfh, // playfield dims
         // for every node on the list (yet to be expanded)
         for(u8 idx = expand_start; idx < curr_len; idx++)
         {
-            const u8 curr_idx_x = PATH_nodes[idx].x;
-            const u8 curr_idx_y = PATH_nodes[idx].y;
-
             const PATH_DIST_TYPE next_dist_ortho = PATH_nodes[idx].dist + 1;
             // PATH_DIST_TYPE next_dist_diagonal = PATH_nodes[idx].dist + 3; -- TODO try later (with manhattan distance [+1]?)
 

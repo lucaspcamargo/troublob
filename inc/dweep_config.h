@@ -9,6 +9,7 @@
 // Debug Switches
 #define DEBUG_CPU_LOAD 1
 #define DEBUG_TILES 0
+#define DEBUG_MAP_OBJS 0
 #define DEBUG_MOUSE 0
 #define DEBUG_CAMERA 0
 #define DEBUG_PLAYER 0
@@ -42,3 +43,7 @@
 #define FADE_DUR 15
 #define RASTER_HUD_LINE (192)-43
 #define RASTER_HUD_LINE_END (225)
+
+
+// Utility macros
+#define ENUM_PACK __attribute__((packed))  // add to end of enum declaration to use smallest possible type

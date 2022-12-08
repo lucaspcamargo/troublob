@@ -2,37 +2,28 @@
 #include "palette_ctrl.h"
 
 
-// TODO metatile indices seem to be stored in map according to how they are shown on screen
-//      the actual tilemap does not matter for metatile index
-//      need to be able to get metatile information per the tileset it came from
+enum PLFLaserFrame // description of laser sprite frames
+{
+    PLF_LASER_FRAME_H,
+    PLF_LASER_FRAME_UL,
+    PLF_LASER_FRAME_DL,
+    PLF_LASER_FRAME_V,
+    PLF_LASER_FRAME_DT,
+    PLF_LASER_FRAME_DR,
+    PLF_LASER_FRAME_UR,
+    PLF_LASER_FRAME_LT,
+} ENUM_PACK;
 
-static const u8 tileset_attr_mapping[] = {  // FOR MAP 1
-    /*0: Wall (covered) */ PLF_ATTR_SOLID,
-    /*1: Wall (uncovered) */ PLF_ATTR_SOLID,
-    /*2: Ice  */ PLF_ATTR_COLD,
-    /*3: Broken_Machine */ NULL,
-    /*4: Ground */ 0,
-    /*5: Pentagram */ 0,
-    /*6: Lava */ PLF_ATTR_HOT,
-    /*7: Item */ PLF_ATTR_OBJ,
-    /*8: ??? */ NULL,
-    /*9: Laser */ PLF_ATTR_OBJ|PLF_ATTR_SOLID,
-    /*10: Ground */ 0
-};
 
-//static const u8 tileset_attr_mapping[] = {  // FOR MAP 3
-//    PLF_ATTR_SOLID,
-//    0,
-//    PLF_ATTR_SOLID,
-//    NULL,
-//    0,
-//    0,
-//    PLF_ATTR_HOT,
-//    PLF_ATTR_OBJ,
-//    NULL,
-//    PLF_ATTR_OBJ|PLF_ATTR_SOLID,
-//    0
-//};
+typedef struct MapObject_st {
+    u16 type;
+    u16 x;
+    u16 y;
+    u16 w;
+    u16 h;
+} MapObject;
+
+
 
 // VARS
 u16 plf_w;
@@ -42,6 +33,10 @@ Map* m_a;
 Map* m_b;
 fix16 plf_cam_cx;
 fix16 plf_cam_cy;
+fix16 plf_player_initial_x;
+fix16 plf_player_initial_y;
+
+#define TILE_AT(x, y) (plf_tiles[(x) + (y)*plf_w])
 
 void PLF_init()
 {
@@ -74,8 +69,8 @@ void PLF_init()
     VDP_loadTileSet(&tset_0, TILE_USER_INDEX, DMA);
 
     // load map data
-    m_a = MAP_create(&map_1_a, BG_A, TILE_ATTR_FULL(PAL_LINE_BG_0, 1, 0, 0, TILE_USER_INDEX));
-    m_b = MAP_create(&map_1_b, BG_B, TILE_ATTR_FULL(PAL_LINE_BG_0, 0, 0, 0, TILE_USER_INDEX));
+    m_a = MAP_create(&map_0_a, BG_A, TILE_ATTR_FULL(PAL_LINE_BG_0, 1, 0, 0, TILE_USER_INDEX));
+    m_b = MAP_create(&map_0_b, BG_B, TILE_ATTR_FULL(PAL_LINE_BG_0, 0, 0, 0, TILE_USER_INDEX));
 
     // init camera
     PLF_cam_to( FIX16(16*(PLAYFIELD_STD_W/2)),FIX16(16*(PLAYFIELD_STD_H/2)) );
@@ -83,30 +78,100 @@ void PLF_init()
     // init plane data
     PLF_update_scroll(TRUE);
 
-    // convert plane data into field data
+    // clear field data
     for(u16 x = 0; x < plf_w; x++)
         for(u16 y = 0; y < plf_h; y++)
         {
-            u16 metaIdx = MAP_getMetaTile(m_b,x,y) & 0x07FF;
-            u8 tileAttr = (metaIdx<sizeof(tileset_attr_mapping))?
-                    tileset_attr_mapping[metaIdx] :
-                    0xFF; // not found
             PlfTile tile;
-            tile.ident = metaIdx<<4;
-            tile.attrs = tileAttr==0xFF? 0 : tileAttr;
-            tile.laser = 0;
-            plf_tiles[x + y*plf_w] = tile;
-            if (DEBUG_TILES)
-            {
-                // debug metatile using layer A:
-                //VDP_setTileMapXY(BG_A, TILE_ATTR_FULL(PAL0,0,0,0,meta+(meta>9?0x05C1-10:0x05B0)), x*2, y*2);
-                char buf[4];
-                intToHex(metaIdx,buf,2);
-                VDP_drawTextBG(BG_A, buf, x*2, y*2);
-                //if(tileAttr != 0xFF)
-                    //VDP_setTileMapXY(BG_A, TILE_ATTR_FULL(PAL0,0,0,0,tileAttr+(tileAttr>9?0x05C1-10:0x05B0)), x*2+1, y*2);
-            }
+            tile.attrs = 0x00;
+            tile.laser = 0x00;
+            TILE_AT(x, y) = tile;
         }
+
+    // process object definitions
+    const void** const objs = map_0_o;
+    const u16 obj_count = sizeof(map_0_o)/sizeof(void*);
+    if(DEBUG_MAP_OBJS)
+    {
+        char buf[5];
+        intToHex(obj_count, buf,4);
+        VDP_drawTextBG(BG_A, buf, 0, 23);
+        VDP_drawTextBG(BG_A, " OBJS", 4, 23);
+    }
+
+    for(u16 iobj=0; iobj<obj_count; iobj++)
+    {
+        const MapObject* const obj = objs[iobj];
+        if(obj->type >= PLF_OBJ_MAX)
+            continue; // invalid obj spec
+
+        if(obj->w || obj->h)
+        {
+            // wall rect or tile object
+            u16 startx = obj->x/16;
+            u16 endx = (obj->x+obj->w-1)/16;
+            u16 starty;
+            u16 endy;
+
+            if(PLF_OBJ_IS_Y_BOTTOM(obj->type))
+            {
+                starty = (obj->y-obj->h)/16;
+                endy = (obj->y-1)/16;
+            }
+            else{
+                starty = obj->y/16;
+                endy = (obj->y+obj->h-1)/16;
+            }
+
+            for(u16 x = startx; x <= endx; x++)
+                for(u16 y = starty; y <= endy; y++)
+                {
+                    TILE_AT(x,y).attrs |= PLF_ATTR_SOLID;
+                }
+        }
+        else
+        {
+            // point object - player initial pos
+            plf_player_initial_x = FIX16(obj->x/16);
+            plf_player_initial_y = FIX16(obj->y/16);
+        }
+
+        if(DEBUG_MAP_OBJS && iobj < 28)
+        {
+            char buf[5];
+            intToHex(obj->type,buf,2);
+            VDP_drawTextBG(BG_A, buf, 0, iobj);
+            VDP_drawTextBG(BG_B, buf, 0, iobj);
+            intToHex(obj->x,buf,4);
+            VDP_drawTextBG(BG_A, buf, 3, iobj);
+            VDP_drawTextBG(BG_B, buf, 3, iobj);
+            intToHex(obj->y,buf,4);
+            VDP_drawTextBG(BG_A, buf, 8, iobj);
+            VDP_drawTextBG(BG_B, buf, 8, iobj);
+            intToHex(obj->w,buf,4);
+            VDP_drawTextBG(BG_A, buf, 13, iobj);
+            VDP_drawTextBG(BG_B, buf, 13, iobj);
+            intToHex(obj->h,buf,4);
+            VDP_drawTextBG(BG_A, buf, 18, iobj);
+            VDP_drawTextBG(BG_B, buf, 18, iobj);
+        }
+    }
+
+    if (DEBUG_TILES)
+    {
+        for(u16 x = 0; x < plf_w; x++)
+            for(u16 y = 0; y < plf_h; y++)
+            {
+                // debug metatile using layer A
+                char buf[4];
+                intToHex(plf_tiles[x + y*plf_w].attrs,buf,2);
+                VDP_drawTextBG(BG_A, buf, x*2, y*2);
+            }
+    }
+
+    // LASER TEST
+    Sprite * laser_test = SPR_addSprite(&spr_laser, 6*16, 9*16-5,TILE_ATTR_FULL(PAL_LINE_BG_1,0,0,0,0));
+    SPR_setAnimAndFrame(laser_test, 0, 0);
 }
 
 void PLF_cam_to(fix16 cx, fix16 cy)
@@ -120,13 +185,19 @@ PlfTile PLF_get_tile(u16 pf_x, u16 pf_y)
     return plf_tiles[pf_x + pf_y*plf_w];
 }
 
+void PLF_player_get_initial_pos(f16 *dest_x, f16 *dest_y)
+{
+    *dest_x = plf_player_initial_x;
+    *dest_y = plf_player_initial_y;
+}
+
 bool PLF_player_pathfind(u16 px, u16 py, u16 destx, u16 desty)
 {
     // NOTE if/when scrolling levels are implemented, we'll need to do some coordinate conversion here
     //      and limit the pathfinding to the current screen via stride_y
     //      for now, just convert to u8
     enum PathfindingResult res = PATH_find(PLAYFIELD_STD_W, PLAYFIELD_STD_H, (u8)px, (u8)py, (u8)destx, (u8)desty,
-                                           ((u8*)plf_tiles)+1, sizeof(PlfTile), sizeof(PlfTile)*PLAYFIELD_STD_W, PLF_ATTR_SOLID);
+                                           ((u8*)&(plf_tiles->attrs)), sizeof(PlfTile), sizeof(PlfTile)*PLAYFIELD_STD_W, PLF_ATTR_SOLID);
 
     if(DEBUG_PATHFINDING)
     {
@@ -175,4 +246,8 @@ void PLF_update_scroll(bool forceRedraw)
         sprintf(buf, "@%d,%d   ", fix16ToRoundedInt(plf_cam_cx), fix16ToRoundedInt(plf_cam_cy));
         VDP_drawTextBG(BG_A, buf, 0, 27);
     }
+}
+
+void PLF_laser_place() {
+
 }

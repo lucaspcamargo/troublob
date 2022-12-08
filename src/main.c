@@ -48,8 +48,9 @@ int main(bool hard) {
     Sprite *spr_player_shadow = SPR_addSprite(&spr_shadow, 0, 0, PAL_LINE_SPR_A<<TILE_ATTR_PALETTE_SFT);
     SPR_setPriority(spr_player_shadow, FALSE);
     SPR_setAlwaysVisible(spr_player, 1);
-    fix16 player_pf_x = FIX16(17);
-    fix16 player_pf_y = FIX16(10);
+    fix16 player_pf_x;
+    fix16 player_pf_y;
+    PLF_player_get_initial_pos(&player_pf_x, &player_pf_y);
     fix16 player_pf_z = FIX16(0);
     fix16 dest_pf_x = player_pf_x;
     fix16 dest_pf_y = player_pf_y;
@@ -72,8 +73,8 @@ int main(bool hard) {
     scaleShadow();
 
     //Play a song
-    const void * const songs[] = {bgm_stage_1, bgm_stage_3, bgm_stage_5, bgm_stage_4, bgm_stage_2};
-    XGM_startPlay(songs[random()%5]);
+    const void * const songs[] = {bgm_stage_1, bgm_stage_5, bgm_stage_3, bgm_stage_4, bgm_stage_2};
+    XGM_startPlay(bgm_stage_5);//songs[random()%5]);
 
     u32 framecounter = 0;
 

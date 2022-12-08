@@ -16,46 +16,46 @@
             "scaleInEditor": 2
         },
         "map/map_0.tmx": {
-            "scale": 3,
-            "selectedLayer": 0,
+            "scale": 2,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 154.99999999999997,
-                "y": 56.66666666666666
+                "x": 150,
+                "y": 69.75
             }
         },
         "map/map_1.tmx": {
             "expandedObjectLayers": [
                 3
             ],
-            "scale": 3,
-            "selectedLayer": 0,
+            "scale": 2,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 159.99999999999997,
-                "y": 112
+                "x": 196,
+                "y": 85.75
             }
         },
         "map/map_2.tmx": {
             "scale": 2.87671875,
-            "selectedLayer": 1,
+            "selectedLayer": 0,
             "viewCenter": {
                 "x": 160.2520232469719,
-                "y": 96.29026125685729
+                "y": 96.46407039270001
             }
         },
         "map/map_3.tmx": {
-            "scale": 3,
+            "scale": 2,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 155.99999999999997,
-                "y": 81.33333333333333
+                "x": 150.25,
+                "y": 85.25
             }
         },
         "map/map_H.tmx": {
             "scale": 2.87671875,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 160.2520232469719,
-                "y": 16.338058769214058
+                "x": 160.0782141111292,
+                "y": 16.511867905056747
             }
         },
         "spr/collection.tsx": {
@@ -75,6 +75,7 @@
         }
     },
     "last.imagePath": "/home/camargo/proj/dweep-gen/art/spr",
+    "last.objectTemplatePath": "/home/camargo/proj/dweep-gen/art/map/models",
     "last.worldFilePath": "/home/camargo/proj/dweep-gen/art/map",
     "loadedWorlds": [
         "/home/camargo/proj/dweep-gen/art/map/world.world"

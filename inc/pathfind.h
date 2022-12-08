@@ -35,7 +35,7 @@ enum PathfindingResult {
     PATH_LIST_OVERFLOW,
     PATH_ALREADY_THERE,
     PATH_UNKNOWN_ERR
-};
+} ENUM_PACK;
 
 
 bool PATH_find( const u8 pfw, const u8 pfh, // playfield dims

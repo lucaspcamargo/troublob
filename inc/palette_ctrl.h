@@ -11,7 +11,7 @@
 enum PalCtrlOperation {
     PCTRL_OP_NOOP = 0,
     PCTRL_OP_CYCLE = 1
-};
+} ENUM_PACK;
 
 typedef struct {
     u8 operation;   // what to do
