@@ -35,7 +35,7 @@ enum PlfLaserBits {
 
 // Do not confuse with Tiled internal "type" attribute, only used for type_filter OBJECTS functionality
 // I could add flip/rotation flags for directional objects, BUT i'll just list them for every direction,
-//     since many objects are not directional
+//     since most objects are not directional
 enum PlfObjectType {
     PLF_OBJ_WALL    = 0, // usually rect, marks any tile that contains it as a wall
     PLF_OBJ_PLAYER  = 1, // usually point, where dweep begins
@@ -51,10 +51,11 @@ enum PlfObjectType {
 
 #define PLF_OBJ_IS_Y_BOTTOM(spec_enum) ((spec_enum)>PLF_OBJ_WALL) // specs that have y origin in bottom of box (tile/obj)
 
-// TODO needs type field? For PlfObjectType enum value? we'll see soon
+
 typedef struct PlfTile_st {
     u8 attrs;
     u8 laser;
+    u16 obj_slot;
 } PlfTile;
 
 

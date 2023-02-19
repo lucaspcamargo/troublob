@@ -12,7 +12,7 @@ bool PATH_find( const u8 pfw, const u8 pfh, // playfield dims
                 const u8 sx, const u8 sy, // start position
                 u8 ex, const u8 ey, // goal position
                 const u8 * const attrs, // playfield attribute addr
-                const u8 stride_x, const u8 stride_y, // how to address playfield attributes (row-major or col-major)
+                const u16 stride_x, const u16 stride_y, // how to address playfield attributes (row-major or col-major)
                 const u8 wall_bit // bits that mean position is blocked
                 )
 {

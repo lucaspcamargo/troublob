@@ -3,11 +3,12 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "map/map_H.tmx",
+    "activeFile": "map/map_2.tmx",
     "expandedProjectPaths": [
-        "spr",
+        "map/models",
+        ".",
         "map",
-        "."
+        "spr"
     ],
     "file.lastUsedOpenFilter": "Todos os Arquivos (*)",
     "fileStates": {
@@ -16,46 +17,49 @@
             "scaleInEditor": 2
         },
         "map/map_0.tmx": {
+            "expandedObjectLayers": [
+                7
+            ],
             "scale": 2,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 150,
-                "y": 69.75
+                "x": 160.25,
+                "y": 96.25
             }
         },
         "map/map_1.tmx": {
             "expandedObjectLayers": [
                 3
             ],
-            "scale": 2,
+            "scale": 5.5,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 196,
-                "y": 85.75
+                "x": 132.09090909090912,
+                "y": 145.54545454545456
             }
         },
         "map/map_2.tmx": {
-            "scale": 2.87671875,
-            "selectedLayer": 0,
+            "scale": 3,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 160.2520232469719,
-                "y": 96.46407039270001
+                "x": 137.5,
+                "y": 105.16666666666666
             }
         },
         "map/map_3.tmx": {
             "scale": 2,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 150.25,
-                "y": 85.25
+                "x": 159.75,
+                "y": 95.5
             }
         },
         "map/map_H.tmx": {
             "scale": 2.87671875,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 160.0782141111292,
-                "y": 16.511867905056747
+                "x": 159.73059583944382,
+                "y": 16.338058769214058
             }
         },
         "spr/collection.tsx": {
@@ -67,6 +71,11 @@
             "dynamicWrapping": false,
             "scaleInDock": 2,
             "scaleInEditor": 5.5
+        },
+        "spr/tileset1.tsx": {
+            "dynamicWrapping": false,
+            "scaleInDock": 1,
+            "scaleInEditor": 4
         },
         "spr/tilesetH.tsx": {
             "dynamicWrapping": false,
@@ -92,25 +101,28 @@
         "spr/tileset0.tsx",
         "spr/tilesetH.tsx",
         "map/map_2.tmx",
-        "map/map_1.tmx"
+        "map/map_1.tmx",
+        "spr/tileset1.tsx",
+        "map/map_0.tmx"
     ],
     "project": "tileset.tiled-project",
     "property.type": "int",
     "recentFiles": [
         "map/map_3.tmx",
+        "map/map_H.tmx",
+        "spr/tileset0.tsx",
+        "spr/tilesetH.tsx",
+        "map/map_0.tmx",
+        "spr/tileset1.tsx",
         "map/map_1.tmx",
         "map/map_2.tmx",
-        "spr/tilesetH.tsx",
-        "spr/tileset0.tsx",
-        "map/map_H.tmx",
         "spr/collection.tsx",
-        "blockset/field_a.tsx",
-        "map/map_0.tmx"
+        "blockset/field_a.tsx"
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {
-        "height": 8,
-        "width": 8
+        "height": 16,
+        "width": 16
     },
     "tileset.type": 0,
     "tileset.useTransparentColor": false

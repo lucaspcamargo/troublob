@@ -9,7 +9,7 @@
 #include "playfield.h"
 #include "hud.h"
 #include "raster.h"
-#include "mouse.h"
+#include "input.h"
 #include "sfx.h"
 
 
@@ -30,7 +30,7 @@ int main(bool hard) {
     // init subsystems
     SPR_init();
     PCTRL_init();
-    MOUSE_init();
+    INPUT_init();
     SFX_register_all();
     SYS_doVBlankProcess();
 
@@ -73,8 +73,8 @@ int main(bool hard) {
     scaleShadow();
 
     //Play a song
-    const void * const songs[] = {bgm_stage_1, bgm_stage_5, bgm_stage_3, bgm_stage_4, bgm_stage_2};
-    XGM_startPlay(bgm_stage_5);//songs[random()%5]);
+    const void * const songs[] = {bgm_stage_1, bgm_stage_2, bgm_stage_3, bgm_stage_4, bgm_stage_5};
+    XGM_startPlay(bgm_stage_1);
 
     u32 framecounter = 0;
 
@@ -97,7 +97,7 @@ int main(bool hard) {
             player_pf_z = player_pf_z<0?fix16Neg(player_pf_z):player_pf_z;
         }
 
-        bool clicked = MOUSE_step();
+        bool clicked = INPUT_step();
         if(clicked)
         {
             s16 click_pf_x = mouse_x/16;

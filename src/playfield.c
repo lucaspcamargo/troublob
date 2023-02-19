@@ -1,5 +1,6 @@
 #include "playfield.h"
 #include "palette_ctrl.h"
+#include "registry.h"
 
 
 enum PLFLaserFrame // description of laser sprite frames
@@ -40,6 +41,9 @@ fix16 plf_player_initial_y;
 
 void PLF_init()
 {
+    static const u16 curr_lvl_id = 0;
+    const RGST_lvl curr_lvl = RGST_levels[curr_lvl_id];
+
     // init playfield vars
     plf_w = PLAYFIELD_STD_W;
     plf_h = PLAYFIELD_STD_H;
@@ -49,28 +53,24 @@ void PLF_init()
     plf_cam_cy = FIX16(16*(PLAYFIELD_STD_H/2));
 
     // setup palettes
-    PCTRL_set_source(PAL_LINE_BG_0, pal_tset_0.data, FALSE);
-    PCTRL_set_source(PAL_LINE_BG_1, pal_tset_0.data+16, FALSE);
+    PCTRL_set_source(PAL_LINE_BG_0, curr_lvl.bg_tileset_pal->data, FALSE);
+    PCTRL_set_source(PAL_LINE_BG_1, curr_lvl.bg_tileset_pal->data+16, FALSE);
 
-    // TODO store these palette ops with tileset somehow?
+    // TODO store palette ops with tileset somehow?
     PalCtrlOperatorDescriptor pal_op =
     {
         PCTRL_OP_CYCLE,
-        44, 3, 0x1f, NULL, NULL
+        16*PAL_LINE_BG_0 + 30,
+        2, 0x03, NULL, NULL
     };
     PCTRL_op_add(&pal_op);
-    pal_op.idx_base = 62;
-    pal_op.len = 2;
-    pal_op.period_mask = 0x03;
-    PCTRL_op_add(&pal_op);
-
-
+    
     // load bg graphics
-    VDP_loadTileSet(&tset_0, TILE_USER_INDEX, DMA);
+    VDP_loadTileSet(curr_lvl.bg_tileset, TILE_USER_INDEX, DMA);
 
     // load map data
-    m_a = MAP_create(&map_0_a, BG_A, TILE_ATTR_FULL(PAL_LINE_BG_0, 1, 0, 0, TILE_USER_INDEX));
-    m_b = MAP_create(&map_0_b, BG_B, TILE_ATTR_FULL(PAL_LINE_BG_0, 0, 0, 0, TILE_USER_INDEX));
+    m_a = MAP_create(curr_lvl.bg_a_map, BG_A, TILE_ATTR_FULL(PAL_LINE_BG_0, 1, 0, 0, TILE_USER_INDEX));
+    m_b = MAP_create(curr_lvl.bg_b_map, BG_B, TILE_ATTR_FULL(PAL_LINE_BG_0, 0, 0, 0, TILE_USER_INDEX));
 
     // init camera
     PLF_cam_to( FIX16(16*(PLAYFIELD_STD_W/2)),FIX16(16*(PLAYFIELD_STD_H/2)) );
@@ -79,17 +79,10 @@ void PLF_init()
     PLF_update_scroll(TRUE);
 
     // clear field data
-    for(u16 x = 0; x < plf_w; x++)
-        for(u16 y = 0; y < plf_h; y++)
-        {
-            PlfTile tile;
-            tile.attrs = 0x00;
-            tile.laser = 0x00;
-            TILE_AT(x, y) = tile;
-        }
+    memset(plf_tiles, 0x00, sizeof(plf_tiles));
 
     // process object definitions
-    const void** const objs = map_0_o;
+    const void** const objs = curr_lvl.obj_map;
     const u16 obj_count = sizeof(map_0_o)/sizeof(void*);
     if(DEBUG_MAP_OBJS)
     {
@@ -107,7 +100,7 @@ void PLF_init()
 
         if(obj->w || obj->h)
         {
-            // wall rect or tile object
+            // evaluate object span
             u16 startx = obj->x/16;
             u16 endx = (obj->x+obj->w-1)/16;
             u16 starty;
@@ -122,6 +115,15 @@ void PLF_init()
                 starty = obj->y/16;
                 endy = (obj->y+obj->h-1)/16;
             }
+
+            if(endy<starty || endx<startx)
+                continue; // something overflowed or is negative
+
+            if(endx >= plf_w || startx >= plf_w ||
+               endy >= plf_h || starty >= plf_h )
+                continue; // out of bounds
+
+            bool single_pos = (startx==endx) && (starty==endy); // TODO use for single objects
 
             for(u16 x = startx; x <= endx; x++)
                 for(u16 y = starty; y <= endy; y++)
@@ -194,7 +196,7 @@ void PLF_player_get_initial_pos(f16 *dest_x, f16 *dest_y)
 bool PLF_player_pathfind(u16 px, u16 py, u16 destx, u16 desty)
 {
     // NOTE if/when scrolling levels are implemented, we'll need to do some coordinate conversion here
-    //      and limit the pathfinding to the current screen via stride_y
+    //      and limit the pathfinding to the visible screen via stride_y
     //      for now, just convert to u8
     enum PathfindingResult res = PATH_find(PLAYFIELD_STD_W, PLAYFIELD_STD_H, (u8)px, (u8)py, (u8)destx, (u8)desty,
                                            ((u8*)&(plf_tiles->attrs)), sizeof(PlfTile), sizeof(PlfTile)*PLAYFIELD_STD_W, PLF_ATTR_SOLID);

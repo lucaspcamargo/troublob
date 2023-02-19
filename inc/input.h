@@ -10,7 +10,7 @@ bool mouse_present = FALSE;
 u16 mouse_last_joy_state = 0;
 bool mouse_last_clicked = FALSE;
 
-void MOUSE_handler( u16 joy, u16 changed, u16 state)
+void INPUT_handler( u16 joy, u16 changed, u16 state)
 {
     // just save curr state for movement handling in callback
     if(joy == JOY_1)
@@ -21,7 +21,7 @@ void MOUSE_handler( u16 joy, u16 changed, u16 state)
     }
 }
 
-void MOUSE_init()
+void INPUT_init()
 {
     //JOY_setSupport(PORT_1, JOY_SUPPORT_3BTN|JOY_SUPPORT_6BTN|JOY_SUPPORT_MOUSE);
     u8 port_type = JOY_getPortType(PORT_1);
@@ -41,10 +41,10 @@ void MOUSE_init()
         SPR_setPriority(mouse_cursor, TRUE);
     }
 
-    JOY_setEventHandler(&MOUSE_handler);
+    JOY_setEventHandler(&INPUT_handler);
 }
 
-void MOUSE_do_move_abs( s16 mx, s16 my, bool do_clamp )
+void INPUT_do_move_abs( s16 mx, s16 my, bool do_clamp )
 {
     if(do_clamp)
     {
@@ -66,9 +66,7 @@ void MOUSE_do_move_abs( s16 mx, s16 my, bool do_clamp )
     }
 }
 
-#define MOUSE_do_move_delta( dx, dy ) MOUSE_do_move_abs(mouse_x+dx, mouse_y+dy, TRUE)
-
-bool MOUSE_step()
+bool INPUT_step()
 {
     if(!mouse_present)
         return FALSE;
@@ -84,7 +82,7 @@ bool MOUSE_step()
 #if FORCE_MOUSE_ABSOLUTE
     s16 mx = JOY_readJoypadX(JOY_1);
     s16 my = JOY_readJoypadY(JOY_1);
-    MOUSE_do_move_abs(mx/2, my/2, TRUE); // HACK DIVIDING BY 2 HERE TO GET PARITY WITH EMULATOR WINDOW SZ
+    INPUT_do_move_abs(mx/2, my/2, TRUE); // HACK DIVIDING BY 2 HERE TO GET PARITY WITH EMULATOR WINDOW SZ
 #else
     s16 dx = JOY_readJoypadX(JOY_1);
     s16 dy = JOY_readJoypadY(JOY_1);
@@ -97,13 +95,13 @@ bool MOUSE_step()
 
 
     //if (dx || dy)
-        MOUSE_do_move_delta(dx, dy);
+        INPUT_do_move_abs(mouse_x+dx, mouse_y+dy, TRUE);
 #endif
 
     return ret;
 }
 
-void MOUSE_set_visible(bool visible)
+void INPUT_set_cursor_visible(bool visible)
 {
     SPR_setVisibility(mouse_cursor,visible?VISIBLE:HIDDEN);
 }
