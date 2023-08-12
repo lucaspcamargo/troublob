@@ -1,5 +1,8 @@
 # dweep-gen SGDK rescomp
 IMAGE title "title.png" 0
+IMAGE title_bg "../art/title/title-bg.png"
+IMAGE title_dweep "../art/title/title-dweep.png"
+IMAGE title_letters "../art/title/title-letters.png"
 
 # 
 # SPRITES_CORE
@@ -24,7 +27,7 @@ PALETTE pal_tset_1 ../art/spr/tileset1.png
 #  MAPS
 #
 
-# 0. Core maps
+# 0. Core maps'
 TILEMAP map_hud ../art/map/map_H.tmx SINGLE AUTO AUTO
 
 # 1. Level maps
@@ -45,14 +48,13 @@ MAP map_3_b ../art/map/map_3.tmx B AUTO AUTO
 #  MUSIC
 #  Huge thanks to libOPNMIDI and its midi2vgm tool!
 
-XGM bgm_stage_1 "vgm/conv_stage_1.vgm" AUTO
+XGM bgm_stage_1 "vgm/stage_1.vgm" AUTO
 XGM bgm_stage_2 "vgm/conv_stage_2.vgm" AUTO
 XGM bgm_stage_3 "vgm/conv_stage_3.vgm" AUTO
 XGM bgm_stage_4 "vgm/conv_stage_4.vgm" AUTO
 XGM bgm_stage_5 "vgm/conv_stage_5.vgm" AUTO
 XGM bgm_victory "vgm/conv_victory.vgm" AUTO
 XGM bgm_defeat "vgm/conv_defeat.vgm" AUTO
-
 
  
 #

@@ -5,3 +5,4 @@ out.bin
 **.kdev4
 *.kate-swp
 out/
+doc/refs

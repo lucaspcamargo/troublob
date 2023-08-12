@@ -5,7 +5,7 @@
 #include "string.h"
 
 #include "palette_ctrl.h"
-#include "title.h"
+#include "title2.h"
 #include "playfield.h"
 #include "hud.h"
 #include "raster.h"
@@ -39,7 +39,7 @@ int main(bool hard) {
 
     // BEGIN main section
     // init playfield and hud
-    PLF_init();
+    PLF_init(0);
     HUD_init();
 
     // player
@@ -74,7 +74,7 @@ int main(bool hard) {
 
     //Play a song
     const void * const songs[] = {bgm_stage_1, bgm_stage_2, bgm_stage_3, bgm_stage_4, bgm_stage_5};
-    XGM_startPlay(bgm_stage_1);
+    XGM_startPlay(songs[0]);
 
     u32 framecounter = 0;
 
@@ -100,8 +100,10 @@ int main(bool hard) {
         bool clicked = INPUT_step();
         if(clicked)
         {
-            s16 click_pf_x = mouse_x/16;
-            s16 click_pf_y = mouse_y/16;
+            s16 click_pf_x, click_pf_y;
+            INPUT_get_cursor_position(&click_pf_x, &click_pf_y);
+            click_pf_x /= 16;
+            click_pf_y /= 16;
 
             if(click_pf_y < 12)
             {

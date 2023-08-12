@@ -5,10 +5,10 @@
     },
     "activeFile": "map/map_2.tmx",
     "expandedProjectPaths": [
-        "map/models",
+        "spr",
         ".",
-        "map",
-        "spr"
+        "map/models",
+        "map"
     ],
     "file.lastUsedOpenFilter": "Todos os Arquivos (*)",
     "fileStates": {
@@ -23,7 +23,7 @@
             "scale": 2,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 160.25,
+                "x": 159.75,
                 "y": 96.25
             }
         },
@@ -34,24 +34,27 @@
             "scale": 5.5,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 132.09090909090912,
-                "y": 145.54545454545456
+                "x": 159.9090909090909,
+                "y": 95.9090909090909
             }
         },
         "map/map_2.tmx": {
+            "expandedObjectLayers": [
+                3
+            ],
             "scale": 3,
-            "selectedLayer": 1,
+            "selectedLayer": 2,
             "viewCenter": {
-                "x": 137.5,
-                "y": 105.16666666666666
+                "x": 86.5,
+                "y": 82.49999999999999
             }
         },
         "map/map_3.tmx": {
             "scale": 2,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 159.75,
-                "y": 95.5
+                "x": 241.75,
+                "y": 144.75
             }
         },
         "map/map_H.tmx": {
@@ -59,7 +62,7 @@
             "selectedLayer": 0,
             "viewCenter": {
                 "x": 159.73059583944382,
-                "y": 16.338058769214058
+                "y": 16.164249633371355
             }
         },
         "spr/collection.tsx": {

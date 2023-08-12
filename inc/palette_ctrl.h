@@ -18,8 +18,6 @@ typedef struct {
     u8 idx_base;    // where to do it
     u8 len;         // how much
     u8 period_mask; // bit-anded with framecounter, if zero, execute this frame
-    void *args;     // extra operator data
-    void *_private; // operator has free reign over this
 } PalCtrlOperatorDescriptor;
 
 void PCTRL_op_clear_all();

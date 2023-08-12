@@ -1,16 +1,16 @@
 #include "palette_ctrl.h"
 
 //static u8 PCTRL_brightness = 0xff; -- For now, use PAL_fade as usual
-u16 PCTRL_src_hud_lines[PCTRL_PAL_TOTAL];
+static u16 PCTRL_src_hud_lines[PCTRL_PAL_TOTAL];
     // from failed attempt to have palette change mid-frame, for hud to use same palette lines that bg uses
     //  (we'd have 1 more palette line. That's 33.3̅% more palette overall! double for the hud!)
     // NOTE: now I know I can write, in theory, 18 bytes every h-int
     //       dont call function, use a pure-asm intrerrupt handler (or something that compiles as such?)
     //       a palette line is 32 bytes, need two scanlines for cram tx for each line
     //       eager to see cram dots in action
-u16 PCTRL_src_lines[PCTRL_PAL_TOTAL];
-u16 PCTRL_result_lines[PCTRL_PAL_TOTAL];
-PalCtrlOperatorDescriptor PCTRL_operators[PCTRL_OP_MAX];
+static u16 PCTRL_src_lines[PCTRL_PAL_TOTAL];
+static u16 PCTRL_result_lines[PCTRL_PAL_TOTAL];
+static PalCtrlOperatorDescriptor PCTRL_operators[PCTRL_OP_MAX];
 
 void PCTRL_op_clear_all();
 

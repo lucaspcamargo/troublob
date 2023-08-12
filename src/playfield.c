@@ -27,10 +27,11 @@ typedef struct MapObject_st {
 
 
 // VARS
-u16 plf_w;
-u16 plf_h;
-PlfTile plf_tiles[PLAYFIELD_STD_SZ];
-Map* m_a;
+static u16 plf_curr_lvl_id;
+static u16 plf_w;
+static u16 plf_h;
+static PlfTile plf_tiles[PLAYFIELD_STD_SZ];
+static Map* m_a;
 Map* m_b;
 fix16 plf_cam_cx;
 fix16 plf_cam_cy;
@@ -39,10 +40,10 @@ fix16 plf_player_initial_y;
 
 #define TILE_AT(x, y) (plf_tiles[(x) + (y)*plf_w])
 
-void PLF_init()
+void PLF_init(u16 lvl_id)
 {
-    static const u16 curr_lvl_id = 0;
-    const RGST_lvl curr_lvl = RGST_levels[curr_lvl_id];
+    plf_curr_lvl_id = lvl_id;
+    const RGST_lvl curr_lvl = RGST_levels[plf_curr_lvl_id];
 
     // init playfield vars
     plf_w = PLAYFIELD_STD_W;
@@ -56,12 +57,12 @@ void PLF_init()
     PCTRL_set_source(PAL_LINE_BG_0, curr_lvl.bg_tileset_pal->data, FALSE);
     PCTRL_set_source(PAL_LINE_BG_1, curr_lvl.bg_tileset_pal->data+16, FALSE);
 
-    // TODO store palette ops with tileset somehow?
+    // TODO store palette ops with level descriptor?
     PalCtrlOperatorDescriptor pal_op =
     {
         PCTRL_OP_CYCLE,
         16*PAL_LINE_BG_0 + 30,
-        2, 0x03, NULL, NULL
+        2, 0x03
     };
     PCTRL_op_add(&pal_op);
     
@@ -173,6 +174,7 @@ void PLF_init()
 
     // LASER TEST
     Sprite * laser_test = SPR_addSprite(&spr_laser, 6*16, 9*16-5,TILE_ATTR_FULL(PAL_LINE_BG_1,0,0,0,0));
+    Sprite * laser_test_2 = SPR_addSprite(&spr_laser, 7*16, 9*16-5,TILE_ATTR_FULL(PAL_LINE_BG_1,0,0,0,0));
     SPR_setAnimAndFrame(laser_test, 0, 0);
 }
 

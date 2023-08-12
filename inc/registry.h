@@ -16,4 +16,4 @@ typedef struct RGST_lvl_st {
 } RGST_lvl;
 
 extern const RGST_lvl RGST_levels[];
-     const uint16_t RGST_lvl_count;
+extern const uint16_t RGST_lvl_count;
