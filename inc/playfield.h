@@ -33,6 +33,8 @@ enum PlfLaserBits {
     PLF_LASER_OUT_D = 1 << 7
 } ENUM_PACK;
 
+#define PLF_LASER_Y_DELTA (-3)
+
 // Do not confuse with Tiled internal "type" attribute, only used for type_filter OBJECTS functionality
 // I could add flip/rotation flags for directional objects, BUT i'll just list them for every direction,
 //     since most objects are not directional
@@ -67,7 +69,7 @@ void PLF_init(u16 lvl_id);
 
 void PLF_cam_to(fix16 cx, fix16 cy);
 
-PlfTile PLF_get_tile(u16 pf_x, u16 pf_y);
+PlfTile * PLF_get_tile(u16 pf_x, u16 pf_y);
 
 void PLF_player_get_initial_pos(f16 *dest_x, f16 *dest_y);
 

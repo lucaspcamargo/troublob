@@ -37,7 +37,7 @@ enum PobjEventType {
     POBJ_EVT_FRAME        // invoked on the object every frame (TODO? use bit in handle to not call every obj every frame?)
 } ENUM_PACK;
 
-typedef void (*PobjEventHandler)(PobjData *data, void* evt_arg, enum PobjEventType evt);
+typedef void (*PobjEventHandler)(PobjData *data, enum PobjEventType evt, void* evt_arg);
 extern const PobjEventHandler POBJ_HANDLERS[];
 
 
@@ -45,7 +45,7 @@ void Pobj_init();    // initialize playfield object system
 void Pobj_destroy(); // free playfield object system
 
 PobjHnd Pobj_alloc();                                                           // allocate
-bool Pobj_dealloc(PobjHnd *obj);                                                // deallocate
+void Pobj_dealloc(PobjHnd *obj);                                                // deallocate
 inline PobjData * Pobj_get_data(PobjHnd handle) {return (PobjData*) handle;}    // since handle is just pointer to data, optimize this getter here
-void Pobj_event(PobjData *data, enum PobjEventType evt, void* evt_arg);         // post an event to an object
+void Pobj_event(PobjHnd data, enum PobjEventType evt, void* evt_arg);         // post an event to an object
 void Pobj_event_to_all(enum PobjEventType evt, void* evt_arg);                  // post an event to all objects

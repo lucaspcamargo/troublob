@@ -74,7 +74,7 @@ int main(bool hard) {
 
     //Play a song
     const void * const songs[] = {bgm_stage_1, bgm_stage_2, bgm_stage_3, bgm_stage_4, bgm_stage_5};
-    XGM_startPlay(songs[0]);
+    XGM_startPlay(songs[1]);
 
     u32 framecounter = 0;
 
@@ -84,9 +84,9 @@ int main(bool hard) {
 
     for(;;) {
         int angle = (framecounter * 4)&1023;
-        if(framecounter%64 == 0)
+        /*if(framecounter%64 == 0)
             SFX_play(SFX_mop);
-
+        */
         if(player_float)
         {
             player_pf_z = FIX16(6)+fix16Mul(sinFix16(angle/2), FIX16(4));
@@ -108,7 +108,7 @@ int main(bool hard) {
             if(click_pf_y < 12)
             {
                 // field click
-                PlfTile tile = PLF_get_tile(click_pf_x, click_pf_y);
+                PlfTile tile = *PLF_get_tile(click_pf_x, click_pf_y);
                 if(tile.attrs & PLF_ATTR_SOLID)
                 {
                     SFX_play(SFX_no);
@@ -160,8 +160,8 @@ int main(bool hard) {
             if(changed && fix16Frac(player_pf_x)==0 && fix16Frac(player_pf_y)==0)
             {
                 // arrived on a tile
-                //PlfTile tile = PLF_get_tile(fix16ToInt(player_pf_x), fix16ToInt(player_pf_y));
-                //player_float = (tile.attrs & PLF_ATTR_HOT)? TRUE : FALSE;
+                PlfTile tile = *PLF_get_tile(fix16ToInt(player_pf_x), fix16ToInt(player_pf_y));
+                player_float = (tile.attrs & PLF_ATTR_HOT)? TRUE : FALSE;
                 if(player_pf_x == dest_pf_x && player_pf_y == dest_pf_y)
                 {
                     // arrived at immediate dest, either we arrived at final destination, or we find our next imm. dest.

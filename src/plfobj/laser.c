@@ -1,6 +1,6 @@
 #include "plf_obj.h"
 
-void PobjHandler_Laser(PobjData *data, void* evt_arg, enum PobjEventType evt)
+void PobjHandler_Laser(PobjData *data, enum PobjEventType evt, void* evt_arg)
 {
 
 }

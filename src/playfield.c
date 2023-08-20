@@ -1,6 +1,7 @@
 #include "playfield.h"
 #include "palette_ctrl.h"
 #include "registry.h"
+#include "plf_obj.h"
 
 
 enum PLFLaserFrame // description of laser sprite frames
@@ -38,7 +39,14 @@ fix16 plf_cam_cy;
 fix16 plf_player_initial_x;
 fix16 plf_player_initial_y;
 
+static u16 plf_vdp_tile_index_used;
+static u16 plf_vdp_laser_tile_index;
+
 #define TILE_AT(x, y) (plf_tiles[(x) + (y)*plf_w])
+
+//private
+void _PLF_do_create_object(const MapObject * obj, u16 x, u16 y);
+
 
 void PLF_init(u16 lvl_id)
 {
@@ -53,6 +61,9 @@ void PLF_init(u16 lvl_id)
     plf_cam_cx = FIX16(16*(PLAYFIELD_STD_W/2));
     plf_cam_cy = FIX16(16*(PLAYFIELD_STD_H/2));
 
+    // initial graphics offset
+    plf_vdp_tile_index_used = TILE_USER_INDEX;
+
     // setup palettes
     PCTRL_set_source(PAL_LINE_BG_0, curr_lvl.bg_tileset_pal->data, FALSE);
     PCTRL_set_source(PAL_LINE_BG_1, curr_lvl.bg_tileset_pal->data+16, FALSE);
@@ -65,9 +76,11 @@ void PLF_init(u16 lvl_id)
         2, 0x03
     };
     PCTRL_op_add(&pal_op);
-    
+
     // load bg graphics
     VDP_loadTileSet(curr_lvl.bg_tileset, TILE_USER_INDEX, DMA);
+    VDP_waitDMACompletion();
+    plf_vdp_tile_index_used += curr_lvl.bg_tileset->numTile;
 
     // load map data
     m_a = MAP_create(curr_lvl.bg_a_map, BG_A, TILE_ATTR_FULL(PAL_LINE_BG_0, 1, 0, 0, TILE_USER_INDEX));
@@ -84,7 +97,7 @@ void PLF_init(u16 lvl_id)
 
     // process object definitions
     const void** const objs = curr_lvl.obj_map;
-    const u16 obj_count = sizeof(map_0_o)/sizeof(void*);
+    const u16 obj_count = curr_lvl.obj_count;
     if(DEBUG_MAP_OBJS)
     {
         char buf[5];
@@ -92,6 +105,8 @@ void PLF_init(u16 lvl_id)
         VDP_drawTextBG(BG_A, buf, 0, 23);
         VDP_drawTextBG(BG_A, " OBJS", 4, 23);
     }
+
+    Pobj_init();
 
     for(u16 iobj=0; iobj<obj_count; iobj++)
     {
@@ -126,15 +141,29 @@ void PLF_init(u16 lvl_id)
 
             bool single_pos = (startx==endx) && (starty==endy); // TODO use for single objects
 
-            for(u16 x = startx; x <= endx; x++)
-                for(u16 y = starty; y <= endy; y++)
+            if(obj->type == PLF_OBJ_WALL)
+            {
+                for(u16 x = startx; x <= endx; x++)
+                    for(u16 y = starty; y <= endy; y++)
+                    {
+                        TILE_AT(x,y).attrs |= PLF_ATTR_SOLID;
+                    }
+            } else if(single_pos)
+            {
+                if( obj->type == PLF_OBJ_PLAYER)
                 {
-                    TILE_AT(x,y).attrs |= PLF_ATTR_SOLID;
+                    plf_player_initial_x = FIX16(startx);
+                    plf_player_initial_y = FIX16(starty);
                 }
+                else if( obj->type > PLF_OBJ_PLAYER)
+                {
+                    _PLF_do_create_object(obj, startx, starty);
+                }
+            }
         }
-        else
+        else if(obj->type == PLF_OBJ_PLAYER)
         {
-            // point object - player initial pos
+            // should be point object, jsut use x and y
             plf_player_initial_x = FIX16(obj->x/16);
             plf_player_initial_y = FIX16(obj->y/16);
         }
@@ -172,11 +201,40 @@ void PLF_init(u16 lvl_id)
             }
     }
 
-    // LASER TEST
-    Sprite * laser_test = SPR_addSprite(&spr_laser, 6*16, 9*16-5,TILE_ATTR_FULL(PAL_LINE_BG_1,0,0,0,0));
-    Sprite * laser_test_2 = SPR_addSprite(&spr_laser, 7*16, 9*16-5,TILE_ATTR_FULL(PAL_LINE_BG_1,0,0,0,0));
-    SPR_setAnimAndFrame(laser_test, 0, 0);
+    // load laser graphics
+    plf_vdp_laser_tile_index = plf_vdp_tile_index_used;
+    u16 loadedTiles;
+    SPR_loadAllFrames(&spr_laser, plf_vdp_tile_index_used, &loadedTiles);
+    plf_vdp_tile_index_used += loadedTiles;
+
+    /* LASER SPRITE TEST
+    for(int i = 0; i < 20; i++)
+    {
+        Sprite *s = SPR_addSprite(&spr_laser, i*16, 9*16 + PLF_LASER_Y_DELTA, TILE_ATTR_FULL(PAL_LINE_BG_1,0,0,0,0));
+        SPR_setAutoTileUpload(s, FALSE);
+        SPR_setVRAMTileIndex(s, plf_vdp_laser_tile_index);
+        SPR_setAnimAndFrame(s, 0, 0);
+    }*/
 }
+
+void _PLF_do_create_object(const MapObject* obj, u16 x, u16 y)
+{
+    PlfTile *t = PLF_get_tile(x, y);
+    if(t->pobj)
+        return; // object already in here, abort
+
+    PobjHnd hnd = Pobj_alloc();
+    if(hnd == POBJ_HND_INVAL)
+        return; // invalid handle
+
+    PobjData *dat = Pobj_get_data(hnd);
+    dat->x = FIX16(x);
+    dat->y = FIX16(y);
+    dat->type = POBJ_TYPE_TEST; // TODO map to real pobj type somehow
+    memset(dat->extra, 0, sizeof(dat->extra));
+    Pobj_event(dat, POBJ_EVT_CREATED, t);
+}
+
 
 void PLF_cam_to(fix16 cx, fix16 cy)
 {
@@ -184,9 +242,9 @@ void PLF_cam_to(fix16 cx, fix16 cy)
     plf_cam_cy = cy;
 }
 
-PlfTile PLF_get_tile(u16 pf_x, u16 pf_y)
+PlfTile * PLF_get_tile(u16 pf_x, u16 pf_y)
 {
-    return plf_tiles[pf_x + pf_y*plf_w];
+    return &plf_tiles[pf_x + pf_y*plf_w];
 }
 
 void PLF_player_get_initial_pos(f16 *dest_x, f16 *dest_y)

@@ -29,15 +29,11 @@ void TITLE_main()
             VDP_setTileMapEx(BG_B, title_bg.tilemap, TILE_ATTR_FULL(PAL1, 0, 0, 0, tilecnt), x*2, y*2, 0, 0, 2, 2, CPU);
 
     VDP_drawText(GAME_VERSION, 38-strlen(GAME_VERSION), 27);
-    char xx[2];
-    xx[0] = '0'+sizeof(void*);
-    xx[1] = '\0';
-    VDP_drawText(xx, 1, 27);
 
     PCTRL_set_source(1, title_dweep.palette->data, FALSE);
     PCTRL_set_source(2, title_letters.palette->data+16, FALSE);
 
-    SFX_play(SFX_glass);
+    SFX_play(SFX_crush);
     PCTRL_fade_in(FADE_DUR);
     for(int i = 0; i < TITLE_FRAMES; i++)
     {

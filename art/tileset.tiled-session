@@ -3,12 +3,13 @@
         "height": 4300,
         "width": 2
     },
-    "activeFile": "map/map_2.tmx",
+    "activeFile": "spr/editor-objs.tsx",
     "expandedProjectPaths": [
-        "spr",
-        ".",
+        "blockset",
+        "map",
         "map/models",
-        "map"
+        ".",
+        "spr"
     ],
     "file.lastUsedOpenFilter": "Todos os Arquivos (*)",
     "fileStates": {
@@ -23,19 +24,19 @@
             "scale": 2,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 159.75,
-                "y": 96.25
+                "x": 159.25,
+                "y": 95.75
             }
         },
         "map/map_1.tmx": {
             "expandedObjectLayers": [
                 3
             ],
-            "scale": 5.5,
+            "scale": 2,
             "selectedLayer": 1,
             "viewCenter": {
-                "x": 159.9090909090909,
-                "y": 95.9090909090909
+                "x": 241.75,
+                "y": 135.75
             }
         },
         "map/map_2.tmx": {
@@ -43,32 +44,36 @@
                 3
             ],
             "scale": 3,
-            "selectedLayer": 2,
+            "selectedLayer": 1,
             "viewCenter": {
-                "x": 86.5,
-                "y": 82.49999999999999
+                "x": 152.66666666666669,
+                "y": 96.16666666666666
             }
         },
         "map/map_3.tmx": {
             "scale": 2,
             "selectedLayer": 2,
             "viewCenter": {
-                "x": 241.75,
-                "y": 144.75
+                "x": 348.75,
+                "y": 164.75
             }
         },
         "map/map_H.tmx": {
             "scale": 2.87671875,
             "selectedLayer": 0,
             "viewCenter": {
-                "x": 159.73059583944382,
-                "y": 16.164249633371355
+                "x": 159.7305958394438,
+                "y": 16.338058769214058
             }
         },
         "spr/collection.tsx": {
             "dynamicWrapping": true,
             "scaleInDock": 1,
             "scaleInEditor": 1
+        },
+        "spr/editor-objs.tsx": {
+            "scaleInDock": 2,
+            "scaleInEditor": 8
         },
         "spr/tileset0.tsx": {
             "dynamicWrapping": false,
@@ -77,12 +82,12 @@
         },
         "spr/tileset1.tsx": {
             "dynamicWrapping": false,
-            "scaleInDock": 1,
+            "scaleInDock": 2,
             "scaleInEditor": 4
         },
         "spr/tilesetH.tsx": {
             "dynamicWrapping": false,
-            "scaleInDock": 4,
+            "scaleInDock": 2,
             "scaleInEditor": 5.5
         }
     },
@@ -101,26 +106,24 @@
     "openFiles": [
         "map/map_3.tmx",
         "map/map_H.tmx",
-        "spr/tileset0.tsx",
         "spr/tilesetH.tsx",
         "map/map_2.tmx",
-        "map/map_1.tmx",
-        "spr/tileset1.tsx",
-        "map/map_0.tmx"
+        "spr/editor-objs.tsx"
     ],
     "project": "tileset.tiled-project",
     "property.type": "int",
     "recentFiles": [
         "map/map_3.tmx",
         "map/map_H.tmx",
-        "spr/tileset0.tsx",
         "spr/tilesetH.tsx",
-        "map/map_0.tmx",
+        "map/map_2.tmx",
+        "spr/editor-objs.tsx",
+        "blockset/field_a.tsx",
         "spr/tileset1.tsx",
         "map/map_1.tmx",
-        "map/map_2.tmx",
-        "spr/collection.tsx",
-        "blockset/field_a.tsx"
+        "spr/tileset0.tsx",
+        "map/map_0.tmx",
+        "spr/collection.tsx"
     ],
     "tileset.lastUsedFormat": "tsx",
     "tileset.tileSize": {

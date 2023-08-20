@@ -31,7 +31,7 @@ PobjHnd Pobj_alloc()
         return POBJ_HND_INVAL;
 }
 
-bool Pobj_dealloc(PobjHnd *obj)
+void Pobj_dealloc(PobjHnd *obj)
 {
     if(obj)
         POOL_release(_pobj_pool, obj, TRUE); // TRUE means reorder pointer list (maybe slow), but eases iteration
@@ -43,10 +43,11 @@ PobjData * Pobj_data(PobjHnd handle)
 (...)
 }*/
 
-void Pobj_event(PobjData *data, enum PobjEventType evt, void* evt_data)
+void Pobj_event(PobjHnd handle, enum PobjEventType evt, void* evt_arg)
 {
-    PobjEventHandler hnd = POBJ_HANDLERS[data->type];
-    (*hnd)(data, evt_data, evt);
+    PobjEventHandler hnd = POBJ_HANDLERS[((PobjData*)handle)->type];
+    if(hnd)
+        (*hnd)(handle, evt, evt_arg);
 }
 
 

@@ -102,7 +102,7 @@
    <property name="exportDimensions" type="bool" value="true"/>
    <property name="exportPosition" type="bool" value="true"/>
    <property name="exportSize" type="bool" value="true"/>
-   <property name="type" type="int" value="0"/>
+   <property name="type" type="int" value="1"/>
   </properties>
  </tile>
  <tile id="13">
