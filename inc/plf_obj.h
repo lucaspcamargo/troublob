@@ -16,7 +16,7 @@ enum PobjType {
     POBJ_TYPE_BOMB,
     POBJ_TYPE_HEAT,
     POBJ_TYPE_COLD,
-    POBJ_TYPE_PLACE,
+    POBJ_TYPE_GOAL,
     POBJ_TYPE_COUNT
 } ENUM_PACK;
 
@@ -36,6 +36,11 @@ enum PobjEventType {
     POBJ_EVT_TOOL,        // tool was used on the object
     POBJ_EVT_FRAME        // invoked on the object every frame (TODO? use bit in handle to not call every obj every frame?)
 } ENUM_PACK;
+
+typedef struct PobjEvtCreatedArgs_st {
+    void * plftile;
+    u16 subtype;
+} PobjEvtCreatedArgs;
 
 typedef void (*PobjEventHandler)(PobjData *data, enum PobjEventType evt, void* evt_arg);
 extern const PobjEventHandler POBJ_HANDLERS[];

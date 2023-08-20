@@ -60,8 +60,8 @@ int main(bool hard) {
     enum PlayerState player_state = PLR_STATE_IDLE;
 
 #define positionPlayer() SPR_setPosition(spr_player, \
-    fix16ToRoundedInt(fix16Mul(player_pf_x, FIX16(16))), \
-    fix16ToRoundedInt(fix16Sub(fix16Mul(player_pf_y, FIX16(16)), player_pf_z))-8+3)
+    fix16ToRoundedInt(fix16Mul(player_pf_x, FIX16(16)))-4, \
+    fix16ToRoundedInt(fix16Sub(fix16Mul(player_pf_y, FIX16(16)), player_pf_z))-10)
 #define positionShadow() SPR_setPosition(spr_player_shadow, \
     fix16ToRoundedInt(fix16Mul(player_pf_x, FIX16(16))), \
     fix16ToRoundedInt(fix16Mul(player_pf_y, FIX16(16)))+4+3)
@@ -93,7 +93,7 @@ int main(bool hard) {
         }
         else
         {
-            player_pf_z = fix16Mul(sinFix16(angle*2), FIX16(10));
+            player_pf_z = fix16Mul(sinFix16(angle*2), FIX16(6));
             player_pf_z = player_pf_z<0?fix16Neg(player_pf_z):player_pf_z;
         }
 
@@ -149,7 +149,7 @@ int main(bool hard) {
                 fix16 delta = ((player_pf_x < dest_pf_x)?PLAYER_SPEED:-PLAYER_SPEED);
                 player_pf_x += delta;
                 changed = TRUE;
-                SPR_setHFlip(spr_player, delta<0);
+                //SPR_setHFlip(spr_player, delta<0);
             }
             if(player_pf_y != dest_pf_y)
             {

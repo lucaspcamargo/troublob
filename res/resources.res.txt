@@ -4,13 +4,21 @@ IMAGE title_bg "../art/title/title-bg.png"
 IMAGE title_dweep "../art/title/title-dweep.png"
 IMAGE title_letters "../art/title/title-letters.png"
 
+
+
 # 
-# SPRITES_CORE
+# SPRITES: CORE
 #
-SPRITE spr_cursor ../art/spr/mouse.png 2 2 BEST
-SPRITE spr_dweep ../art/spr/dweep.png 2 2 FAST 0
+
+# rem: id         source               w h compr anim coll  opt.str
+SPRITE spr_cursor ../art/spr/mouse.png 2 2 BEST  0    NONE  SPRITE
+
+SPRITE spr_dweep ../art/spr/dweep.png 3 3 FAST 0
 SPRITE spr_shadow ../art/spr/shadow.png 2 1 NONE 0
 SPRITE spr_laser  ../art/spr/laser.png 2 2 FAST 0 NONE SPRITE
+SPRITE spr_laser_cannon  ../art/spr/laser_cannon.png 2 3 FAST 3 NONE SPRITE
+
+
 
 #
 #  TILESETS

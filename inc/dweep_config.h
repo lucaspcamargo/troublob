@@ -47,3 +47,7 @@
 
 // Utility macros
 #define ENUM_PACK __attribute__((packed))  // add to end of enum declaration to use smallest possible type
+#define DIR_R 0
+#define DIR_L 1
+#define DIR_U 2
+#define DIR_D 3

@@ -223,6 +223,35 @@ void _PLF_do_create_object(const MapObject* obj, u16 x, u16 y)
     if(t->pobj)
         return; // object already in here, abort
 
+    PobjEvtCreatedArgs args;
+    args.plftile = t;
+    u16 final_type = 0xffff;
+    switch(obj->type)
+    {
+        case PLF_OBJ_WALL    :
+        case PLF_OBJ_PLAYER  :
+            return; // not handled here!
+        case PLF_OBJ_GOAL    :
+            final_type = POBJ_TYPE_GOAL;
+            args.subtype = 0;
+            break;
+        case PLF_OBJ_LASER_R :
+        case PLF_OBJ_LASER_L :
+        case PLF_OBJ_LASER_U :
+        case PLF_OBJ_LASER_D :
+            final_type = POBJ_TYPE_LASER;
+            args.subtype = obj->type - PLF_OBJ_LASER_R;
+            break;
+        case PLF_OBJ_MIRROR  :
+        case PLF_OBJ_MIRROR2 :
+            final_type = POBJ_TYPE_LASER;
+            args.subtype = obj->type - DIR_R;
+            break;
+    }
+
+    if(final_type == 0xffff)
+        return; // type was not handled
+
     PobjHnd hnd = Pobj_alloc();
     if(hnd == POBJ_HND_INVAL)
         return; // invalid handle
@@ -230,9 +259,9 @@ void _PLF_do_create_object(const MapObject* obj, u16 x, u16 y)
     PobjData *dat = Pobj_get_data(hnd);
     dat->x = FIX16(x);
     dat->y = FIX16(y);
-    dat->type = POBJ_TYPE_TEST; // TODO map to real pobj type somehow
+    dat->type = final_type;
     memset(dat->extra, 0, sizeof(dat->extra));
-    Pobj_event(dat, POBJ_EVT_CREATED, t);
+    Pobj_event(dat, POBJ_EVT_CREATED, &args);
 }
 
 

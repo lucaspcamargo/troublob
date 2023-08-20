@@ -5,15 +5,16 @@
 
 DECL_POBJ_HANDLER(Test)
 DECL_POBJ_HANDLER(Laser)
+DECL_POBJ_HANDLER(Goal)
 
 const PobjEventHandler POBJ_HANDLERS[] =
 {
-    PobjHandler_Test,   // POBJ_TYPE_TEST,
+    PobjHandler_Test,
     NULL,              // POBJ_TYPE_MIRROR,
-    PobjHandler_Laser,  // POBJ_TYPE_LASER,
-    // POBJ_TYPE_FAN,
-    // POBJ_TYPE_BOMB,
-    // POBJ_TYPE_HEAT,
-    // POBJ_TYPE_COLD,
-    // POBJ_TYPE_PLACE
+    PobjHandler_Laser,
+    NULL, // POBJ_TYPE_FAN,
+    NULL, // POBJ_TYPE_BOMB,
+    NULL, // POBJ_TYPE_HEAT,
+    NULL, // POBJ_TYPE_COLD,
+    PobjHandler_Goal,
 };
