@@ -1,7 +1,7 @@
 # dweep-gen
 Version of old Dweep shareware game on Sega Genesis (using SGDK)
 
-![Screenshot of the game](screenshot.png "Game screenshot")
+![Screenshot of the game](./doc/screenshot.png "Game screenshot")
 
 ## About
 
@@ -10,7 +10,7 @@ Not much to talk about for now, still in the beginning.
 Next major milestones would be:
 + ~~A* navigation for Dweep~~
 + ~~Collision with walls and objs~~
-+ Lasers
++ Lasers (almost there)
 + Some items and inventory
 + Player States
 + Game states (victory, defeat)
@@ -25,7 +25,9 @@ The original Dweep was created and programmed by Steve Pavlina, with music by Mi
 
 ## Building
 
-~~Should not be different to build than any other SGDK project.~~ **(Curretly needs a patched version of rescomp for reading object dimensions, will submit a PR at some point.)** After [installing the toolchain](https://github.com/Stephane-D/SGDK/wiki/SGDK-Installation),
+Should not be different to build than any other SGDK project.
+Just remember to run the map processor script beforehand (`./scripts/process_all_maps.sh`).
+After [installing the toolchain](https://github.com/Stephane-D/SGDK/wiki/SGDK-Installation),
 check the [usage documentation](https://github.com/Stephane-D/SGDK/wiki/SGDK-Usage).
 
 
