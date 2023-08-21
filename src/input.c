@@ -59,6 +59,7 @@ void INPUT_init()
         mouse_present = TRUE;
         mouse_cursor = SPR_addSprite(&spr_cursor, mouse_x, mouse_y, PAL_LINE_SPR_A<<TILE_ATTR_PALETTE_SFT);
         SPR_setPriority(mouse_cursor, TRUE);
+        SPR_setDepth(mouse_cursor, SPR_MIN_DEPTH);
     }
 
     JOY_setEventHandler(&INPUT_handler);

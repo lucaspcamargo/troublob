@@ -282,7 +282,7 @@ PlfTile * PLF_get_tile_safe(u16 pf_x, u16 pf_y)
     return &plf_tiles[pf_x + pf_y*plf_w];
 }
 
-void PLF_player_get_initial_pos(f16 *dest_x, f16 *dest_y)
+void PLF_player_get_initial_pos(fix16 *dest_x, fix16 *dest_y)
 {
     *dest_x = plf_player_initial_x;
     *dest_y = plf_player_initial_y;
@@ -340,6 +340,7 @@ bool PLF_laser_put(u16 orig_x, u16 orig_y, u8 dir)
         SPR_setAutoTileUpload(s, FALSE);
         SPR_setAnimAndFrame(s, 0, 4);
         SPR_setVRAMTileIndex(s, plf_vdp_laser_tile_indices[0][4]);
+        SPR_setDepth(s, PLF_get_sprite_depth(FIX16(orig_x), FIX16(orig_y)) - 1); // <-- note the minus one for laser
     }
 
     u16 curr_x = orig_x;
@@ -398,6 +399,7 @@ bool PLF_laser_put(u16 orig_x, u16 orig_y, u8 dir)
             SPR_setAutoTileUpload(s, FALSE);
             SPR_setAnimAndFrame(s, 0, laser_frame);
             SPR_setVRAMTileIndex(s, plf_vdp_laser_tile_indices[0][laser_frame]);
+            SPR_setDepth(s, PLF_get_sprite_depth(FIX16(curr_x), FIX16(curr_y)) + 1); // <-- note the plus one for laser
             if(flip_laser_frame)
             {
                 if(DIR_IS_HORIZONTAL(dir))
@@ -421,10 +423,10 @@ void PLF_update_scroll(bool forceRedraw)
     s16 plf_scroll_x = fix16ToRoundedInt(fix16Sub(plf_cam_cx, FIX16(160)));
     s16 plf_scroll_y = fix16ToRoundedInt(fix16Sub(plf_cam_cy, FIX16(96)));
 
-    VDP_setHorizontalScroll(BG_A, -plf_scroll_x);
-    VDP_setHorizontalScroll(BG_B, -plf_scroll_x);
-    VDP_setVerticalScroll(BG_A, plf_scroll_y);
-    VDP_setVerticalScroll(BG_B, plf_scroll_y);
+    //VDP_setHorizontalScroll(BG_A, -plf_scroll_x);
+    //VDP_setHorizontalScroll(BG_B, -plf_scroll_x);
+    //VDP_setVerticalScroll(BG_A, plf_scroll_y);
+    //VDP_setVerticalScroll(BG_B, plf_scroll_y);
 
     MAP_scrollToEx(m_a, plf_scroll_x, plf_scroll_y, forceRedraw);
     if (forceRedraw)
@@ -437,7 +439,7 @@ void PLF_update_scroll(bool forceRedraw)
     {
         char buf[40];
         sprintf(buf, "@%d,%d   ", fix16ToRoundedInt(plf_cam_cx), fix16ToRoundedInt(plf_cam_cy));
-        VDP_drawTextBG(BG_A, buf, 0, 27);
+        VDP_drawTextBG(WINDOW, buf, 0, 27);
     }
 }
 
