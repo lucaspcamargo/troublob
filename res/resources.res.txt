@@ -10,7 +10,7 @@ IMAGE title_letters "../art/title/title-letters.png"
 # SPRITES: CORE
 #
 
-# rem: id         source               w h compr anim coll  opt.str
+# rem: id         source               w h compr anim coll  opt.strategy
 SPRITE spr_cursor ../art/spr/mouse.png 2 2 BEST  0    NONE  SPRITE
 
 SPRITE spr_dweep ../art/spr/dweep.png 3 3 FAST 0

@@ -40,7 +40,7 @@ fix16 plf_player_initial_x;
 fix16 plf_player_initial_y;
 
 static u16 plf_vdp_tile_index_used;
-static u16 plf_vdp_laser_tile_index;
+static u16 ** plf_vdp_laser_tile_indices; // release this mem when playfield unloads?
 
 #define TILE_AT(x, y) (plf_tiles[(x) + (y)*plf_w])
 
@@ -81,6 +81,11 @@ void PLF_init(u16 lvl_id)
     VDP_loadTileSet(curr_lvl.bg_tileset, TILE_USER_INDEX, DMA);
     VDP_waitDMACompletion();
     plf_vdp_tile_index_used += curr_lvl.bg_tileset->numTile;
+
+    // load laser graphics
+    u16 loadedTiles;
+    plf_vdp_laser_tile_indices = SPR_loadAllFrames(&spr_laser, plf_vdp_tile_index_used, &loadedTiles);
+    plf_vdp_tile_index_used += loadedTiles;
 
     // load map data
     m_a = MAP_create(curr_lvl.bg_a_map, BG_A, TILE_ATTR_FULL(PAL_LINE_BG_0, 1, 0, 0, TILE_USER_INDEX));
@@ -201,12 +206,6 @@ void PLF_init(u16 lvl_id)
             }
     }
 
-    // load laser graphics
-    plf_vdp_laser_tile_index = plf_vdp_tile_index_used;
-    u16 loadedTiles;
-    SPR_loadAllFrames(&spr_laser, plf_vdp_tile_index_used, &loadedTiles);
-    plf_vdp_tile_index_used += loadedTiles;
-
     /* LASER SPRITE TEST
     for(int i = 0; i < 20; i++)
     {
@@ -276,6 +275,13 @@ PlfTile * PLF_get_tile(u16 pf_x, u16 pf_y)
     return &plf_tiles[pf_x + pf_y*plf_w];
 }
 
+PlfTile * PLF_get_tile_safe(u16 pf_x, u16 pf_y)
+{
+    if(pf_x >= plf_w || pf_y >= plf_h)
+        return NULL;
+    return &plf_tiles[pf_x + pf_y*plf_w];
+}
+
 void PLF_player_get_initial_pos(f16 *dest_x, f16 *dest_y)
 {
     *dest_x = plf_player_initial_x;
@@ -311,6 +317,102 @@ bool PLF_player_path_next(u16 px, u16 py, u16 *nextx, u16 *nexty)
     return ret;
 }
 
+/***
+ * This function lets us add a laser to the playfield,
+ * give the tile it is coming from, and the direction.
+ * It walks along the laser path, creating the sprites for it,
+ * and updating the tile data accordingly;.
+ */
+bool PLF_laser_put(u16 orig_x, u16 orig_y, u8 dir)
+{
+    PlfTile * tile = PLF_get_tile(orig_x, orig_y);
+    const u16 OUTFLAG = PLF_LASER_OUT_R << dir;
+    if(tile->laser & OUTFLAG)
+        return FALSE; // laser coming out of here in this dir already
+
+    tile->laser |= OUTFLAG;
+
+    if( dir == DIR_D )
+    {
+        // in this special case, we start with graphics placement
+        // CONSIDER: maybe just embed this into the canon graphics?
+        Sprite *s = SPR_addSprite(&spr_laser, orig_x*16, orig_y*16, TILE_ATTR_FULL(PAL_LINE_BG_1,0,0,0,0));
+        SPR_setAutoTileUpload(s, FALSE);
+        SPR_setAnimAndFrame(s, 0, 4);
+        SPR_setVRAMTileIndex(s, plf_vdp_laser_tile_indices[0][4]);
+    }
+
+    u16 curr_x = orig_x;
+    u16 curr_y = orig_y;
+    bool terminated = FALSE;
+
+    while(!terminated)
+    {
+        // update x and y of next in
+        DIR_UPDATE_XY(curr_x, curr_y, dir);
+        tile = PLF_get_tile_safe(curr_x, curr_y);
+        if(!tile)
+        {
+            // abort early if
+            break;
+        }
+
+        tile->laser &= (PLF_LASER_IN_R << dir);
+        u8 laser_frame = DIR_IS_HORIZONTAL(dir)? PLF_LASER_FRAME_H : PLF_LASER_FRAME_V;
+        bool flip_laser_frame = FALSE;
+
+        if(tile->pobj)
+        {
+            // TODO do laser query, etc
+            // HINT: update dir and laser frame if mirror
+        }
+        else if(tile->attrs & PLF_ATTR_SOLID)
+        {
+            terminated = TRUE;
+            switch(dir)
+            {
+                case DIR_L:
+                    flip_laser_frame = TRUE;
+                case DIR_R:
+                    laser_frame = PLF_LASER_FRAME_LT;
+                    break;
+                case DIR_U:
+                    laser_frame = PLF_LASER_FRAME_DT;
+                    break;
+                case DIR_D:
+                    laser_frame = 0xff;
+            }
+        }
+        else
+        {
+            // no object, not solid
+        }
+
+        if(!terminated)
+            tile->laser &= (PLF_LASER_OUT_R << dir);
+
+        if(laser_frame != 0xff)
+        {
+            // TODO own this sprite somewhere somehow
+            Sprite *s = SPR_addSprite(&spr_laser, curr_x*16, curr_y*16, TILE_ATTR_FULL(PAL_LINE_BG_1,0,0,0,0));
+            SPR_setAutoTileUpload(s, FALSE);
+            SPR_setAnimAndFrame(s, 0, laser_frame);
+            SPR_setVRAMTileIndex(s, plf_vdp_laser_tile_indices[0][laser_frame]);
+            if(flip_laser_frame)
+            {
+                if(DIR_IS_HORIZONTAL(dir))
+                    SPR_setHFlip(s, TRUE);
+                else
+                    SPR_setVFlip(s, TRUE);
+            }
+        }
+    }
+
+    // NOTE: think, do something else here, maybe?
+
+    return TRUE;
+}
+
 /*
  * Note: forceRedraw will call vblank processing twice for uploading map data to planes
  * */
@@ -339,6 +441,3 @@ void PLF_update_scroll(bool forceRedraw)
     }
 }
 
-void PLF_laser_place() {
-
-}

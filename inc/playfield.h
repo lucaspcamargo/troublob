@@ -70,12 +70,15 @@ void PLF_init(u16 lvl_id);
 void PLF_cam_to(fix16 cx, fix16 cy);
 
 PlfTile * PLF_get_tile(u16 pf_x, u16 pf_y);
+PlfTile * PLF_get_tile_safe(u16 pf_x, u16 pf_y);  // this one return NULL if tile out of bounds
 
 void PLF_player_get_initial_pos(f16 *dest_x, f16 *dest_y);
 
 bool PLF_player_pathfind(u16 px, u16 py, u16 destx, u16 desty);
 
 bool PLF_player_path_next(u16 px, u16 py, u16 *nextx, u16 *nexty);
+
+bool PLF_laser_put(u16 orig_x, u16 orig_y, u8 dir);
 
 /*
  * Note: forceRedraw will call vblank processing twice for uploading map data to planes

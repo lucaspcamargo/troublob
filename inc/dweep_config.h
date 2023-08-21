@@ -51,3 +51,13 @@
 #define DIR_L 1
 #define DIR_U 2
 #define DIR_D 3
+
+#define DIR_UPDATE_XY(xvar, yvar, dir) {\
+    if(dir == DIR_R) xvar += 1;\
+    if(dir == DIR_L) xvar -= 1;\
+    if(dir == DIR_U) yvar -= 1;\
+    if(dir == DIR_D) yvar += 1;\
+}
+
+#define DIR_IS_VERTICAL(dir) (dir == DIR_U || dir == DIR_D)
+#define DIR_IS_HORIZONTAL(dir) (dir == DIR_R || dir == DIR_L)
