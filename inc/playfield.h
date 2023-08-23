@@ -10,14 +10,9 @@
 
 // uniform attributes for every playfield tile
 enum PlfAttrBits {
-    PLF_ATTR_SOLID = 1 << 0,    // is solid
-    PLF_ATTR_HOT   = 1 << 1,    // is hot plate
-    PLF_ATTR_COLD  = 1 << 2,    // is cold plate
-    PLF_ATTR_OBJ   = 1 << 3,    // contains object, can be solid or not
-    PLF_ATTR_DIR_FLIP = 1 << 4, // for every flippable object (incl mirrors)
-    PLF_ATTR_DIR_VERT = 1 << 5, // four-way objects like lasers and fans, default up, stacks with _FLIP
-    PLF_ATTR_EXTRA_A  = 1 << 6, // reserved
-    PLF_ATTR_EXTRA_B = 1 << 7   // reserved
+    PLF_ATTR_SOLID = 1,
+    PLF_ATTR_PLANE_A_REUSED = 2,  // in this position, plane A is being used by a laser
+    PLF_ATTR_PLANE_B_REUSED = 4          // in this position, plane B is being used by object
 } ENUM_PACK;
 
 // laser attributes for every playfield tile
@@ -33,12 +28,11 @@ enum PlfLaserBits {
     PLF_LASER_OUT_D = 1 << 7
 } ENUM_PACK;
 
-#define PLF_LASER_Y_DELTA (-3)
 
 // Do not confuse with Tiled internal "type" attribute, only used for type_filter OBJECTS functionality
 // I could add flip/rotation flags for directional objects, BUT i'll just list them for every direction,
 //     since most objects are not directional
-// This is also different then POBJ_TYPE, although it may seem redundant
+// This is also different to POBJ_TYPE, although it may seem redundant
 // PlfObjType are the object types that can come from level data
 // PobjType are the types of objects that exist at runtime
 enum PlfObjectType {
@@ -56,6 +50,14 @@ enum PlfObjectType {
 
 #define PLF_OBJ_IS_Y_BOTTOM(spec_enum) ((spec_enum)>PLF_OBJ_WALL) // specs that have y origin in bottom of box (tile/obj)
 
+
+enum PlfThemeData{
+    PLF_THEME_LASER_LIGHT,
+    PLF_THEME_TOOLS,
+    PLF_THEME_GOAL,
+    PLF_THEME_GOAL_BABIES,
+    PLF_THEME_COUNT
+} ENUM_PACK;
 
 typedef struct PlfTile_st {
     u8 attrs;
@@ -86,3 +88,17 @@ inline s16 PLF_get_sprite_depth(fix16 x, fix16 y) { (void) x; return 0x8000 - y;
  * Note: forceRedraw will call vblank processing twice for uploading map data to planes
  * */
 void PLF_update_scroll(bool forceRedraw);
+
+// reuse plane A (for laser) or plane B (for objects) to display 4 column-major tiles at position
+// column major because we can use this with unoptimized sprite data
+// tiles are marked as such via PLF_ATTR_PLANE_X_REUSED
+void PLF_plane_draw(bool planeB, u16 x, u16 y, u16 tile_attr);
+
+// undo a PLF_plane_draw at the specified position
+void PLF_plane_clear(bool planeB);  // TODO unimpl
+
+// get a tile index table (u16**) preloaded by the playfield theming
+// may return a NULL value in case gfx is not part of theme
+const SpriteDefinition* PLF_theme_data_sprite_def(enum PlfThemeData ref);
+u16** PLF_theme_data_idx_table(enum PlfThemeData ref);
+u8 PLF_theme_data_pal_line(enum PlfThemeData ref); // same for palette

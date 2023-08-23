@@ -1,0 +1,5 @@
+# strings_en.txt -- demo string list
+__IDENTIFIER str_en
+
+STRING ZERO
+What a cool demo!!!

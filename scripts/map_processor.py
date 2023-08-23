@@ -21,6 +21,15 @@ basepath = os.path.dirname(inp)
 tilesets:list[tuple[str, int]] = []     # tileset relatove filename, and first gid
 tileprops:dict[int, Any] = {}           # for every gid, all properties that were found
 
+width = -1
+height = -1
+plane_a_allocation = []                 # array of arrays of bools
+                                        # marks every map position that is occupied by plane A graphics
+                                        # used for laser graphics in plane A
+plane_a_alloc_bitmap = b''
+plane_a_alloc_size = -1
+plane_a_alloc_stride = -1
+
 print(f"Processing '{inp}'...")
 
 tree:etree.ElementTree = etree.parse(inp)
@@ -74,10 +83,35 @@ for objgrp in root.findall("objectgroup"):
                     props_elem.append(etree.fromstring(b'<property name="exportSize" type="bool" value="true"/>'))
                 else:
                     size_prop.set("value", dims_prop.get("value"))
+
             
+for layerA in root.findall("layer[@name = 'A']"):
+    width = int(layerA.get("width"))
+    height = int(layerA.get("height"))
+    plane_a_alloc_stride = width // 8 + (1 if width % 8 else 0)
+    plane_a_alloc_size = height*plane_a_alloc_stride
+    plane_a_allocation = bytearray(plane_a_alloc_size)
+    data = layerA.find("data[@encoding = 'csv']")
+    if data is not None:
+        csv:str = data.text
+        print(csv)
+        for y, line in enumerate(csv.strip().split("\n")):
+            for x, token in enumerate(line.strip().split(',')):
+                if token and int(token) > 0:
+                   plane_a_allocation[x//8 + y*plane_a_alloc_stride] |= (1 << x%8)
+    else:
+        print("Found layer A, but no usable data!")
+
+print(repr(plane_a_allocation))
 
 # save final file
 f = open(out, 'wb')
 f.write(etree.tostring(root, pretty_print=True))
 f.close()
 print(f"\tWrote to '{out}'")
+
+if plane_a_allocation:
+    out_a_bin = f'{out}.A.bin'
+    with open(out_a_bin, 'wb') as fA:
+        fA.write(plane_a_allocation)
+    print(f"\tWrote to '{out_a_bin}'")

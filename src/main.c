@@ -1,4 +1,5 @@
 #include "dweep_config.h"
+#include "dweep_globals.h"
 
 #include <genesis.h>
 #include "resources.h"
@@ -14,7 +15,6 @@
 #include "sfx.h"
 
 
-
 int exec_playfield(u16 level_id){
     // BEGIN main section
     // init playfield and hud
@@ -25,7 +25,7 @@ int exec_playfield(u16 level_id){
 
     //Play a song
     const void * const songs[] = {bgm_stage_1, bgm_stage_2, bgm_stage_3, bgm_stage_4, bgm_stage_5};
-    XGM_startPlay(songs[1]);
+    XGM_startPlay(songs[0]);
 
     u32 framecounter = 0;
 
@@ -38,14 +38,15 @@ int exec_playfield(u16 level_id){
         bool clicked = INPUT_step();
         if(clicked)
         {
-            s16 click_pf_x, click_pf_y;
-            INPUT_get_cursor_position(&click_pf_x, &click_pf_y);
-            click_pf_x /= 16;
-            click_pf_y /= 16;
+            s16 click_x, click_y;
+            INPUT_get_cursor_position(&click_x, &click_y);
 
-            if(click_pf_y < 12)
+            if(click_y < 192)
             {
                 // field click
+                s16 click_pf_x = click_x / 16;
+                s16 click_pf_y = click_y / 16;
+
                 PlfTile tile = *PLF_get_tile(click_pf_x, click_pf_y);
                 if(tile.attrs & PLF_ATTR_SOLID)
                 {
@@ -59,11 +60,20 @@ int exec_playfield(u16 level_id){
             else
             {
                 // hud click
-                SFX_play(SFX_no);
+                static bool dialog_test = TRUE;
+                if(dialog_test)
+                    HUD_dialog_start(0, 1);
+                else
+                    HUD_dialog_end();
+                dialog_test = !dialog_test;
             }
         }
 
         PLR_update(framecounter);
+        HUD_update();
+
+
+        // Done with game logic, now update render systems
 
         PCTRL_step(framecounter); // evaluate palettes for next frame
 
@@ -85,6 +95,8 @@ int main(bool hard) {
     if(!hard)
         SYS_hardReset();
 
+    GLOBAL_vdp_tile_watermark = TILE_USER_INDEX;
+
     // init vdp
     VDP_setScreenWidth320();
     SYS_doVBlankProcess();
@@ -103,3 +115,17 @@ int main(bool hard) {
 
     return 0;
 }
+
+
+/* HINT EXAMPLE
+
+HINTERRUPT_CALLBACK hint()
+{
+  PAL_setColor(0, 0x0E0E);
+}
+
+TO USE:
+    VDP_setHIntCounter(192);
+    SYS_setHIntCallback(hint);
+    VDP_setHInterrupt(TRUE);
+*/

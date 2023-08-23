@@ -13,7 +13,6 @@ static fix16 dest_pf_x;
 static fix16 dest_pf_y;
 static fix16 final_dest_pf_x;
 static fix16 final_dest_pf_y;
-static bool player_float;
 static enum PlayerState player_state;
 static Sprite *spr_player;
 static Sprite *spr_player_shadow;
@@ -28,7 +27,7 @@ void PLR_init()
     spr_player = SPR_addSprite(&spr_dweep, 0, 0, PAL_LINE_SPR_A<<TILE_ATTR_PALETTE_SFT);
     spr_player_shadow = SPR_addSprite(&spr_shadow, 0, 0, PAL_LINE_SPR_A<<TILE_ATTR_PALETTE_SFT);
     SPR_setPriority(spr_player_shadow, FALSE);
-    SPR_setAlwaysVisible(spr_player, 1);
+    SPR_setVisibility(spr_player, VISIBLE);
 
     PLF_player_get_initial_pos(&player_pf_x, &player_pf_y);
     player_pf_z = FIX16(0);
@@ -36,7 +35,6 @@ void PLR_init()
     dest_pf_y = player_pf_y;
     final_dest_pf_x = player_pf_x;
     final_dest_pf_y = player_pf_y;
-    player_float = FALSE;
     player_state = PLR_STATE_IDLE;
 
     _PLR_update_gfx();
@@ -76,15 +74,13 @@ bool PLR_goto(f16 dest_x, f16 dest_y)
 void _PLR_update_bounce(u32 framecounter)
 {
     int angle = (framecounter * 4)&1023;
-    if(player_float)
+    /*if(player_float)
     {
         player_pf_z = FIX16(6)+fix16Mul(sinFix16(angle/2), FIX16(4));
-    }
-    else
-    {
-        player_pf_z = fix16Mul(sinFix16(angle*2), FIX16(6));
-        player_pf_z = player_pf_z<0?fix16Neg(player_pf_z):player_pf_z;
-    }
+    }*/
+
+    player_pf_z = fix16Mul(sinFix16(angle*2), FIX16(6));
+    player_pf_z = player_pf_z<0?fix16Neg(player_pf_z):player_pf_z;
 }
 
 
@@ -132,8 +128,7 @@ void PLR_update(u32 framecounter)
         if(changed && fix16Frac(player_pf_x)==0 && fix16Frac(player_pf_y)==0)
         {
             // arrived on a tile
-            PlfTile tile = *PLF_get_tile(fix16ToInt(player_pf_x), fix16ToInt(player_pf_y));
-            player_float = (tile.attrs & PLF_ATTR_HOT)? TRUE : FALSE;
+            //PlfTile tile = *PLF_get_tile(fix16ToInt(player_pf_x), fix16ToInt(player_pf_y));
             if(player_pf_x == dest_pf_x && player_pf_y == dest_pf_y)
             {
                 // arrived at immediate dest, either we arrived at final destination, or we find our next imm. dest.

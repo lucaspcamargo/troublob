@@ -13,6 +13,7 @@ typedef struct RGST_lvl_st {
     const Palette *bg_tileset_pal;
     const void ** const obj_map;
     const u16 obj_count;
+    const u8 * bg_a_allocation;
 } RGST_lvl;
 
 extern const RGST_lvl RGST_levels[];

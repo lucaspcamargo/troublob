@@ -2,7 +2,7 @@
 #include <genesis.h>
 #include "dweep_config.h"
 
-#define PATHFIND_MAX PLAYFIELD_STD_W*PLAYFIELD_STD_H // 240, in this case, we can index nodes with u8, phew
+#define PATHFIND_MAX PLAYFIELD_VIEW_W*PLAYFIELD_VIEW_H // 240, in this case, we can index nodes with u8, phew
 #if PATHFIND_MAX > 254
 #define PATH_IDX_TYPE u16
 #else
@@ -12,8 +12,8 @@
 
 // in the discovery stage, we use a bitmap to mark
 // which tiles have already been navigated from (or are a wall?)
-#define PATH_BITMAP_H_LEN (PLAYFIELD_STD_W/8+(PLAYFIELD_STD_W%8?1:0))
-#define PATH_BITMAP_LEN (PLAYFIELD_STD_H*PATH_BITMAP_H_LEN)
+#define PATH_BITMAP_H_LEN (PLAYFIELD_VIEW_W/8+(PLAYFIELD_VIEW_W%8?1:0))
+#define PATH_BITMAP_LEN (PLAYFIELD_VIEW_H*PATH_BITMAP_H_LEN)
 #define BITMAP_IS_SET(bitmap, x, y) ((bitmap)[((x)/8)+((y)*PATH_BITMAP_H_LEN)]&(1<<(x&0x07)))
 #define BITMAP_SET(bitmap, x, y) (bitmap)[((x)/8)+((y)*PATH_BITMAP_H_LEN)] |= (1<<(x&0x07))
 #define BITMAP_UNSET(bitmap, x, y) (bitmap)[((x)/8)+((y)*PATH_BITMAP_H_LEN)] &= ~(1<<(x&0x07))

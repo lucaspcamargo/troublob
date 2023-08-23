@@ -5,11 +5,17 @@
 #include "dweep_config.h"
 #include "resources.h"
 
-// HACK +256 for single bg tileset loaded at TILE_USER_INDEX
-//      Need global mechanism for managing VDP tile memory in future, maybe
-#define TILE_HUD_INDEX (TILE_USER_INDEX+256)
-
-void HUD_draw();
+enum HUDState
+{
+    HUD_ST_NORMAL,              // normal gameplay state
+    HUD_ST_DIALOG_STARTING,     // drawing the dialog background and portrait
+    HUD_ST_DIALOG_TYPING,       // drawing the works animatedly
+    HUD_ST_DIALOG_IDLE,         // dialog written
+    HUD_ST_UNINITIALIZED = 0xff
+} ENUM_PACK;
 
 void HUD_init();
+void HUD_update();
 
+void HUD_dialog_start(u8 character_id, u16 string_id);  // animated, requires per frame HUD_update
+void HUD_dialog_end();

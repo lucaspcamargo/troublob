@@ -19,7 +19,7 @@ void PobjHandler_Laser(PobjData *data, enum PobjEventType evt, void* evt_arg)
         extraData->dir = args->subtype;
 
         extraData->spr = SPR_addSprite(&spr_laser_cannon, fix16ToInt(data->x)*16, fix16ToInt(data->y)*16 - 8, 0);
-        SPR_setPalette(extraData->spr, PAL1);
+        SPR_setPalette(extraData->spr, PAL_LINE_SPR_A);
         SPR_setAnim(extraData->spr, args->subtype);
         SPR_setDepth(extraData->spr, PLF_get_sprite_depth(data->x, data->y));
         // FIXME maybe world is not built yet, watch out

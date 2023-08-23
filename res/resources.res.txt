@@ -10,20 +10,25 @@ IMAGE title_letters "../art/title/title-letters.png"
 # SPRITES: CORE
 #
 
-# rem: id         source               w h compr anim coll  opt.strategy
-SPRITE spr_cursor ../art/spr/mouse.png 2 2 BEST  0    NONE  SPRITE
+# rem: id         source                                w h  compr  anim    coll    opt.strategy
+SPRITE spr_cursor ../art/spr/mouse.png                  2 2  NONE   0       NONE    SPRITE
 
-SPRITE spr_dweep ../art/spr/dweep.png 3 3 FAST 0
-SPRITE spr_shadow ../art/spr/shadow.png 2 1 NONE 0
-SPRITE spr_laser  ../art/spr/laser.png 2 2 FAST 0 NONE SPRITE
-SPRITE spr_laser_cannon  ../art/spr/laser_cannon.png 2 3 FAST 3 NONE SPRITE
+SPRITE spr_dweep ../art/spr/dweep.png                   3 3  FAST   0       NONE    SPRITE
+SPRITE spr_shadow ../art/spr/shadow.png                 2 1  NONE   0       NONE    SPRITE
+SPRITE spr_tools  ../art/spr/tools.png                  2 2  FAST   0       NONE    NONE
+SPRITE spr_laser  ../art/spr/laser.png                  2 2  FAST   0       NONE    NONE
+SPRITE spr_laser_cannon  ../art/spr/laser-cannon.png    2 3  FAST   3       NONE    SPRITE
+SPRITE spr_goal_plate ../art/spr/goal-plate.png         2 2  FAST   0       NONE    NONE
+SPRITE spr_goal_babies ../art/spr/goal-babies.png       1 1  FAST   0       NONE    SPRITE
+
 
 
 
 #
 #  TILESETS
 #
-TILESET tset_hud ../art/spr/tilesetH.tsx AUTO ALL
+TILESET tset_hud ../art/spr/tilesetH.png AUTO ALL
+TILESET tset_hud_font ../art/spr/tilesetH-font.png AUTO NONE // no optimization
 PALETTE pal_tset_hud ../art/spr/tilesetH.png
 TILESET tset_0 ../art/spr/tileset0.tsx AUTO ALL
 PALETTE pal_tset_0 ../art/spr/tileset0.png
@@ -47,6 +52,7 @@ MAP map_1_b ../art/map/__map_1.tmx B AUTO AUTO
 OBJECTS map_1_o ../art/map/__map_1.tmx OBJ type:u16;x:u16;y:u16;width:u16;height:u16
 MAP map_2_a ../art/map/__map_2.tmx A AUTO AUTO
 MAP map_2_b ../art/map/__map_2.tmx B AUTO AUTO
+BIN map_2_a_alloc ../art/map/__map_2.tmx.A.bin
 OBJECTS map_2_o ../art/map/__map_2.tmx OBJ type:u16;x:u16;y:u16;width:u16;height:u16
 MAP map_3_a ../art/map/__map_3.tmx A AUTO AUTO
 MAP map_3_b ../art/map/__map_3.tmx B AUTO AUTO
