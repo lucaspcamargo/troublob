@@ -3,6 +3,7 @@
 #include "palette_ctrl.h"
 #include "registry.h"
 #include "plf_obj.h"
+#include "gfx_utils.h"
 
 
 enum PLFLaserFrame // description of laser sprite frames
@@ -492,45 +493,8 @@ void PLF_plane_draw(bool planeB, u16 x, u16 y, u16 tile_attr)
     if(!tile)
         return;
 
-    if(tile_attr & TILE_ATTR_VFLIP_MASK)
-    {
-        if(tile_attr & TILE_ATTR_HFLIP_MASK)
-        {
-            // both flip
-            VDP_setTileMapXY(planeB, tile_attr  , x*2+1, y*2+1);
-            VDP_setTileMapXY(planeB, tile_attr+1, x*2+1, y*2);
-            VDP_setTileMapXY(planeB, tile_attr+2, x*2, y*2+1);
-            VDP_setTileMapXY(planeB, tile_attr+3, x*2, y*2);
+    GFX_draw_sprite_in_plane_2x2_inline(planeB? BG_B : BG_A, x*2, y*2, tile_attr);
 
-        }
-        else
-        {
-            // vflip
-            VDP_setTileMapXY(planeB, tile_attr  , x*2, y*2+1);
-            VDP_setTileMapXY(planeB, tile_attr+1, x*2, y*2);
-            VDP_setTileMapXY(planeB, tile_attr+2, x*2+1, y*2+1);
-            VDP_setTileMapXY(planeB, tile_attr+3, x*2+1, y*2);
-        }
-    }
-    else
-    {
-        if(tile_attr & TILE_ATTR_HFLIP_MASK)
-        {
-            // hflip
-            VDP_setTileMapXY(planeB, tile_attr  , x*2+1, y*2);
-            VDP_setTileMapXY(planeB, tile_attr+1, x*2+1, y*2+1);
-            VDP_setTileMapXY(planeB, tile_attr+2, x*2, y*2);
-            VDP_setTileMapXY(planeB, tile_attr+3, x*2, y*2+1);
-        }
-        else
-        {
-            // no flip
-            VDP_setTileMapXY(planeB, tile_attr  , x*2, y*2);
-            VDP_setTileMapXY(planeB, tile_attr+1, x*2, y*2+1);
-            VDP_setTileMapXY(planeB, tile_attr+2, x*2+1, y*2);
-            VDP_setTileMapXY(planeB, tile_attr+3, x*2+1, y*2+1);
-        }
-    }
     tile->attrs |= (planeB? PLF_ATTR_PLANE_B_REUSED : PLF_ATTR_PLANE_A_REUSED);
 }
 

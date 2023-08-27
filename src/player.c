@@ -14,18 +14,22 @@ static fix16 dest_pf_y;
 static fix16 final_dest_pf_x;
 static fix16 final_dest_pf_y;
 static enum PlayerState player_state;
+static enum PlayerEmote player_emote;
 static Sprite *spr_player;
 static Sprite *spr_player_shadow;
+static Sprite *spr_player_eyes;
 
-void _PLR_update_gfx();
+
+void _PLR_update_gfx(bool blink, u8 anim_frame);
 void _PLR_update_bounce(u32 framecounter);
 
 void PLR_init()
 {
-        // player
+    // player
     PCTRL_set_source(PAL_LINE_SPR_A, spr_dweep.palette->data, FALSE);
     spr_player = SPR_addSprite(&spr_dweep, 0, 0, PAL_LINE_SPR_A<<TILE_ATTR_PALETTE_SFT);
     spr_player_shadow = SPR_addSprite(&spr_shadow, 0, 0, PAL_LINE_SPR_A<<TILE_ATTR_PALETTE_SFT);
+    spr_player_eyes = SPR_addSprite(&spr_dweep_eyes, 0, 0, PAL_LINE_SPR_A<<TILE_ATTR_PALETTE_SFT);
     SPR_setPriority(spr_player_shadow, FALSE);
     SPR_setVisibility(spr_player, VISIBLE);
 
@@ -36,8 +40,9 @@ void PLR_init()
     final_dest_pf_x = player_pf_x;
     final_dest_pf_y = player_pf_y;
     player_state = PLR_STATE_IDLE;
+    player_emote = PLR_EMOTE_NEUTRAL;
 
-    _PLR_update_gfx();
+    _PLR_update_gfx(FALSE, 0);
 
 }
 
@@ -84,22 +89,35 @@ void _PLR_update_bounce(u32 framecounter)
 }
 
 
-void _PLR_update_gfx()
+void _PLR_update_gfx(bool blink_frame, u8 anim_frame)
 {
-    // player position
-    SPR_setPosition(spr_player,
-    fix16ToRoundedInt(fix16Mul(player_pf_x, FIX16(16)))-4,
-    fix16ToRoundedInt(fix16Sub(fix16Mul(player_pf_y, FIX16(16)), player_pf_z))-10);
-    SPR_setDepth(spr_player, PLF_get_sprite_depth(player_pf_x, player_pf_y));
+    // player
+    u16 px = fix16ToRoundedInt(fix16Mul(player_pf_x, FIX16(16)))-4;
+    u16 py = fix16ToRoundedInt(fix16Sub(fix16Mul(player_pf_y, FIX16(16)), player_pf_z))-10;
+    u16 depth = PLF_get_sprite_depth(player_pf_x, player_pf_y);
+    SPR_setPosition(spr_player, px, py);
+    SPR_setDepth(spr_player, depth);
+    SPR_setAnimAndFrame(spr_player, 0, anim_frame);
 
-    // shadow pos
+    // shadow
     SPR_setPosition(spr_player_shadow,
         fix16ToRoundedInt(fix16Mul(player_pf_x, FIX16(16))),
         fix16ToRoundedInt(fix16Mul(player_pf_y, FIX16(16)))+4+3);
-
-    // shadow scale
     SPR_setFrame(spr_player_shadow, \
     ((s16) (fix16Div(player_pf_z, FIX16(3)) >> FIX16_FRAC_BITS)) );
+
+
+    // eyes
+    if(player_emote == PLR_EMOTE_NEUTRAL && !blink_frame)
+    {
+        SPR_setVisibility(spr_player_eyes, HIDDEN);
+    }else{
+        SPR_setVisibility(spr_player_eyes, VISIBLE);
+        SPR_setFrame(spr_player_eyes, player_emote == PLR_EMOTE_FEAR? 1 : 0);
+        SPR_setPosition(spr_player_eyes, px+4, py+6);
+        SPR_setDepth(spr_player_eyes, depth - 1);
+    }
+
 }
 
 
@@ -151,7 +169,7 @@ void PLR_update(u32 framecounter)
         }
     }
 
-    _PLR_update_gfx();
+    _PLR_update_gfx((framecounter%128)<6, ((framecounter*8) % 512) >= 200? 0 : 1);
 
     if(DEBUG_PLAYER)
     {

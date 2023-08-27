@@ -14,6 +14,7 @@ typedef struct RGST_lvl_st {
     const void ** const obj_map;
     const u16 obj_count;
     const u8 * bg_a_allocation;
+    const u8 * bgm_xgm;
 } RGST_lvl;
 
 extern const RGST_lvl RGST_levels[];

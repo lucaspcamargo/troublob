@@ -14,7 +14,9 @@ enum HUDState
     HUD_ST_UNINITIALIZED = 0xff
 } ENUM_PACK;
 
+void HUD_preinit(); // just load graphics data used by rest of system
 void HUD_init();
+void HUD_setVisible(bool visible);
 void HUD_update();
 
 void HUD_dialog_start(u8 character_id, u16 string_id);  // animated, requires per frame HUD_update

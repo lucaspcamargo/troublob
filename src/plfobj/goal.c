@@ -13,7 +13,7 @@ void PobjHandler_Goal(PobjData *data, enum PobjEventType evt, void* evt_arg)
     PobjGoalExtraData * const extraData  = (PobjGoalExtraData*) &data->extra;
     if(evt == POBJ_EVT_CREATED)
     {
-        const PobjEvtCreatedArgs * const args = (PobjEvtCreatedArgs *) evt_arg;
+        //const PobjEvtCreatedArgs * const args = (PobjEvtCreatedArgs *) evt_arg;
         u16 tile_attrs = TILE_ATTR_FULL(PLF_theme_data_pal_line(PLF_THEME_GOAL),
                                         0, 0, 0,
                                         PLF_theme_data_idx_table(PLF_THEME_GOAL)[0][0]);

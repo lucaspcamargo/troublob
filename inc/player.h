@@ -7,6 +7,12 @@ enum PlayerState {
     PLR_STATE_MOVING_PATH
 } ENUM_PACK;
 
+enum PlayerEmote {
+    PLR_EMOTE_NEUTRAL = 0,
+    PLR_EMOTE_HAPPY,
+    PLR_EMOTE_FEAR
+} ENUM_PACK;
+
 
 void PLR_init();
 

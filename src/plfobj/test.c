@@ -8,9 +8,6 @@ void PobjHandler_Test(PobjData *data, enum PobjEventType evt, void* evt_arg)
     {
         VDP_drawTextEx(BG_B, "OO", TILE_ATTR(0,0,0,0), fix16ToInt(data->x)*2, fix16ToInt(data->y)*2, DMA);
         VDP_drawTextEx(BG_B, "OO", TILE_ATTR(0,0,0,0), fix16ToInt(data->x)*2, fix16ToInt(data->y)*2 + 1, DMA);
-
-        PlfTile *t = (PlfTile*) evt_arg;
-        t->attrs |= PLF_ATTR_HOT;
     }
 }
 

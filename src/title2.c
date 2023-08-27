@@ -35,11 +35,14 @@ void TITLE_main()
 
     SFX_play(SFX_crush);
     PCTRL_fade_in(FADE_DUR);
+    u16 framecounter = 0;
     for(int i = 0; i < TITLE_FRAMES; i++)
     {
         VDP_setHorizontalScroll(BG_B, -((i/2)&0xf));
         VDP_setVerticalScroll(BG_B, (i/2)&0xf);
+        PCTRL_step(framecounter);
         SYS_doVBlankProcess();
+        framecounter++;
     }
 
     PCTRL_fade_out(FADE_DUR);

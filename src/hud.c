@@ -3,6 +3,9 @@
 #include "palette_ctrl.h"
 #include "./strings/strings_en.h"
 #include "sfx.h"
+#include "gfx_utils.h"
+#include "playfield.h"
+#include "tools.h"
 
 #define TILE_HUD_INDEX (1728) // for hud, we use spare space in window tile mappings
 #define TILE_HUD_FONT_INDEX (TILE_FONT_INDEX)
@@ -21,7 +24,7 @@ Sprite *hud_dialog_portrait = NULL;
 
 void _HUD_draw();
 
-void HUD_init()
+void HUD_preinit()
 {
     // set hud palette on its line
     PCTRL_set_source(PAL_LINE_HUD, pal_tset_hud.data, FALSE);
@@ -29,25 +32,36 @@ void HUD_init()
     // load HUD tiles
     VDP_loadTileSet(&tset_hud, TILE_HUD_INDEX, DMA);
     VDP_loadFont(&tset_hud_font, DMA);
+}
 
+
+void HUD_init()
+{
     // draw HUD
     _HUD_draw();
+    HUD_setVisible(TRUE);
 
     hud_state = HUD_ST_NORMAL;
 }
 
+
+void HUD_setVisible(bool visible)
+{
+    VDP_setWindowVPos(TRUE, visible ? 24 : 28);
+
+}
 void _HUD_draw()
 {
-    VDP_setWindowVPos(TRUE, 24);
     // tiles on BG A
     VDP_setTileMapEx(WINDOW, &map_hud, TILE_ATTR_FULL(PAL_LINE_HUD, 0, 0, 0, TILE_HUD_INDEX), 0, 24, 0, 0, 40, 4, DMA);
 
     // TODO do this drawing on window plane directly
     // move sprite drawing code from playfield laser in some utility function
-    SPR_addSprite(&spr_tools, 8, 200, TILE_ATTR(PAL_LINE_SPR_A, 1, 0, 0));
-    SPR_setAnimAndFrame(SPR_addSprite(&spr_tools, 8+24, 200, TILE_ATTR(PAL_LINE_SPR_A, 1, 0, 0)), 0, 1);
-    SPR_setAnimAndFrame(SPR_addSprite(&spr_tools, 8+48, 200, TILE_ATTR(PAL_LINE_SPR_A, 1, 0, 0)), 0, 2);
-    SPR_setAnimAndFrame(SPR_addSprite(&spr_tools, 8+72, 200, TILE_ATTR(PAL_LINE_SPR_A, 1, 0, 0)), 0, 3);
+    for(int i = 0; i < 11; i++)
+    {
+        GFX_draw_sprite_in_plane_2x2(WINDOW, 1+3*i, 25,
+                                     TILE_ATTR_FULL(PAL_LINE_SPR_A, 1, 0, 0, PLF_theme_data_idx_table(PLF_THEME_TOOLS)[0][i]));
+    }
 
     DMA_waitCompletion();
 

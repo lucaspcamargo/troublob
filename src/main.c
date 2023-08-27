@@ -12,6 +12,7 @@
 #include "player.h"
 #include "raster.h"
 #include "input.h"
+#include "registry.h"
 #include "sfx.h"
 
 
@@ -23,9 +24,9 @@ int exec_playfield(u16 level_id){
     PLR_init();
 
 
-    //Play a song
-    const void * const songs[] = {bgm_stage_1, bgm_stage_2, bgm_stage_3, bgm_stage_4, bgm_stage_5};
-    XGM_startPlay(songs[0]);
+    //Play the song
+    const RGST_lvl * curr_lvl = RGST_levels + level_id;
+    XGM_startPlay(curr_lvl->bgm_xgm);
 
     u32 framecounter = 0;
 
@@ -110,6 +111,9 @@ int main(bool hard) {
 
     // show title
     TITLE_main();
+
+    // init global/UI graphics
+    HUD_preinit();
 
     exec_playfield(0);
 
