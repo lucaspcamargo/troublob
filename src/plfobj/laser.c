@@ -15,7 +15,7 @@ void PobjHandler_Laser(PobjData *data, enum PobjEventType evt, void* evt_arg)
     if(evt == POBJ_EVT_CREATED)
     {
         const PobjEvtCreatedArgs * const args = (PobjEvtCreatedArgs *) evt_arg;
-        ((PlfTile*)args->plftile)->attrs |= PLF_ATTR_SOLID;
+        ((PlfTile*)args->plftile)->attrs |= (PLF_ATTR_SOLID | PLF_ATTR_DANGER);
         extraData->dir = args->subtype;
 
         extraData->spr = SPR_addSprite(&spr_laser_cannon, fix16ToInt(data->x)*16, fix16ToInt(data->y)*16 - 8, 0);

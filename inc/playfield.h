@@ -12,7 +12,8 @@
 enum PlfAttrBits {
     PLF_ATTR_SOLID = 1,
     PLF_ATTR_PLANE_A_REUSED = 2,  // in this position, plane A is being used by a laser
-    PLF_ATTR_PLANE_B_REUSED = 4          // in this position, plane B is being used by object
+    PLF_ATTR_PLANE_B_REUSED = 4,  // in this position, plane B is being used by object
+    PLF_ATTR_DANGER = 8,          // dweep is afraid of this tile (laser handled separately)
 } ENUM_PACK;
 
 // laser attributes for every playfield tile
@@ -27,6 +28,9 @@ enum PlfLaserBits {
     PLF_LASER_OUT_U = 1 << 6,
     PLF_LASER_OUT_D = 1 << 7
 } ENUM_PACK;
+
+#define PLF_LASER_IN_ALL (PLF_LASER_IN_R|PLF_LASER_IN_L|PLF_LASER_IN_U|PLF_LASER_IN_D)
+#define PLF_LASER_OUT_ALL (PLF_LASER_OUT_R|PLF_LASER_OUT_L|PLF_LASER_OUT_U|PLF_LASER_OUT_D)
 
 
 // Do not confuse with Tiled internal "type" attribute, only used for type_filter OBJECTS functionality
