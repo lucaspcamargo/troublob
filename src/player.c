@@ -31,24 +31,18 @@ bool _PLR_check_danger(u8 dist);
 // TODO remove these after fix in SGDK
 FORCE_INLINE fix16 _fix16Round(fix16 value)
 {
-    if (fix16Frac(value) > FIX16(0.5))
-        return fix16Int(value + FIX16(1));
-
-    return fix16Int(value);
+    return fix16Int(value + (FIX16(0.5)-1));
 }
 
 FORCE_INLINE s16 _fix16ToRoundedInt(fix16 value)
 {
-    if (fix16Frac(value) > FIX16(0.5))
-        return fix16ToInt(value) + 1;
-
-    return fix16ToInt(value);
+    return fix16ToInt(value + (FIX16(0.5)-1));
 }
 
 void PLR_init()
 {
     // player
-    PCTRL_set_source(PAL_LINE_SPR_A, spr_dweep.palette->data, FALSE);
+    PCTRL_set_source(PAL_LINE_SPR_A, spr_dweep.palette->data);
     spr_player = SPR_addSprite(&spr_dweep, 0, 0, PAL_LINE_SPR_A<<TILE_ATTR_PALETTE_SFT);
     spr_player_shadow = SPR_addSprite(&spr_shadow, 0, 0, PAL_LINE_SPR_A<<TILE_ATTR_PALETTE_SFT);
     spr_player_eyes = SPR_addSprite(&spr_dweep_eyes, 0, 0, PAL_LINE_SPR_A<<TILE_ATTR_PALETTE_SFT);
@@ -209,7 +203,7 @@ void PLR_update(u32 framecounter)
         if(changed)
         {
             // FIXME sometimes when moving diagonally,
-            // we change only x or only y on a single frame
+            // we change only x or only y on a single frame?
             const s16 rx = _fix16ToRoundedInt(player_pf_x);
             const s16 ry = _fix16ToRoundedInt(player_pf_y);
             if(rx != player_int_x || ry != player_int_y)
@@ -258,7 +252,7 @@ void PLR_update(u32 framecounter)
 
     _PLR_update_gfx((framecounter%128)<6, ((framecounter*8) % 512) >= 200? 0 : 1);
 
-    if(1)//DEBUG_PLAYER)
+    if(DEBUG_PLAYER)
     {
         char buf[20];
         sprintf(buf, "S%X@%X,%X,%X     ",

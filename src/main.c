@@ -110,10 +110,16 @@ int main(bool hard) {
     SYS_doVBlankProcess();
 
     // show title
-    TITLE_main();
+    // TITLE_main();
+
 
     // init global/UI graphics
     HUD_preinit();
+
+    // ensure we are blacked out
+    PCTRL_fade_out(0);
+    PCTRL_step(0);
+    SYS_doVBlankProcess();
 
     exec_playfield(0);
 

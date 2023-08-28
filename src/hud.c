@@ -27,7 +27,7 @@ void _HUD_draw();
 void HUD_preinit()
 {
     // set hud palette on its line
-    PCTRL_set_source(PAL_LINE_HUD, pal_tset_hud.data, FALSE);
+    PCTRL_set_source(PAL_LINE_HUD, pal_tset_hud.data);
 
     // load HUD tiles
     VDP_loadTileSet(&tset_hud, TILE_HUD_INDEX, DMA);
@@ -55,9 +55,7 @@ void _HUD_draw()
     // tiles on BG A
     VDP_setTileMapEx(WINDOW, &map_hud, TILE_ATTR_FULL(PAL_LINE_HUD, 0, 0, 0, TILE_HUD_INDEX), 0, 24, 0, 0, 40, 4, DMA);
 
-    // TODO do this drawing on window plane directly
-    // move sprite drawing code from playfield laser in some utility function
-    for(int i = 0; i < 11; i++)
+    for(int i = 0; i < 10; i++)
     {
         GFX_draw_sprite_in_plane_2x2(WINDOW, 1+3*i, 25,
                                      TILE_ATTR_FULL(PAL_LINE_SPR_A, 1, 0, 0, PLF_theme_data_idx_table(PLF_THEME_TOOLS)[0][i]));

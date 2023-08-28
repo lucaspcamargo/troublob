@@ -1,5 +1,6 @@
 #pragma once
 
+#include "dweep_config.h"
 #include <genesis.h>
 
 #define PCTRL_PAL_COUNT 4
@@ -22,9 +23,11 @@ typedef struct {
 
 void PCTRL_op_clear_all();
 void PCTRL_init();
-void PCTRL_set_source(u8 line, u16* data, bool hud);
+void PCTRL_set_source(u8 line, const u16* data);
 void PCTRL_step(u16 framecounter);
 void PCTRL_fade_in(u16 num_fr);
 void PCTRL_fade_out(u16 num_fr);
+bool PCTRL_is_fading();
+bool PCTRL_is_dark();
 bool PCTRL_op_add(PalCtrlOperatorDescriptor *desc);
 void PCTRL_op_clear_all();

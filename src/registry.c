@@ -11,7 +11,7 @@ const RGST_lvl RGST_levels[] = {
         map_2_o,
         sizeof(map_2_o)/sizeof(void*),
         map_2_a_alloc,
-        bgm_stage_3
+        bgm_stage_4
     }
 };
 const uint16_t RGST_lvl_count = sizeof(RGST_levels)/sizeof(RGST_lvl);

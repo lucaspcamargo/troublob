@@ -6,11 +6,36 @@
 #include "palette_ctrl.h"
 #include "sfx.h"
 
-#define TITLE_FRAMES 60
+
+#define TITLE_FRAMES (300 + 2*FADE_DUR)
+#define TITLE_DISCLAIMER_FRAMES 200
+
+
+void _TITLE_disclaimer()
+{
+    const u16 txt_y = 16;
+    PCTRL_set_source(PAL_LINE_BG_0, sgdk_logo.palette->data);
+    VDP_drawBitmapEx(BG_A, &sgdk_logo, TILE_ATTR(PAL_LINE_BG_0, 0, 0, 0), 16, 4, FALSE);
+    VDP_drawTextBG(BG_A, "Dweep Genesis ", 4, txt_y);
+    VDP_drawTextBG(BG_A, GAME_VERSION, 18, txt_y);
+    VDP_drawTextBG(BG_A, "by Lucas Pires Camargo", 4, txt_y+1);
+    VDP_drawTextBG(BG_A, "Original game by Steve Pavlina", 4, txt_y+4);
+    VDP_drawTextBG(BG_A, "Original music by Michael Huang", 4, txt_y+5);
+    u16 framecounter = 0;
+    for(int i = 0; i < TITLE_DISCLAIMER_FRAMES; i++)
+    {
+        PCTRL_step(framecounter);
+        SYS_doVBlankProcess();
+        framecounter++;
+    }
+}
+
 
 void TITLE_main()
 {
-    // immediately force palette to black
+    _TITLE_disclaimer();
+
+    // force palette to black
     u16 zeroes[64];
     memset(zeroes, 0x0000, 64*2);
     PAL_setColorsDMA(0, zeroes, 64);
@@ -18,6 +43,7 @@ void TITLE_main()
 
     // now load graphics in the peace of darkness
     u16 tilecnt = TILE_USER_INDEX;
+    VDP_clearPlane(BG_A, TRUE);
     VDP_drawImageEx(BG_A, &title_dweep, TILE_ATTR_FULL(PAL1, 0, 0, 0, tilecnt), 1, 1, 0, DMA);
     tilecnt += title_dweep.tileset->numTile;
     VDP_drawImageEx(BG_A, &title_letters, TILE_ATTR_FULL(PAL1, 0, 0, 0, tilecnt), 13, 17, 0, DMA);
@@ -28,12 +54,10 @@ void TITLE_main()
         for(u8 y = 0; y <= 16; y++)
             VDP_setTileMapEx(BG_B, title_bg.tilemap, TILE_ATTR_FULL(PAL1, 0, 0, 0, tilecnt), x*2, y*2, 0, 0, 2, 2, CPU);
 
-    VDP_drawText(GAME_VERSION, 38-strlen(GAME_VERSION), 27);
+    PCTRL_set_source(1, title_dweep.palette->data);
+    PCTRL_set_source(2, title_letters.palette->data+16);
 
-    PCTRL_set_source(1, title_dweep.palette->data, FALSE);
-    PCTRL_set_source(2, title_letters.palette->data+16, FALSE);
-
-    SFX_play(SFX_crush);
+    SFX_play(SFX_freeze);
     PCTRL_fade_in(FADE_DUR);
     u16 framecounter = 0;
     for(int i = 0; i < TITLE_FRAMES; i++)
@@ -43,11 +67,10 @@ void TITLE_main()
         PCTRL_step(framecounter);
         SYS_doVBlankProcess();
         framecounter++;
-    }
 
-    PCTRL_fade_out(FADE_DUR);
-    while(PAL_isDoingFade())
-        SYS_doVBlankProcess();
+        if(framecounter == TITLE_FRAMES-FADE_DUR-1)
+            PCTRL_fade_out(FADE_DUR);
+    }
 
 }
 
