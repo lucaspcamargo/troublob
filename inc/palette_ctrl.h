@@ -29,5 +29,5 @@ void PCTRL_fade_in(u16 num_fr);
 void PCTRL_fade_out(u16 num_fr);
 bool PCTRL_is_fading();
 bool PCTRL_is_dark();
-bool PCTRL_op_add(PalCtrlOperatorDescriptor *desc);
+bool PCTRL_op_add(const PalCtrlOperatorDescriptor *desc);
 void PCTRL_op_clear_all();

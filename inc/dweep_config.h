@@ -41,7 +41,7 @@
 #define PAL_LINE_SPR_A PAL1
 #define PAL_LINE_BG_0 PAL2
 #define PAL_LINE_BG_1 PAL3
-#define FADE_DUR 16
+#define FADE_DUR 32
 #define RASTER_HUD_LINE (192)-43
 #define RASTER_HUD_LINE_END (225)
 

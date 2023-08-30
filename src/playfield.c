@@ -77,14 +77,12 @@ void PLF_init(u16 lvl_id)
     PCTRL_set_source(PAL_LINE_BG_0, curr_lvl.bg_tileset_pal->data);
     PCTRL_set_source(PAL_LINE_BG_1, curr_lvl.bg_tileset_pal->data+16);
 
-    // TODO store palette ops with level descriptor
-    PalCtrlOperatorDescriptor pal_op =
+    PCTRL_op_clear_all();
+    for(int p = 0; p < RGST_PCTRL_OP_MAX; p++)
     {
-        PCTRL_OP_CYCLE,
-        16*PAL_LINE_BG_0 + 30,
-        2, 0x03
-    };
-    PCTRL_op_add(&pal_op);
+        if(curr_lvl.pal_ops[p].operation != PCTRL_OP_NOOP)
+            PCTRL_op_add(&curr_lvl.pal_ops[p]);
+    }
 
     // load bg graphics
     VDP_loadTileSet(curr_lvl.bg_tileset, GLOBAL_vdp_tile_watermark, DMA);
@@ -119,11 +117,14 @@ void _PLF_load_theme()
     memset(plf_theme_tile_indices, 0, sizeof(plf_theme_tile_indices));
     memset(plf_theme_palette_line, 0, sizeof(plf_theme_palette_line));
 
-
-    // load laser graphics
     plf_theme_sprite_defs[PLF_THEME_LASER_LIGHT] = &spr_laser;
     plf_theme_palette_line[PLF_THEME_LASER_LIGHT] = PAL_LINE_SPR_A;
-    plf_theme_tile_indices[PLF_THEME_LASER_LIGHT] = SPR_loadAllFrames(&spr_laser, GLOBAL_vdp_tile_watermark, &loadedTiles); // TODO free later
+    plf_theme_tile_indices[PLF_THEME_LASER_LIGHT] = SPR_loadAllFrames(&spr_laser, GLOBAL_vdp_tile_watermark, &loadedTiles);
+    GLOBAL_vdp_tile_watermark += loadedTiles;
+
+    plf_theme_sprite_defs[PLF_THEME_LASER_CANNON] = &spr_laser_cannon;
+    plf_theme_palette_line[PLF_THEME_LASER_CANNON] = PAL_LINE_SPR_A;
+    plf_theme_tile_indices[PLF_THEME_LASER_CANNON] = SPR_loadAllFrames(&spr_laser_cannon, GLOBAL_vdp_tile_watermark, &loadedTiles);
     GLOBAL_vdp_tile_watermark += loadedTiles;
 
     plf_theme_sprite_defs[PLF_THEME_TOOLS] = &spr_tools;

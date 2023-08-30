@@ -110,7 +110,7 @@ int main(bool hard) {
     SYS_doVBlankProcess();
 
     // show title
-    // TITLE_main();
+    //TITLE_main();
 
 
     // init global/UI graphics

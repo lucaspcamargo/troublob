@@ -9,14 +9,28 @@ enum PalCtrlFadeState
     PCTRL_FADE_OUT
 } ENUM_PACK;
 
+#define PCTRL_FADE_DIV_SHIFT 10
+#define PCTRL_FADE_RESOLUTION (1 << PCTRL_FADE_DIV_SHIFT)
+#define PCTRL_FADE_MASK ((1 << PCTRL_FADE_DIV_SHIFT) - 1)
+#define PCTRL_APPLY_LUM( src, lum ) (((lum + PCTRL_rounding_term_lookup[src]) * src) >> PCTRL_FADE_DIV_SHIFT)
+
 static u16 PCTRL_src_lines[PCTRL_PAL_TOTAL];
 static u16 PCTRL_result_lines[PCTRL_PAL_TOTAL];
 static PalCtrlOperatorDescriptor PCTRL_operators[PCTRL_OP_MAX];
 static enum PalCtrlFadeState PCTRL_fade_state;
 static u16 PCTRL_fade_timer;
 static u16 PCTRL_fade_duration;
-static fix16 PCTRL_fade_duration_inv;
 static bool PCTRL_fade_blackout;
+static const u16 PCTRL_rounding_term_lookup[8] = {
+    0,
+    PCTRL_FADE_RESOLUTION/2,
+    PCTRL_FADE_RESOLUTION/4,
+    PCTRL_FADE_RESOLUTION/6,
+    PCTRL_FADE_RESOLUTION/8,
+    PCTRL_FADE_RESOLUTION/10,
+    PCTRL_FADE_RESOLUTION/12,
+    PCTRL_FADE_RESOLUTION/14 };
+
 
 // TODO remove this after fix in SGDK
 FORCE_INLINE s16 _fix16ToRoundedInt(fix16 value)
@@ -25,13 +39,10 @@ FORCE_INLINE s16 _fix16ToRoundedInt(fix16 value)
 }
 
 
-void PCTRL_op_clear_all();
-
 void PCTRL_init ()
 {
     PAL_getColors(0, PCTRL_src_lines, PCTRL_PAL_TOTAL);
     memcpy(PCTRL_result_lines, PCTRL_src_lines, PCTRL_PAL_TOTAL*sizeof(u16));
-
 
     PCTRL_op_clear_all();
 }
@@ -46,7 +57,7 @@ void PCTRL_step(u16 framecounter)
     if(PAL_isDoingFade())
         return;
 
-    for(u8 i = 0; i < PCTRL_PAL_TOTAL; i++)
+    for(u8 i = 0; i < PCTRL_OP_MAX; i++)
     {
         PalCtrlOperatorDescriptor *curr = PCTRL_operators + i;
         if(!curr->operation)
@@ -81,23 +92,25 @@ void PCTRL_step(u16 framecounter)
     }
     else
     {
-        // TODO optimize this mess
-        // we need to prepare destination buffer
-        fix16 track = intToFix16(PCTRL_fade_state == PCTRL_FADE_IN? PCTRL_fade_timer : PCTRL_fade_duration - PCTRL_fade_timer - 1);
-        fix16 lum = fix16Mul(fix16Mul(FIX16(20.0), track), PCTRL_fade_duration_inv);
-        fix16 lumR = min(fix16Mul(lum, FIX16(1.4)), FIX16(20.0));
-        fix16 lumG = lum;
-        fix16 lumB = min(fix16Mul(lum, FIX16(2.0)), FIX16(20.0));
+        // prepare destination buffer
+        u16 track = (PCTRL_fade_state == PCTRL_FADE_IN)? PCTRL_fade_timer : (PCTRL_fade_duration - PCTRL_fade_timer);
+        u16 lum = ((u32) track) * ((u32) PCTRL_FADE_RESOLUTION) / ((u32)PCTRL_fade_duration);
+        u16 lumR = min(lum + (lum >> 2), PCTRL_FADE_MASK);
+        u16 lumG = lum;
+        u16 lumB = min(lum << 1, PCTRL_FADE_MASK);
+        // char buf[5]; -- lefover debug code
+        // sprintf(buf, "%d", lum);
+        // VDP_drawTextBG(WINDOW, buf, 0, 25);
         for(int i = 0; i < PCTRL_PAL_LEN*4; i++)
         {
-            u8 line = i % 16;
+            //u8 line = i % 16; // maybe use this and some kind of mask to allow fading in only certain lines
             u16 src = PCTRL_src_lines[i];
             u8 src_r = (src & VDPPALETTE_REDMASK) >> VDPPALETTE_REDSFT;
             u8 src_g = (src & VDPPALETTE_GREENMASK) >> VDPPALETTE_GREENSFT;
             u8 src_b = (src & VDPPALETTE_BLUEMASK) >> VDPPALETTE_BLUESFT;
-            u8 dst_r = _fix16ToRoundedInt(fix16Mul(fix16Mul(intToFix16(src_r), lumR), FIX16(0.05)));
-            u8 dst_g = _fix16ToRoundedInt(fix16Mul(fix16Mul(intToFix16(src_g), lumG), FIX16(0.05)));
-            u8 dst_b = _fix16ToRoundedInt(fix16Mul(fix16Mul(intToFix16(src_b), lumB), FIX16(0.05)));
+            u8 dst_r = PCTRL_APPLY_LUM( src_r, lumR );
+            u8 dst_g = PCTRL_APPLY_LUM( src_g, lumG );
+            u8 dst_b = PCTRL_APPLY_LUM( src_b, lumB );
             PCTRL_result_lines[i] = dst_r << VDPPALETTE_REDSFT   |
                                     dst_g << VDPPALETTE_GREENSFT |
                                     dst_b << VDPPALETTE_BLUESFT;
@@ -123,7 +136,6 @@ void PCTRL_fade_in(u16 num_fr)
     if(num_fr)
     {
         PCTRL_fade_duration = num_fr;
-        PCTRL_fade_duration_inv = fix16Div(FIX16(1), intToFix16(num_fr));
         PCTRL_fade_timer = 0;
         PCTRL_fade_state = PCTRL_FADE_IN;
         PCTRL_fade_blackout = FALSE;
@@ -163,7 +175,7 @@ bool PCTRL_is_dark()
     return PCTRL_fade_blackout;
 }
 
-bool PCTRL_op_add(PalCtrlOperatorDescriptor *desc)
+bool PCTRL_op_add(const PalCtrlOperatorDescriptor *desc)
 {
     if(!desc->operation)
         return FALSE;

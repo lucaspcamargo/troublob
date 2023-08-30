@@ -57,6 +57,7 @@ enum PlfObjectType {
 
 enum PlfThemeData{
     PLF_THEME_LASER_LIGHT,
+    PLF_THEME_LASER_CANNON,
     PLF_THEME_TOOLS,
     PLF_THEME_GOAL,
     PLF_THEME_GOAL_BABIES,
