@@ -23,3 +23,15 @@ const RGST_lvl RGST_levels[] = {
     }
 };
 const uint16_t RGST_lvl_count = sizeof(RGST_levels)/sizeof(RGST_lvl);
+
+
+const void* RGST_bgms[] = {
+    bgm_stage_1,
+    bgm_stage_2,
+    bgm_stage_3,
+    bgm_stage_4,
+    bgm_stage_5,
+    bgm_victory,
+    bgm_defeat
+};
+const uint16_t RGST_bgm_count = sizeof(RGST_bgms)/sizeof(void*);

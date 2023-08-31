@@ -7,7 +7,7 @@
 #include "sfx.h"
 
 
-#define TITLE_FRAMES (300 + 2*FADE_DUR)
+#define TITLE_FRAMES (300 + 2 * PAL_STD_FADE_DURATION)
 #define TITLE_DISCLAIMER_FRAMES 200
 
 
@@ -31,8 +31,10 @@ void _TITLE_disclaimer()
 }
 
 
-void TITLE_main()
+void TITLE_main(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd)
 {
+    (void) curr_cmd; // ignore
+
     _TITLE_disclaimer();
 
     // force palette to black
@@ -58,7 +60,7 @@ void TITLE_main()
     PCTRL_set_source(2, title_letters.palette->data+16);
 
     SFX_play(SFX_freeze);
-    PCTRL_fade_in(FADE_DUR);
+    PCTRL_fade_in(PAL_STD_FADE_DURATION);
     u16 framecounter = 0;
     for(int i = 0; i < TITLE_FRAMES; i++)
     {
@@ -68,9 +70,12 @@ void TITLE_main()
         SYS_doVBlankProcess();
         framecounter++;
 
-        if(framecounter == TITLE_FRAMES-FADE_DUR-1)
-            PCTRL_fade_out(FADE_DUR);
+        if(framecounter == TITLE_FRAMES-PAL_STD_FADE_DURATION-1)
+            PCTRL_fade_out(PAL_STD_FADE_DURATION);
     }
+
+    memset(next_cmd, 0x00, sizeof(DirectorCommand));
+    next_cmd->cmd = DIREC_CMD_LEVEL;
 
 }
 

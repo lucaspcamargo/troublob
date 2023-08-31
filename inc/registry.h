@@ -23,3 +23,6 @@ typedef struct RGST_lvl_st {
 
 extern const RGST_lvl RGST_levels[];
 extern const uint16_t RGST_lvl_count;
+
+extern const void* RGST_bgms[];
+extern const uint16_t RGST_bgm_count;

@@ -6,6 +6,8 @@
 #include "string.h"
 
 #include "palette_ctrl.h"
+#include "director.h"
+#include "debug_menu.h"
 #include "title2.h"
 #include "playfield.h"
 #include "hud.h"
@@ -16,23 +18,22 @@
 #include "sfx.h"
 
 
-int exec_playfield(u16 level_id){
-    // BEGIN main section
+int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
+
+    (void) next_cmd; // future usage
+    const u16 level_id = curr_cmd->arg0;
+    const RGST_lvl * curr_lvl = RGST_levels + level_id;
+
     // init playfield and hud
-    PLF_init(0);
+    PLF_init(level_id);
     HUD_init();
     PLR_init();
 
-
-    //Play the song
-    const RGST_lvl * curr_lvl = RGST_levels + level_id;
     XGM_startPlay(curr_lvl->bgm_xgm);
 
     u32 framecounter = 0;
 
-    //RASTER_enable(); // enable raster interrupts
-
-    PCTRL_fade_in(FADE_DUR);
+    PCTRL_fade_in(PAL_STD_FADE_DURATION);
 
     for(;;) {
 
@@ -109,19 +110,38 @@ int main(bool hard) {
     SFX_register_all();
     SYS_doVBlankProcess();
 
-    // show title
-    //TITLE_main();
+    DirectorCommand next_cmd;
+    DirectorCommand curr_cmd;
+
+    memset(&next_cmd, 0x00, sizeof(DirectorCommand));
+    next_cmd.cmd = DEBUG_MENU? DIREC_CMD_DEBUG_MENU : DIREC_CMD_TITLE;
+
+    for(;;)
+    {
+        curr_cmd = next_cmd;
+        switch(curr_cmd.cmd)
+        {
+            case DIREC_CMD_DEBUG_MENU:
+                exec_debug_menu(&next_cmd);
+                break;
+            case DIREC_CMD_TITLE:
+                TITLE_main(&curr_cmd, &next_cmd);
+                HUD_preinit(); // init global/UI graphics
+                break;
+            case DIREC_CMD_LEVEL:
+                // ensure we are blacked out
+                PCTRL_fade_out(0);
+                PCTRL_step(0);
+                SYS_doVBlankProcess();
+
+                exec_playfield(&curr_cmd, &next_cmd);
+                break;
+        }
+    }
 
 
-    // init global/UI graphics
-    HUD_preinit();
 
-    // ensure we are blacked out
-    PCTRL_fade_out(0);
-    PCTRL_step(0);
-    SYS_doVBlankProcess();
 
-    exec_playfield(0);
 
     return 0;
 }

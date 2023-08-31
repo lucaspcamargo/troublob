@@ -1,3 +1,5 @@
 #pragma once
 
-void TITLE_main();
+#include "director.h"
+
+void TITLE_main(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd);

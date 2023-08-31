@@ -7,6 +7,7 @@
 #define GAME_VERSION "v 0.1"
 
 // Debug Switches
+#define DEBUG_MENU 1
 #define DEBUG_CPU_LOAD 1
 #define DEBUG_TILES 0
 #define DEBUG_MAP_OBJS 0
@@ -36,15 +37,12 @@
 // Audio
 #define SFX_USER_OFFSET 64
 
-// Palette and scanout
+// Palettes
 #define PAL_LINE_HUD PAL0
 #define PAL_LINE_SPR_A PAL1
 #define PAL_LINE_BG_0 PAL2
 #define PAL_LINE_BG_1 PAL3
-#define FADE_DUR 32
-#define RASTER_HUD_LINE (192)-43
-#define RASTER_HUD_LINE_END (225)
-
+#define PAL_STD_FADE_DURATION 16
 
 // Utility macros
 #define ENUM_PACK __attribute__((packed))  // add to end of enum declaration to use smallest possible type

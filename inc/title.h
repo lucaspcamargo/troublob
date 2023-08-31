@@ -15,11 +15,11 @@ void TITLE_main()
     PCTRL_set_source(1, title.palette->data, FALSE);
     PCTRL_set_source(2, sgdk_logo.palette->data, FALSE);
 
-    PCTRL_fade_in(FADE_DUR);
+    PCTRL_fade_in(PAL_STD_FADE_DURATION);
     for(int i = 0; i < 40; i++)
         SYS_doVBlankProcess();
 
-    PCTRL_fade_out(FADE_DUR);
+    PCTRL_fade_out(PAL_STD_FADE_DURATION);
     while(PAL_isDoingFade())
         SYS_doVBlankProcess();
 
