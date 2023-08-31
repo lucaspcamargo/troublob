@@ -1,12 +1,17 @@
-# dweep-gen
-Version of old Dweep shareware game on Sega Genesis (using SGDK)
+# Dweep Genesis
+Version of old [Dweep](https://en.wikipedia.org/wiki/Dweep) shareware game for the Sega MegaDrive (using SGDK)
 
 ![Screenshot of the game](./doc/screenshot.png "Game screenshot")
 
 ## About
 
-This is a SGDK port of the old shareware game Dweep.
-Not much to talk about for now, still in the beginning.
+This is a work-in-progress SGDK port of the old shareware game Dweep.
+The main objective of the project is to be a good C programming exercise,
+as well as a way tor realize a long-standing desire to code for the Genesis.
+
+Most of the game subsystems are in place, and we have a good base for the game.
+Now the focus is on getting the gameplay mechanics and objects working.
+
 Next major milestones would be:
 + ~~A* navigation for Dweep~~
 + ~~Collision with walls and objs~~
@@ -17,9 +22,10 @@ Next major milestones would be:
 + Menu
 
 
-Music was converted using libOPNMIDI (midi2vgm). Still needs some manual adjustment.
+A couple of songs were rearranged using the [Furnace](https://github.com/tildearrow/furnace/) tracker
+Some music was converted using libOPNMIDI (midi2vgm), and still needs some manual adjustment or arrangement.
 SFX was imported straight from the original game.
-Art uses LibreSprite for tilesets and sprites, and Tiled for tilemaps.
+Art uses [LibreSprite](https://github.com/LibreSprite/LibreSprite) for tilesets and sprites, and [Tiled](https://github.com/mapeditor/tiled) for tilemaps.
 
 The original Dweep was created and programmed by Steve Pavlina, with music by Michael Huang.
 
