@@ -7,7 +7,7 @@ A demake of [Dweep](https://en.wikipedia.org/wiki/Dweep) for the Sega MegaDrive.
 
 This is a work-in-progress SGDK port of the old shareware game Dweep.
 The main objective of the project is to be a good C programming exercise,
-as well as a way tor realize a long-standing desire to code for the Genesis.
+as well as a way to realize a long-standing desire to code for the Genesis.
 
 Most of the game subsystems are in place, and we have a good base for the game.
 Now the focus is on getting the gameplay mechanics and objects working.
@@ -22,8 +22,8 @@ Next major milestones would be:
 + Menu
 
 
-A couple of songs were rearranged using the [Furnace](https://github.com/tildearrow/furnace/) tracker
-Some music was converted using libOPNMIDI (midi2vgm), and still needs some manual adjustment or arrangement.
+Some songs were rearranged using the [Furnace](https://github.com/tildearrow/furnace/) tracker.
+Others were converted using libOPNMIDI (midi2vgm), and still need some manual adjustment or a proper arrangement.
 SFX was imported straight from the original game.
 Art uses [LibreSprite](https://github.com/LibreSprite/LibreSprite) for tilesets and sprites, and [Tiled](https://github.com/mapeditor/tiled) for tilemaps.
 
