@@ -1,5 +1,5 @@
 # Dweep Genesis
-Version of old [Dweep](https://en.wikipedia.org/wiki/Dweep) shareware game for the Sega MegaDrive (using SGDK)
+A demake of [Dweep](https://en.wikipedia.org/wiki/Dweep) for the Sega MegaDrive (using SGDK).
 
 ![Screenshot of the game](./doc/screenshot.png "Game screenshot")
 
