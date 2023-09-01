@@ -55,9 +55,9 @@ void _HUD_draw()
     // tiles on BG A
     VDP_setTileMapEx(WINDOW, &map_hud, TILE_ATTR_FULL(PAL_LINE_HUD, 0, 0, 0, TILE_HUD_INDEX), 0, 24, 0, 0, 40, 4, DMA);
 
-    for(int i = 0; i < 10; i++)
+    for(int i = 0; i < 8; i++)
     {
-        GFX_draw_sprite_in_plane_2x2(WINDOW, 1+3*i, 25,
+        GFX_draw_sprite_in_plane_2x2(WINDOW, 2+3*i, 25,
                                      TILE_ATTR_FULL(PAL_LINE_SPR_A, 1, 0, 0, PLF_theme_data_idx_table(PLF_THEME_TOOLS)[0][i]));
     }
 
@@ -74,10 +74,10 @@ void HUD_update()
         {
             static const u8 MAX_VAL = (320/8)+3-1;
             static const u8 STEP_SIZE = 4;
-            static const u16 DIALOG_BG_CORNER = TILE_HUD_INDEX+16;
-            static const u16 DIALOG_BG_BORDER_H = TILE_HUD_INDEX+17;
-            static const u16 DIALOG_BG_BORDER_V = TILE_HUD_INDEX+18;
-            static const u16 DIALOG_BG_BLANK = TILE_HUD_INDEX+19;
+            static const u16 DIALOG_BG_CORNER = TILE_HUD_INDEX+14;
+            static const u16 DIALOG_BG_BORDER_H = DIALOG_BG_CORNER+1;
+            static const u16 DIALOG_BG_BORDER_V = DIALOG_BG_CORNER+2;
+            static const u16 DIALOG_BG_BLANK = DIALOG_BG_CORNER+3;
             u8 turn_max = (hud_state_timer*STEP_SIZE) + STEP_SIZE;
             for (u8 curr = hud_state_timer*STEP_SIZE; curr < turn_max; curr++)
             {

@@ -58,7 +58,7 @@ OBJECTS map_2_o ../art/map/__map_2.tmx OBJ type:u16;x:u16;y:u16;width:u16;height
 MAP map_3_a ../art/map/__map_3.tmx A AUTO AUTO
 MAP map_3_b ../art/map/__map_3.tmx B AUTO AUTO
 OBJECTS map_3_o ../art/map/__map_2.tmx OBJ type:u16;x:u16;y:u16;width:u16;height:u16
- 
+
 
 #
 #  MUSIC

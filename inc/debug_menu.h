@@ -2,4 +2,4 @@
 
 #include "director.h"
 
-int exec_debug_menu(DirectorCommand *next_cmd);
+void exec_debug_menu(DirectorCommand *next_cmd);

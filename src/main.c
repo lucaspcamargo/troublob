@@ -110,6 +110,8 @@ int main(bool hard) {
     SFX_register_all();
     SYS_doVBlankProcess();
 
+    HUD_preinit(); // init global/UI graphics
+
     DirectorCommand next_cmd;
     DirectorCommand curr_cmd;
 
@@ -126,7 +128,6 @@ int main(bool hard) {
                 break;
             case DIREC_CMD_TITLE:
                 TITLE_main(&curr_cmd, &next_cmd);
-                HUD_preinit(); // init global/UI graphics
                 break;
             case DIREC_CMD_LEVEL:
                 // ensure we are blacked out
