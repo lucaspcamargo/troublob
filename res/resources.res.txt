@@ -1,8 +1,13 @@
 # dweep-gen SGDK rescomp
-IMAGE title "title.png" 0
+
+#
+#   TITLE SCREEN
+#
+
 IMAGE title_bg "../art/title/title-bg.png"
 IMAGE title_dweep "../art/title/title-dweep.png"
-IMAGE title_letters "../art/title/title-letters.png"
+SPRITE title_letters_dweep "../art/title/title-letters-dweep.png"       25 6 BEST 0 NONE SPRITE
+SPRITE title_letters_genesis "../art/title/title-letters-genesis.png"   22 3 BEST 0 NONE SPRITE
 
 
 

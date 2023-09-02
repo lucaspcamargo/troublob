@@ -24,6 +24,8 @@ int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
     const u16 level_id = curr_cmd->arg0;
     const RGST_lvl * curr_lvl = RGST_levels + level_id;
 
+    INPUT_set_cursor_visible(TRUE);
+
     // init playfield and hud
     PLF_init(level_id);
     HUD_init();
@@ -108,15 +110,14 @@ int main(bool hard) {
     PCTRL_init();
     INPUT_init();
     SFX_register_all();
-    SYS_doVBlankProcess();
-
     HUD_preinit(); // init global/UI graphics
+    SYS_doVBlankProcess();
 
     DirectorCommand next_cmd;
     DirectorCommand curr_cmd;
 
     memset(&next_cmd, 0x00, sizeof(DirectorCommand));
-    next_cmd.cmd = DEBUG_MENU? DIREC_CMD_DEBUG_MENU : DIREC_CMD_TITLE;
+    next_cmd.cmd = DEBUG_MENU&&0? DIREC_CMD_DEBUG_MENU : DIREC_CMD_TITLE;
 
     for(;;)
     {
