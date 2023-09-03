@@ -1,11 +1,27 @@
 #include "registry.h"
 #include "resources.h"
+#include "tools.h"
 
 #define PCTRL_NOP { PCTRL_OP_NOOP, 0, 0, 0 }
 
+/**
+ * Names of first 10 lvls
+ * deflection
+ * spin doctor
+ * house of mirrors
+ * bombing alley
+ * Dexterity
+ * Lasermania
+ * Phoenix
+ * Squish Time
+ * Dweeps on Ice
+ * Badda Bing Badda Boom
+ */
+
+
 const RGST_lvl RGST_levels[] = {
     {
-        "TEST LEVEL\0                    ",
+        "Deflection\0                    ",
         &map_2_a,
         &map_2_b,
         &tset_1,
@@ -19,6 +35,17 @@ const RGST_lvl RGST_levels[] = {
             {PCTRL_OP_CYCLE, 16*PAL_LINE_BG_1 + 1,  4, 0x07},
             {PCTRL_OP_CYCLE, 16*PAL_LINE_BG_0 + 11, 2, 0x07},
             PCTRL_NOP
+        },
+        {
+            TOOL_PLACE_MIRROR_LEFT_UP,
+            TOOL_PLACE_MIRROR_LEFT_UP,
+            TOOL_PLACE_MIRROR_LEFT_UP,
+            TOOL_PLACE_MIRROR_LEFT_DOWN,
+            TOOL_PLACE_MIRROR_LEFT_DOWN,
+            TOOL_PLACE_MIRROR_LEFT_DOWN,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE
         }
     }
 };

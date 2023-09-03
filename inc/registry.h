@@ -2,6 +2,7 @@
 
 #include <genesis.h>
 #include "palette_ctrl.h"
+#include "tools.h"
 
 #define RGST_PCTRL_OP_MAX 4
 
@@ -19,6 +20,7 @@ typedef struct RGST_lvl_st {
     const u8 * bg_a_allocation;
     const u8 * bgm_xgm;
     PalCtrlOperatorDescriptor pal_ops[RGST_PCTRL_OP_MAX];
+    const enum ToolId tool_inventory[9];
 } RGST_lvl;
 
 extern const RGST_lvl RGST_levels[];
