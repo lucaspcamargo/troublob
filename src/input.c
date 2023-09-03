@@ -5,6 +5,10 @@
 
 static u8 port_type_1, joy_type_1, port_type_2, joy_type_2;
 
+static enum InputMethod curr_im;
+static bool im_changed;
+static u16 last_changed, last_state;
+
 static Sprite *mouse_cursor;
 static s16 mouse_x = 160;
 static s16 mouse_y = 92;
@@ -19,20 +23,30 @@ static s16 last_mx, last_my = -1;
 
 void _INPUT_handler( u16 joy, u16 changed, u16 state)
 {
-    // just save curr state for movement handling in callback
-    if(joy == JOY_1 || joy==JOY_2)
+    enum InputMethod im = curr_im;
+    const u16 mouse_joy = mouse_present? (is_mouse_1? JOY_1 : JOY_2) : 0xffff;
+    if(joy == mouse_joy)
     {
+        // in case of mouse
+        // just save curr state for movement handling in callback
         mouse_last_joy_state = state;
-        //if(changed & state & BUTTON_A)
-        //    mouse_last_clicked = TRUE;
+        im = INPUT_METHOD_MOUSE;
+    }
+    else
+        im = INPUT_METHOD_PAD;
 
-        if( DEBUG_INPUT )
-        {
-            char buf[20];
-            memset(buf,0,20);
-            sprintf(buf, "%02x %04x %04x", joy, changed, state);
-            VDP_drawTextBG(BG_A, buf, 20, 0);
-        }
+    last_changed = changed;
+    last_state = state;
+
+    im_changed = (im != curr_im);
+    curr_im = im;
+
+    if( DEBUG_INPUT )
+    {
+        char buf[20];
+        memset(buf,0,20);
+        sprintf(buf, "%02x %04x %04x", joy, changed, state);
+        VDP_drawTextBG(BG_A, buf, 20, 0);
     }
 }
 
@@ -143,6 +157,26 @@ void INPUT_step()
     }
 }
 
+
+
+
+
+enum InputMethod INPUT_get_curr_method()
+{
+    return curr_im;
+}
+
+void INPUT_get_last_state(bool *out_method_change, u16 *out_changed, u16 *out_state)
+{
+    (*out_method_change) = im_changed;
+    (*out_changed) = last_changed;
+    (*out_state) = last_state;
+
+    last_changed = 0;
+}
+
+
+
 bool INPUT_is_mouse_present()
 {
     return mouse_present;
@@ -153,6 +187,13 @@ void INPUT_set_cursor_visible(bool visible)
 {
     if(mouse_cursor)
         SPR_setVisibility(mouse_cursor,visible?VISIBLE:HIDDEN);
+}
+
+
+void INPUT_set_cursor(enum InputCursor cur)
+{
+    if(mouse_cursor)
+        SPR_setAnimAndFrame(mouse_cursor, 0, cur);
 }
 
 bool INPUT_is_cursor_visible()
