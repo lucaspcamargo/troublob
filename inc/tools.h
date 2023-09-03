@@ -1,7 +1,9 @@
 #pragma once
-#include <dweep_config.h>
+#include "dweep_config.h"
+#include <genesis.h>
 
 enum ToolId {
+    TOOL_NONE,
     TOOL_MOVE,
     TOOL_PLACE_MIRROR_LEFT_DOWN,
     TOOL_PLACE_MIRROR_LEFT_UP,
@@ -20,4 +22,6 @@ enum ToolId {
     TOOL_TORCH,
     TOOL_BUCKET,
     TOOL_COUNT
-};
+} ENUM_PACK;
+
+bool TOOL_get_gfx(enum ToolId tool, u16 *out_frame, bool *out_flip_h, bool *out_flip_v);

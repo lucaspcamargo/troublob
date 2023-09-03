@@ -11,18 +11,30 @@
 #define TILE_HUD_FONT_INDEX (TILE_FONT_INDEX)
 
 #define D_BG_P 0  // "dialog background priority"
+#define DIALOG_BG_CORNER    (TILE_HUD_INDEX+14)
+#define DIALOG_BG_BORDER_H  (DIALOG_BG_CORNER+1)
+#define DIALOG_BG_BORDER_V  (DIALOG_BG_CORNER+2)
+#define DIALOG_BG_BLANK     (DIALOG_BG_CORNER+3)
 
 static u8 hud_state = HUD_ST_UNINITIALIZED;
 static u8 hud_state_timer = 0;
+static bool hud_dirty = FALSE;
 
 static const u16 HUD_DIALOG_ERROR_STR = 0;
 static const u8 HUD_DIALOG_DELAY = 4;
+
 static u16 hud_dialog_charid;
 static const char * hud_dialog_str;
 static u8 hud_dialog_len;
 Sprite *hud_dialog_portrait = NULL;
 
+#define HUD_INVENTORY_COUNT 10   // hud does not distinguish move tool
+static enum ToolId hud_inventory[HUD_INVENTORY_COUNT];
+static u16 hud_inventory_curr;
+static bool hud_inventory_marker;
+
 void _HUD_draw();
+void _HUD_draw_marker();
 
 void HUD_preinit()
 {
@@ -37,15 +49,15 @@ void HUD_preinit()
 
 void HUD_init()
 {
-    // draw HUD
-    _HUD_draw();
-    HUD_setVisible(TRUE);
-
+    HUD_inventory_clear();
+    HUD_set_visible(TRUE);
     hud_state = HUD_ST_NORMAL;
+    hud_inventory_marker = FALSE;
+    // will draw on next update
 }
 
 
-void HUD_setVisible(bool visible)
+void HUD_set_visible(bool visible)
 {
     VDP_setWindowVPos(TRUE, visible ? 24 : 28);
 
@@ -55,29 +67,67 @@ void _HUD_draw()
     // tiles on BG A
     VDP_setTileMapEx(WINDOW, &map_hud, TILE_ATTR_FULL(PAL_LINE_HUD, 0, 0, 0, TILE_HUD_INDEX), 0, 24, 0, 0, 40, 4, DMA);
 
-    for(int i = 0; i < 8; i++)
+    for(int i = 0; i < HUD_INVENTORY_COUNT; i++)
     {
+        u16 frame_idx;
+        bool flipH = FALSE, flipV = FALSE;
+        if(!TOOL_get_gfx(hud_inventory[i], &frame_idx, &flipH, &flipV))
+            continue;
         GFX_draw_sprite_in_plane_2x2(WINDOW, 2+3*i, 25,
-                                     TILE_ATTR_FULL(PAL_LINE_SPR_A, 1, 0, 0, PLF_theme_data_idx_table(PLF_THEME_TOOLS)[0][i]));
+                                     TILE_ATTR_FULL(PAL_LINE_SPR_A, 1, flipV?1:0, flipH?1:0, PLF_theme_data_idx_table(PLF_THEME_TOOLS)[0][frame_idx]));
     }
-
-    DMA_waitCompletion();
-
+    if (hud_inventory_marker)
+        _HUD_draw_marker();
+    hud_dirty = FALSE;
 }
+
+void _HUD_draw_marker()
+{
+    if(hud_inventory_curr >= HUD_INVENTORY_COUNT)
+        return; // oob
+
+    const u8 sx = 1 + 3*hud_inventory_curr;
+    static const u8 sy = 24;
+    // top row
+    VDP_setTileMapXY(WINDOW, TILE_ATTR_FULL(PAL_LINE_HUD, 1, 0, 0, TILE_HUD_INDEX + 1), sx+0, sy);
+    VDP_setTileMapXY(WINDOW, TILE_ATTR_FULL(PAL_LINE_HUD, 1, 0, 0, TILE_HUD_INDEX + 2), sx+1, sy);
+    VDP_setTileMapXY(WINDOW, TILE_ATTR_FULL(PAL_LINE_HUD, 1, 0, 0, TILE_HUD_INDEX + 2), sx+2, sy);
+    VDP_setTileMapXY(WINDOW, TILE_ATTR_FULL(PAL_LINE_HUD, 1, 0, 0, TILE_HUD_INDEX + 3), sx+3, sy);
+    // left right borders
+    VDP_setTileMapXY(WINDOW, TILE_ATTR_FULL(PAL_LINE_HUD, 1, 0, 0, TILE_HUD_INDEX + 8), sx+0, sy+1);
+    VDP_setTileMapXY(WINDOW, TILE_ATTR_FULL(PAL_LINE_HUD, 1, 0, 0, TILE_HUD_INDEX + 8), sx+0, sy+2);
+    VDP_setTileMapXY(WINDOW, TILE_ATTR_FULL(PAL_LINE_HUD, 1, 0, 0, TILE_HUD_INDEX + 9), sx+3, sy+1);
+    VDP_setTileMapXY(WINDOW, TILE_ATTR_FULL(PAL_LINE_HUD, 1, 0, 0, TILE_HUD_INDEX + 9), sx+3, sy+2);
+    // bottom row
+    VDP_setTileMapXY(WINDOW, TILE_ATTR_FULL(PAL_LINE_HUD, 1, 0, 0, TILE_HUD_INDEX + 10), sx+0, sy+3);
+    VDP_setTileMapXY(WINDOW, TILE_ATTR_FULL(PAL_LINE_HUD, 1, 0, 0, TILE_HUD_INDEX + 12), sx+1, sy+3);
+    VDP_setTileMapXY(WINDOW, TILE_ATTR_FULL(PAL_LINE_HUD, 1, 0, 0, TILE_HUD_INDEX + 12), sx+2, sy+3);
+    VDP_setTileMapXY(WINDOW, TILE_ATTR_FULL(PAL_LINE_HUD, 1, 0, 0, TILE_HUD_INDEX + 13), sx+3, sy+3);
+}
+
 
 void HUD_update()
 {
     u8 prev_state = hud_state;
     switch(hud_state)
     {
+        case HUD_ST_NORMAL:
+        {
+            bool show_marker = hud_state_timer%64 >= 32;
+            if(show_marker != hud_inventory_marker)
+            {
+                hud_inventory_marker = show_marker;
+                hud_dirty = TRUE;
+            }
+            if(hud_dirty)
+                _HUD_draw();
+            break;
+        }
         case HUD_ST_DIALOG_STARTING:
         {
             static const u8 MAX_VAL = (320/8)+3-1;
             static const u8 STEP_SIZE = 4;
-            static const u16 DIALOG_BG_CORNER = TILE_HUD_INDEX+14;
-            static const u16 DIALOG_BG_BORDER_H = DIALOG_BG_CORNER+1;
-            static const u16 DIALOG_BG_BORDER_V = DIALOG_BG_CORNER+2;
-            static const u16 DIALOG_BG_BLANK = DIALOG_BG_CORNER+3;
+
             u8 turn_max = (hud_state_timer*STEP_SIZE) + STEP_SIZE;
             for (u8 curr = hud_state_timer*STEP_SIZE; curr < turn_max; curr++)
             {
@@ -142,7 +192,6 @@ void HUD_update()
         break;
         case HUD_ST_DIALOG_IDLE:
         {
-
         }
         break;
         default:
@@ -177,4 +226,18 @@ void HUD_dialog_end()
     _HUD_draw();
     hud_state = HUD_ST_NORMAL;
     hud_state_timer = 0;
+}
+
+
+void HUD_inventory_set(const enum ToolId * tool_arr)
+{
+    memcpy(hud_inventory, tool_arr, sizeof(hud_inventory));
+    hud_dirty = TRUE;
+}
+
+void HUD_inventory_clear()
+{
+    memset(hud_inventory, 0x00, sizeof(hud_inventory));
+    hud_inventory_curr = 0;
+    hud_dirty = TRUE;
 }
