@@ -1,7 +1,7 @@
 # dweep-gen SGDK rescomp
 
 #
-#   TITLE SCREEN
+#  TITLE SCREEN
 #
 
 IMAGE title_bg "../art/title/title-bg.png"
@@ -12,11 +12,12 @@ SPRITE title_letters_genesis "../art/title/title-letters-genesis.png"   22 3 BES
 
 
 # 
-# SPRITES: CORE
+#  SPRITES: CORE
 #
 
 # rem: id         source                                w h  compr  anim    coll    opt.strategy
 SPRITE spr_cursor ../art/spr/mouse.png                  2 2  NONE   0       NONE    SPRITE
+SPRITE spr_input_dev ../art/spr/input-dev.png           8 6  BEST   0       NONE    SPRITE
 
 SPRITE spr_dweep ../art/spr/dweep.png                   3 3  FAST   0       NONE    SPRITE
 SPRITE spr_dweep_eyes ../art/spr/dweep-eyes.png         2 1  NONE   0       NONE    SPRITE
@@ -29,10 +30,10 @@ SPRITE spr_goal_babies ../art/spr/goal-babies.png       1 1  FAST   0       NONE
 
 
 
-
 #
 #  TILESETS
 #
+
 TILESET tset_hud ../art/spr/tilesetH.png AUTO ALL
 TILESET tset_hud_font ../art/spr/tilesetH-font.png AUTO NONE // no optimization
 PALETTE pal_tset_hud ../art/spr/tilesetH.png
@@ -40,6 +41,7 @@ TILESET tset_0 ../art/spr/tileset0.tsx AUTO ALL
 PALETTE pal_tset_0 ../art/spr/tileset0.png
 TILESET tset_1 ../art/spr/tileset1.tsx AUTO ALL
 PALETTE pal_tset_1 ../art/spr/tileset1.png
+
 
 
 #
@@ -78,6 +80,7 @@ XGM bgm_stage_5 "vgm/conv_stage_5.vgm" AUTO
 #  Huge thanks to libOPNMIDI and its midi2vgm tool!
 XGM bgm_victory "vgm/conv_victory.vgm" AUTO
 XGM bgm_defeat "vgm/conv_defeat.vgm" AUTO
+
 
  
 #

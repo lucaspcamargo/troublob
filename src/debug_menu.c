@@ -40,18 +40,28 @@ void debug_menu_draw_opts()
 
 void exec_debug_menu(DirectorCommand *next_cmd)
 {
+
+    INPUT_set_cursor_visible(TRUE);
+
     PCTRL_set_source(0, pal_tset_hud.data);
     PCTRL_set_source(PAL_LINE_HUD, pal_tset_hud.data);
     PCTRL_fade_in(0);
     PCTRL_step(0);
     SYS_doVBlankProcess();
 
-    VDP_fillTileMapRect(BG_A, TILE_FONT_INDEX, 0, 0, 320/8, 224/8);
+    VDP_fillTileMapRect(BG_A, TILE_FONT_INDEX, 0, 0, 320/8, 224/8-(DEBUG_INPUT?1:0));
     VDP_drawText("LEVEL <    >", POS_X_TXT, POS_Y_TXT);
     VDP_drawText("BGM   <    >", POS_X_TXT, POS_Y_TXT + 1);
     VDP_drawText("SFX   <    >", POS_X_TXT, POS_Y_TXT + 2);
 
     VDP_drawText(RGST_levels[curr_subopts[0]].name, POS_X_EXTRA, POS_Y_TXT);
+
+    VDP_drawText("PORT 1", 12, 20);
+    VDP_drawText("PORT 2", 21, 20);
+    Sprite *port1 = SPR_addSprite(&spr_input_dev, 160-64-4, 168, 0);
+    SPR_setAnimAndFrame(port1, 0, INPUT_get_input_dev_icon(PORT_1));
+    Sprite *port2 = SPR_addSprite(&spr_input_dev, 160+4, 168, 0);
+    SPR_setAnimAndFrame(port2, 0, INPUT_get_input_dev_icon(PORT_2));
 
     debug_menu_draw_cursor();
     debug_menu_draw_opts();
@@ -63,11 +73,14 @@ void exec_debug_menu(DirectorCommand *next_cmd)
 
     for(;;)
     {
-        if(INPUT_step())
-            break;
-        SPR_update(); // for mouse cursor
+        INPUT_step();
+        SPR_update();
         SYS_doVBlankProcess();
     }
+
+    INPUT_set_cursor_visible(FALSE);
+    SPR_releaseSprite(port1);
+    SPR_releaseSprite(port2);
 
     next_cmd->cmd = DIREC_CMD_LEVEL;
     next_cmd->flags = DIREC_CMD_F_NONE;

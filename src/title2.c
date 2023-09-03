@@ -11,12 +11,13 @@
 #define TITLE_FRAMES (300 + 2 * PAL_STD_FADE_DURATION)
 #define TITLE_DISCLAIMER_FRAMES 200
 
+extern const Bitmap sgdk_logo;
 
 void _TITLE_disclaimer()
 {
     const u16 txt_y = 16;
 
-    VDP_fillTileMapRect(BG_B, TILE_FONT_INDEX, 0, 0, 320/8, 224/8);
+    VDP_fillTileMapRect(BG_B, TILE_FONT_INDEX, 0, txt_y-2, 320/8, 12);
     VDP_drawTextBG(BG_B, "Dweep Genesis ", 10, txt_y);
     VDP_drawTextBG(BG_B, GAME_VERSION, 24, txt_y);
     VDP_drawTextBG(BG_B, "by Lucas Pires Camargo", 8, txt_y+2);
@@ -24,7 +25,7 @@ void _TITLE_disclaimer()
     VDP_drawTextBG(BG_B, "Original music by Michael Huang", 4, txt_y+7);
 
     PCTRL_set_source(PAL_LINE_BG_0, sgdk_logo.palette->data);
-    VDP_drawBitmapEx(BG_A, &sgdk_logo, TILE_ATTR(PAL_LINE_BG_0, 0, 0, 0), 16, 4, FALSE);
+    VDP_drawBitmapEx(BG_A, &sgdk_logo, TILE_ATTR_FULL(PAL_LINE_BG_0, 0, 0, 0, TILE_USER_INDEX), 16, 4, FALSE);
 
     u16 framecounter = 0;
     for(int i = 0; i < TITLE_DISCLAIMER_FRAMES; i++)

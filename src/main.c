@@ -31,16 +31,24 @@ int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
     HUD_init();
     PLR_init();
 
+    { // setup hud inventory
+        enum ToolId all_tools[10];
+        all_tools[0] = TOOL_MOVE;
+        memcpy(all_tools + 1, curr_lvl->tool_inventory, 9);
+        HUD_inventory_set(all_tools);
+    }
+
     XGM_startPlay(curr_lvl->bgm_xgm);
-
-    u32 framecounter = 0;
-
     PCTRL_fade_in(PAL_STD_FADE_DURATION);
 
-    for(;;) {
 
-        bool clicked = INPUT_step();
-        if(clicked)
+    u32 framecounter = 0;
+    enum ToolId curr_tool = TOOL_MOVE;
+    for(;;)
+    {
+
+        INPUT_step();
+        if(FALSE) // clicked
         {
             s16 click_x, click_y;
             INPUT_get_cursor_position(&click_x, &click_y);
@@ -63,13 +71,7 @@ int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
             }
             else
             {
-                // hud click
-                static bool dialog_test = TRUE;
-                if(dialog_test)
-                    HUD_dialog_start(0, 1);
-                else
-                    HUD_dialog_end();
-                dialog_test = !dialog_test;
+
             }
         }
 
@@ -117,7 +119,7 @@ int main(bool hard) {
     DirectorCommand curr_cmd;
 
     memset(&next_cmd, 0x00, sizeof(DirectorCommand));
-    next_cmd.cmd = DEBUG_MENU&&0? DIREC_CMD_DEBUG_MENU : DIREC_CMD_TITLE;
+    next_cmd.cmd = DEBUG_MENU? DIREC_CMD_DEBUG_MENU : DIREC_CMD_TITLE;
 
     for(;;)
     {
