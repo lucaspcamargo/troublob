@@ -43,37 +43,112 @@ int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
 
 
     u32 framecounter = 0;
-    enum ToolId curr_tool = TOOL_MOVE;
+    Sprite * item_preview = NULL;
+    const SpriteDefinition * item_preview_def = NULL;
+
     for(;;)
     {
 
+        // process input and get info
         INPUT_step();
-        if(FALSE) // clicked
-        {
-            s16 click_x, click_y;
-            INPUT_get_cursor_position(&click_x, &click_y);
+        bool im_change;
+        u16 changed, state;
+        INPUT_get_last_state(&im_change, &changed, &state);
+        enum InputMethod meth;
+        meth = INPUT_get_curr_method();
+        s16 mouse_x, mouse_y;
+        INPUT_get_cursor_position(&mouse_x, &mouse_y);
+        bool l_click = meth == INPUT_METHOD_MOUSE && BUTTON_LMB & changed & state;
+        bool r_click = meth == INPUT_METHOD_MOUSE && BUTTON_RMB & changed & state;
 
-            if(click_y < 192)
+        enum ToolId curr_tool = HUD_inventory_curr();
+        bool mouse_in_field = mouse_y < 192;
+
+        if(r_click)
+        {
+            HUD_inventory_set_curr_idx(0);
+            curr_tool = HUD_inventory_curr();
+        }
+
+        if(mouse_in_field)
+        {
+            s16 mouse_pf_x = mouse_x / 16;
+            s16 mouse_pf_y = mouse_y / 16;
+
+            ToolQuery tq;
+            TOOL_query(curr_tool, mouse_pf_x, mouse_pf_y, &tq);
+            INPUT_set_cursor(tq.cursor);
+
+            // handle item preview existance
+            if(item_preview_def != tq.prev_sprite)
+            {
+                if(item_preview)
+                {
+                    SPR_releaseSprite(item_preview);
+                    item_preview = NULL;
+                }
+                item_preview_def = tq.prev_sprite;
+                if(item_preview_def)
+                {
+                    item_preview = SPR_addSprite(item_preview_def,
+                                                 16*mouse_pf_x,
+                                                 16*mouse_pf_y-(item_preview_def->h-16),
+                                                 TILE_ATTR(tq.prev_pal_line, 0, 0, 0));
+                    SPR_setHFlip(item_preview, tq.prev_flip_h);
+                    SPR_setAnim(item_preview, tq.prev_anim);
+                }
+            }
+
+            if(item_preview)
+            {
+                const bool visible = framecounter%2 && tq.can_use;
+                SPR_setVisibility(item_preview, visible? VISIBLE : HIDDEN);
+                if(visible)
+                {
+                    s16 mouse_pf_x = mouse_x / 16;
+                    s16 mouse_pf_y = mouse_y / 16;
+                    SPR_setPosition(item_preview, 16*mouse_pf_x, 16*mouse_pf_y-(item_preview_def->h-16));
+                    SPR_setDepth(item_preview, PLF_get_sprite_depth(intToFix16(mouse_pf_x), intToFix16(mouse_pf_y)));
+                    if(tq.prev_sprite) // tool query has preview sprite info now
+                    {
+                        if(tq.prev_anim != item_preview->animInd)
+                            SPR_setAnim(item_preview, tq.prev_anim);
+                        SPR_setHFlip(item_preview, tq.prev_flip_h);
+                    }
+                }
+            }
+
+            if(tq.can_use && l_click) // clicked
             {
                 // field click
-                s16 click_pf_x = click_x / 16;
-                s16 click_pf_y = click_y / 16;
-
-                PlfTile tile = *PLF_get_tile(click_pf_x, click_pf_y);
+                PlfTile tile = *PLF_get_tile(mouse_pf_x, mouse_pf_y);
                 if(tile.attrs & PLF_ATTR_SOLID)
                 {
                     SFX_play(SFX_no);
                 }
                 else
                 {
-                    PLR_goto(click_pf_x, click_pf_y);
+                    PLR_goto(mouse_pf_x, mouse_pf_y);
                 }
-            }
-            else
-            {
 
             }
         }
+        else
+        {
+            // mouse on hud
+            INPUT_set_cursor(INPUT_CURSOR_NORMAL);
+
+            if(item_preview)
+                SPR_setVisibility(item_preview, HIDDEN);
+
+            if(l_click)
+            {
+                HUD_on_click(mouse_x, mouse_y);
+                curr_tool = HUD_inventory_curr();
+            }
+        }
+
+
 
         PLR_update(framecounter);
         HUD_update();
@@ -91,9 +166,10 @@ int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
         SPR_update(); // step sprite system
         SYS_doVBlankProcess();
         framecounter++;
-    }
 
-    // end main for
+    }  // end main for
+
+    // TODO deinit stuff
 }
 
 int main(bool hard) {

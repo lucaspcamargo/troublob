@@ -24,4 +24,15 @@ enum ToolId {
     TOOL_COUNT
 } ENUM_PACK;
 
+typedef struct ToolQuery_st
+{
+    bool can_use;
+    u8 cursor;
+    const SpriteDefinition *prev_sprite;
+    u8 prev_pal_line;
+    bool prev_flip_h;
+    u8 prev_anim;
+} ToolQuery;
+
 bool TOOL_get_gfx(enum ToolId tool, u16 *out_frame, bool *out_flip_h, bool *out_flip_v);
+void TOOL_query(enum ToolId tool, u16 plf_x, u16 plf_y, ToolQuery *ret);

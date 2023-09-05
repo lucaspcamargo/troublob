@@ -27,6 +27,8 @@ SPRITE spr_laser  ../art/spr/laser.png                  2 2  FAST   0       NONE
 SPRITE spr_laser_cannon  ../art/spr/laser-cannon.png    2 3  FAST   3       NONE    SPRITE
 SPRITE spr_goal_plate ../art/spr/goal-plate.png         2 2  FAST   0       NONE    NONE
 SPRITE spr_goal_babies ../art/spr/goal-babies.png       1 1  FAST   0       NONE    SPRITE
+SPRITE spr_bomb ../art/spr/bomb.png                     2 2  FAST   2       NONE    NONE
+SPRITE spr_mirror ../art/spr/mirror.png                 2 3  FAST   0       NONE    NONE
 
 
 

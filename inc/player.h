@@ -15,7 +15,7 @@ enum PlayerEmote {
 
 
 void PLR_init();
-
 bool PLR_goto(f16 dest_x, f16 dest_y);
-
+u16 PLR_curr_tile_x();
+u16 PLR_curr_tile_y();
 void PLR_update(u32 framecounter);

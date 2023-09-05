@@ -141,6 +141,11 @@ void _PLF_load_theme()
     plf_theme_palette_line[PLF_THEME_GOAL_BABIES] = PAL_LINE_SPR_A;
     plf_theme_tile_indices[PLF_THEME_GOAL_BABIES] = SPR_loadAllFrames(&spr_goal_babies, GLOBAL_vdp_tile_watermark, &loadedTiles);
     GLOBAL_vdp_tile_watermark += loadedTiles;
+
+    plf_theme_sprite_defs[PLF_THEME_BOMB] = &spr_bomb;
+    plf_theme_palette_line[PLF_THEME_BOMB] = PAL_LINE_SPR_A;
+    plf_theme_tile_indices[PLF_THEME_BOMB] = SPR_loadAllFrames(&spr_bomb, GLOBAL_vdp_tile_watermark, &loadedTiles);
+    GLOBAL_vdp_tile_watermark += loadedTiles;
 }
 
 

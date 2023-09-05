@@ -12,7 +12,7 @@
 #define POS_X_EXTRA (POS_X_TXT + 13)
 #define POS_X_ARROW (POS_X_TXT - 2)
 
-#define NUM_ENTRIES 3
+#define NUM_ENTRIES 4
 #define NUM_SUBOPTS 3
 static int curr_idx = 0;
 static int curr_subopts[NUM_SUBOPTS];
@@ -35,7 +35,7 @@ static const u8 * bgms[] = {
 void debug_menu_draw_cursor()
 {
     const char arrow[2] = {'z'+5, '\0'};
-    for(int i = 0; i < NUM_SUBOPTS; i++)
+    for(int i = 0; i < NUM_ENTRIES; i++)
         VDP_drawText(curr_idx == i? arrow : " ", POS_X_ARROW, POS_Y_TXT+i);
 }
 
@@ -74,6 +74,7 @@ void exec_debug_menu(DirectorCommand *next_cmd)
     VDP_drawText("LEVEL <    >", POS_X_TXT, POS_Y_TXT);
     VDP_drawText("BGM   <    >", POS_X_TXT, POS_Y_TXT + 1);
     VDP_drawText("SFX   <    >", POS_X_TXT, POS_Y_TXT + 2);
+    VDP_drawText("TITLE", POS_X_TXT, POS_Y_TXT + 3);
 
     VDP_drawText("PORT 1", 12, 20);
     VDP_drawText("PORT 2", 21, 20);
@@ -117,7 +118,7 @@ void exec_debug_menu(DirectorCommand *next_cmd)
                     SFX_play(SFX_dull);
                 }
 
-            if( (BUTTON_LEFT|BUTTON_RIGHT) & changed & state )
+            if( curr_idx < NUM_SUBOPTS && (BUTTON_LEFT|BUTTON_RIGHT) & changed & state )
             {
                 u16 inc = BUTTON_LEFT & changed & state? -1 : 1;
                 u16 new = curr_subopts[curr_idx] + inc;
@@ -145,6 +146,10 @@ void exec_debug_menu(DirectorCommand *next_cmd)
                     case 2:
                         SFX_play(curr_subopts[2]);
                         break;
+                    case 3:
+                        next_cmd->cmd = DIREC_CMD_TITLE;
+                        quit = TRUE;
+                        break;
                 }
                 if(quit)
                     break;
@@ -164,15 +169,23 @@ void exec_debug_menu(DirectorCommand *next_cmd)
         SYS_doVBlankProcess();
     }
 
+    XGM_stopPlay();
     INPUT_set_cursor_visible(FALSE);
+    SPR_setVisibility(port1, HIDDEN);
+    SPR_setVisibility(port2, HIDDEN);
+    SPR_update();
+    SYS_doVBlankProcess();
     SPR_releaseSprite(port1);
     SPR_releaseSprite(port2);
+    SPR_update();
+    SYS_doVBlankProcess();
 
-    XGM_stopPlay();
-
-    next_cmd->cmd = DIREC_CMD_LEVEL;
-    next_cmd->flags = DIREC_CMD_F_NONE;
-    next_cmd->arg0 = curr_subopts[0];
-    next_cmd->arg1 = 0;
-    next_cmd->arg_p = NULL;
+    if(next_cmd->cmd != DIREC_CMD_TITLE)
+    {
+        next_cmd->cmd = DIREC_CMD_LEVEL;
+        next_cmd->flags = DIREC_CMD_F_NONE;
+        next_cmd->arg0 = curr_subopts[0];
+        next_cmd->arg1 = 0;
+        next_cmd->arg_p = NULL;
+    }
 }

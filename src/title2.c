@@ -17,6 +17,9 @@ void _TITLE_disclaimer()
 {
     const u16 txt_y = 16;
 
+    VDP_clearPlane(BG_A, TRUE);
+    SPR_clear();
+
     VDP_fillTileMapRect(BG_B, TILE_FONT_INDEX, 0, txt_y-2, 320/8, 12);
     VDP_drawTextBG(BG_B, "Dweep Genesis ", 10, txt_y);
     VDP_drawTextBG(BG_B, GAME_VERSION, 24, txt_y);
@@ -30,6 +33,7 @@ void _TITLE_disclaimer()
     u16 framecounter = 0;
     for(int i = 0; i < TITLE_DISCLAIMER_FRAMES; i++)
     {
+        SPR_update();
         PCTRL_step(framecounter);
         SYS_doVBlankProcess();
         framecounter++;

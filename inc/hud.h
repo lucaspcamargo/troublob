@@ -15,6 +15,9 @@ enum HUDState
     HUD_ST_UNINITIALIZED = 0xff
 } ENUM_PACK;
 
+#define HUD_Y_TILE 24
+#define HUD_Y_POS (HUD_Y_TILE * 8)
+
 void HUD_preinit(); // just load graphics data used by rest of system
 void HUD_init();
 void HUD_set_visible(bool visible);
@@ -24,4 +27,8 @@ void HUD_dialog_start(u8 character_id, u16 string_id);
 void HUD_dialog_end();
 
 void HUD_inventory_set(const enum ToolId * tool_arr);
+void HUD_inventory_set_curr_idx(u8 idx);
 void HUD_inventory_clear();
+enum ToolId HUD_inventory_curr();
+
+void HUD_on_click(s16 mouse_x, s16 mouse_y);

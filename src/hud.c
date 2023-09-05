@@ -59,13 +59,13 @@ void HUD_init()
 
 void HUD_set_visible(bool visible)
 {
-    VDP_setWindowVPos(TRUE, visible ? 24 : 28);
+    VDP_setWindowVPos(TRUE, visible ? HUD_Y_TILE : 28);
 
 }
 void _HUD_draw()
 {
     // tiles on BG A
-    VDP_setTileMapEx(WINDOW, &map_hud, TILE_ATTR_FULL(PAL_LINE_HUD, 0, 0, 0, TILE_HUD_INDEX), 0, 24, 0, 0, 40, 4, DMA);
+    VDP_setTileMapEx(WINDOW, &map_hud, TILE_ATTR_FULL(PAL_LINE_HUD, 0, 0, 0, TILE_HUD_INDEX), 0, HUD_Y_TILE, 0, 0, 40, 28-HUD_Y_TILE, DMA);
 
     for(int i = 0; i < HUD_INVENTORY_COUNT; i++)
     {
@@ -73,7 +73,7 @@ void _HUD_draw()
         bool flipH = FALSE, flipV = FALSE;
         if(!TOOL_get_gfx(hud_inventory[i], &frame_idx, &flipH, &flipV))
             continue;
-        GFX_draw_sprite_in_plane_2x2(WINDOW, 2+3*i, 25,
+        GFX_draw_sprite_in_plane_2x2(WINDOW, 2+3*i, HUD_Y_TILE+1,
                                      TILE_ATTR_FULL(PAL_LINE_SPR_A, 1, flipV?1:0, flipH?1:0, PLF_theme_data_idx_table(PLF_THEME_TOOLS)[0][frame_idx]));
     }
     if (hud_inventory_marker)
@@ -235,9 +235,42 @@ void HUD_inventory_set(const enum ToolId * tool_arr)
     hud_dirty = TRUE;
 }
 
+void HUD_inventory_set_curr_idx(u8 idx)
+{
+    if(hud_inventory_curr != idx)
+    {
+        hud_inventory_curr = idx;
+        hud_dirty = TRUE;
+    }
+}
+
 void HUD_inventory_clear()
 {
     memset(hud_inventory, 0x00, sizeof(hud_inventory));
     hud_inventory_curr = 0;
     hud_dirty = TRUE;
+}
+
+enum ToolId HUD_inventory_curr()
+{
+    return hud_inventory[hud_inventory_curr];
+}
+
+
+void HUD_on_click(s16 x, s16 y)
+{
+    // check if on a tool square
+    if(x >= 16 && x < 248 && y >= (HUD_Y_POS+8) && y < (HUD_Y_POS+24))
+    {
+        s16 tool_square_x = (x-16)%24;
+        if(tool_square_x < 16)
+        {
+            u8 new_idx = (x-16)/24;
+            if(hud_inventory[new_idx] != TOOL_NONE)
+            {
+                hud_inventory_curr = new_idx;
+                hud_dirty = TRUE;
+            }
+        }
+    }
 }

@@ -94,6 +94,17 @@ bool PLR_goto(f16 dest_x, f16 dest_y)
     }
 }
 
+
+u16 PLR_curr_tile_x()
+{
+    return player_int_x;
+}
+
+u16 PLR_curr_tile_y()
+{
+    return player_int_y;
+}
+
 void _PLR_update_bounce(u32 framecounter)
 {
     int angle = (framecounter * 4)&1023;
