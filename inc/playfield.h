@@ -10,10 +10,11 @@
 
 // uniform attributes for every playfield tile
 enum PlfAttrBits {
-    PLF_ATTR_SOLID = 1,
+    PLF_ATTR_PLAYER_SOLID = 1,           // dweep stops_here
     PLF_ATTR_PLANE_A_REUSED = 2,  // in this position, plane A is being used by a laser
     PLF_ATTR_PLANE_B_REUSED = 4,  // in this position, plane B is being used by object
     PLF_ATTR_DANGER = 8,          // dweep is afraid of this tile (laser handled separately)
+    PLF_ATTR_LASER_SOLID = 16,    // laser stops here
 } ENUM_PACK;
 
 // laser attributes for every playfield tile
@@ -58,6 +59,7 @@ enum PlfObjectType {
 enum PlfThemeData{
     PLF_THEME_LASER_LIGHT,
     PLF_THEME_LASER_CANNON,
+    PLF_THEME_MIRROR,
     PLF_THEME_TOOLS,
     PLF_THEME_GOAL,
     PLF_THEME_GOAL_BABIES,
@@ -81,10 +83,11 @@ PlfTile * PLF_get_tile(u16 pf_x, u16 pf_y);
 PlfTile * PLF_get_tile_safe(u16 pf_x, u16 pf_y);  // this one return NULL if tile out of bounds
 
 void PLF_player_get_initial_pos(fix16 *dest_x, fix16 *dest_y);
-
 bool PLF_player_pathfind(u16 px, u16 py, u16 destx, u16 desty);
-
 bool PLF_player_path_next(u16 px, u16 py, u16 *nextx, u16 *nexty);
+
+void* PLF_obj_create(u16 pobj_type, u16 pobj_subtype, u16 px, u16 py);   // returns PobjHnd
+void* PLF_obj_at(u16 px, u16 py);       // returns PobjHnd
 
 bool PLF_laser_put(u16 orig_x, u16 orig_y, u8 dir);
 

@@ -244,6 +244,23 @@ void HUD_inventory_set_curr_idx(u8 idx)
     }
 }
 
+void HUD_inventory_pop(u8 idx)
+{
+    for(u8 i = idx; i < HUD_INVENTORY_COUNT; i++)
+    {
+        hud_inventory[i] = i < HUD_INVENTORY_COUNT - 1? hud_inventory[i+1] : TOOL_NONE;
+    }
+    if(hud_inventory_curr == idx)
+        hud_inventory_curr = 0;
+    hud_dirty = TRUE;
+}
+
+
+void HUD_inventory_pop_curr()
+{
+    HUD_inventory_pop(hud_inventory_curr);
+}
+
 void HUD_inventory_clear()
 {
     memset(hud_inventory, 0x00, sizeof(hud_inventory));
@@ -268,6 +285,7 @@ void HUD_on_click(s16 x, s16 y)
             u8 new_idx = (x-16)/24;
             if(hud_inventory[new_idx] != TOOL_NONE)
             {
+                SFX_play(SFX_dull);
                 hud_inventory_curr = new_idx;
                 hud_dirty = TRUE;
             }

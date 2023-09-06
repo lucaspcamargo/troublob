@@ -64,8 +64,9 @@ int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
         enum ToolId curr_tool = HUD_inventory_curr();
         bool mouse_in_field = mouse_y < 192;
 
-        if(r_click)
+        if(r_click && curr_tool != TOOL_MOVE)
         {
+            SFX_play(SFX_dull);
             HUD_inventory_set_curr_idx(0);
             curr_tool = HUD_inventory_curr();
         }
@@ -105,8 +106,6 @@ int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
                 SPR_setVisibility(item_preview, visible? VISIBLE : HIDDEN);
                 if(visible)
                 {
-                    s16 mouse_pf_x = mouse_x / 16;
-                    s16 mouse_pf_y = mouse_y / 16;
                     SPR_setPosition(item_preview, 16*mouse_pf_x, 16*mouse_pf_y-(item_preview_def->h-16));
                     SPR_setDepth(item_preview, PLF_get_sprite_depth(intToFix16(mouse_pf_x), intToFix16(mouse_pf_y)));
                     if(tq.prev_sprite) // tool query has preview sprite info now
@@ -121,16 +120,9 @@ int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
             if(tq.can_use && l_click) // clicked
             {
                 // field click
-                PlfTile tile = *PLF_get_tile(mouse_pf_x, mouse_pf_y);
-                if(tile.attrs & PLF_ATTR_SOLID)
-                {
-                    SFX_play(SFX_no);
-                }
-                else
-                {
-                    PLR_goto(mouse_pf_x, mouse_pf_y);
-                }
-
+                TOOL_exec(curr_tool, mouse_pf_x, mouse_pf_y);
+                if(curr_tool != TOOL_MOVE)
+                    HUD_inventory_pop_curr();
             }
         }
         else

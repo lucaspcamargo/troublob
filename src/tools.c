@@ -3,6 +3,8 @@
 #include "player.h"
 #include "input.h"
 #include "resources.h"
+#include "plf_obj.h"
+#include "sfx.h"
 
 bool TOOL_get_gfx(enum ToolId tool, u16 *out_frame, bool *out_flip_h, bool *out_flip_v)
 {
@@ -88,7 +90,7 @@ void TOOL_query(enum ToolId tool, u16 plf_x, u16 plf_y, ToolQuery *ret)
     ret->prev_flip_h = FALSE;
     ret->prev_anim = 0;
     ret->prev_pal_line = PAL_LINE_SPR_A;
-    bool solid = t->attrs & PLF_ATTR_SOLID;
+    bool solid = t->attrs & PLF_ATTR_PLAYER_SOLID;
     bool has_obj = t->pobj != NULL;
     bool is_player = PLR_curr_tile_x() == plf_x && PLR_curr_tile_y() == plf_y;
 
@@ -154,4 +156,40 @@ place_obj:
         goto no;
     ret->can_use = TRUE;
     ret->cursor = INPUT_CURSOR_NORMAL;
+}
+
+
+void TOOL_exec(enum ToolId tool, u16 plf_x, u16 plf_y)
+{
+    const PlfTile * t = PLF_get_tile_safe(plf_x, plf_y);
+    if (!t)
+        return;
+
+    u16 create_type = POBJ_TYPE_COUNT;
+    u16 create_subtype = 0;
+
+    switch(tool)
+    {
+        case TOOL_MOVE:
+
+            if(t->attrs & PLF_ATTR_PLAYER_SOLID)
+                SFX_play(SFX_no);
+            else
+                PLR_goto(plf_x, plf_y);
+            break;
+        case TOOL_PLACE_MIRROR_LEFT_DOWN:
+            create_subtype = 1;
+        case TOOL_PLACE_MIRROR_LEFT_UP:
+            create_type = POBJ_TYPE_MIRROR;
+            goto place_obj;
+        default:
+            break;
+    }
+    return;
+
+place_obj:
+    if(create_type == POBJ_TYPE_COUNT)
+        return;
+    PLF_obj_create(create_type, create_subtype, plf_x, plf_y);
+    SFX_play(SFX_dull);
 }

@@ -158,6 +158,15 @@ void exec_debug_menu(DirectorCommand *next_cmd)
             if( BUTTON_START & changed & state )
                 break;
         }
+        else if(meth == INPUT_METHOD_MOUSE && changed)
+        {
+            bool l_click = meth == INPUT_METHOD_MOUSE && BUTTON_LMB & changed & state;
+            if(l_click)
+            {
+                // TODO interact
+                break;
+            }
+        }
 
         if(redraw_cursor)
             debug_menu_draw_cursor();

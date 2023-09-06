@@ -64,7 +64,7 @@ void PLR_init()
 
 }
 
-bool PLR_goto(f16 dest_x, f16 dest_y)
+bool PLR_goto(u16 dest_x, u16 dest_y)
 {
     bool found = PLF_player_pathfind(fix16ToInt(player_pf_x),fix16ToInt(player_pf_y), dest_x, dest_y);
     if (found)

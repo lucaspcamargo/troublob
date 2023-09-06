@@ -1,3 +1,4 @@
+
 #include "plf_obj.h"
 #include "resources.h"
 #include "playfield.h"
@@ -6,26 +7,25 @@
 
 typedef struct {
     Sprite * spr;
-    u16 dir;
+    u16 var;
 } PobjLaserExtraData;
 
-void PobjHandler_Laser(PobjData *data, enum PobjEventType evt, void* evt_arg)
+void PobjHandler_Mirror(PobjData *data, enum PobjEventType evt, void* evt_arg)
 {
     PobjLaserExtraData * const extraData  = (PobjLaserExtraData*) &data->extra;
     if(evt == POBJ_EVT_CREATED)
     {
         const PobjEvtCreatedArgs * const args = (PobjEvtCreatedArgs *) evt_arg;
-        ((PlfTile*)args->plftile)->attrs |= (PLF_ATTR_PLAYER_SOLID | PLF_ATTR_LASER_SOLID | PLF_ATTR_DANGER);
-        extraData->dir = args->subtype;
+        ((PlfTile*)args->plftile)->attrs |= (PLF_ATTR_PLAYER_SOLID | PLF_ATTR_DANGER);
+        extraData->var = args->subtype;
 
-        extraData->spr = SPR_addSprite(PLF_theme_data_sprite_def(PLF_THEME_LASER_CANNON),
+        extraData->spr = SPR_addSprite(PLF_theme_data_sprite_def(PLF_THEME_MIRROR),
                                        fix16ToInt(data->x)*16, fix16ToInt(data->y)*16 - 8, 0);
         SPR_setAutoTileUpload(extraData->spr, FALSE);
         SPR_setPalette(extraData->spr, PAL_LINE_SPR_A);
-        SPR_setAnim(extraData->spr, extraData->dir);
-        SPR_setVRAMTileIndex(extraData->spr, PLF_theme_data_idx_table(PLF_THEME_LASER_CANNON)[extraData->dir][0]);
+        SPR_setAnim(extraData->spr, 0);
+        SPR_setVRAMTileIndex(extraData->spr, PLF_theme_data_idx_table(PLF_THEME_MIRROR)[0][0]);
+        SPR_setHFlip(extraData->spr,extraData->var? TRUE : FALSE);
         SPR_setDepth(extraData->spr, PLF_get_sprite_depth(data->x, data->y));
-        // FIXME maybe world is not built yet, watch out
-        PLF_laser_put(fix16ToInt(data->x), fix16ToInt(data->y), extraData->dir);
     }
 }

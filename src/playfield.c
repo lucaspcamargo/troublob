@@ -56,7 +56,7 @@ static u8     plf_theme_palette_line[PLF_THEME_COUNT];
 //private
 void _PLF_load_theme();
 void _PLF_load_objects();
-void _PLF_do_create_object(const MapObject * obj, u16 x, u16 y);
+void _PLF_init_create_object(const MapObject * obj, u16 x, u16 y);
 
 
 void PLF_init(u16 lvl_id)
@@ -125,6 +125,11 @@ void _PLF_load_theme()
     plf_theme_sprite_defs[PLF_THEME_LASER_CANNON] = &spr_laser_cannon;
     plf_theme_palette_line[PLF_THEME_LASER_CANNON] = PAL_LINE_SPR_A;
     plf_theme_tile_indices[PLF_THEME_LASER_CANNON] = SPR_loadAllFrames(&spr_laser_cannon, GLOBAL_vdp_tile_watermark, &loadedTiles);
+    GLOBAL_vdp_tile_watermark += loadedTiles;
+
+    plf_theme_sprite_defs[PLF_THEME_MIRROR] = &spr_mirror;
+    plf_theme_palette_line[PLF_THEME_MIRROR] = PAL_LINE_SPR_A;
+    plf_theme_tile_indices[PLF_THEME_MIRROR] = SPR_loadAllFrames(&spr_mirror, GLOBAL_vdp_tile_watermark, &loadedTiles);
     GLOBAL_vdp_tile_watermark += loadedTiles;
 
     plf_theme_sprite_defs[PLF_THEME_TOOLS] = &spr_tools;
@@ -204,7 +209,7 @@ void _PLF_load_objects()
                 for(u16 x = startx; x <= endx; x++)
                     for(u16 y = starty; y <= endy; y++)
                     {
-                        TILE_AT(x,y).attrs |= PLF_ATTR_SOLID;
+                        TILE_AT(x,y).attrs |= (PLF_ATTR_PLAYER_SOLID | PLF_ATTR_LASER_SOLID);
                     }
             } else if(single_pos)
             {
@@ -215,7 +220,7 @@ void _PLF_load_objects()
                 }
                 else if( obj->type > PLF_OBJ_PLAYER)
                 {
-                    _PLF_do_create_object(obj, startx, starty);
+                    _PLF_init_create_object(obj, startx, starty);
                 }
             }
         }
@@ -275,7 +280,7 @@ void _PLF_load_objects()
     }
 }
 
-void _PLF_do_create_object(const MapObject* obj, u16 x, u16 y)
+void _PLF_init_create_object(const MapObject* obj, u16 x, u16 y)
 {
     PlfTile *t = PLF_get_tile(x, y);
     if(t->pobj)
@@ -353,7 +358,7 @@ bool PLF_player_pathfind(u16 px, u16 py, u16 destx, u16 desty)
     //      and limit the pathfinding to the visible screen via stride_y
     //      for now, just convert to u8
     enum PathfindingResult res = PATH_find(PLAYFIELD_VIEW_W, PLAYFIELD_VIEW_H, (u8)px, (u8)py, (u8)destx, (u8)desty,
-                                           ((u8*)&(plf_tiles->attrs)), sizeof(PlfTile), sizeof(PlfTile)*plf_w, PLF_ATTR_SOLID);
+                                           ((u8*)&(plf_tiles->attrs)), sizeof(PlfTile), sizeof(PlfTile)*plf_w, PLF_ATTR_PLAYER_SOLID);
 
     if(DEBUG_PATHFINDING)
     {
@@ -374,6 +379,39 @@ bool PLF_player_path_next(u16 px, u16 py, u16 *nextx, u16 *nexty)
         *nexty = bufy;
     }
     return ret;
+}
+
+
+void* PLF_obj_create(u16 pobj_type, u16 pobj_subtype, u16 px, u16 py)
+{
+    PlfTile * t = PLF_get_tile_safe(px, py);
+    if(!t)
+        return NULL;
+
+    PobjHnd hnd = Pobj_alloc();
+    if(hnd == POBJ_HND_INVAL)
+        return NULL;
+
+    PobjData *dat = Pobj_get_data(hnd);
+    dat->x = FIX16(px);
+    dat->y = FIX16(py);
+    dat->type = pobj_type;
+    memset(dat->extra, 0, sizeof(dat->extra));
+    PobjEvtCreatedArgs args;
+    memset(&args, 0, sizeof(PobjEvtCreatedArgs));
+    args.subtype = pobj_subtype;
+    args.plftile = t;
+    Pobj_event(dat, POBJ_EVT_CREATED, &args);
+    return hnd;
+}
+
+void* PLF_obj_at(u16 px, u16 py)
+{
+    const PlfTile * t = PLF_get_tile_safe(px, py);
+    if(!t)
+        return NULL;
+
+    return t->pobj;
 }
 
 /***
@@ -428,7 +466,7 @@ bool PLF_laser_put(u16 orig_x, u16 orig_y, u8 dir)
             // TODO do laser query, etc
             // HINT: update dir and laser frame if mirror
         }
-        else if(tile->attrs & PLF_ATTR_SOLID)
+        else if(tile->attrs & PLF_ATTR_LASER_SOLID)
         {
             terminated = TRUE;
             switch(dir)
