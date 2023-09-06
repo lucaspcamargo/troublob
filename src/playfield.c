@@ -5,6 +5,9 @@
 #include "plf_obj.h"
 #include "gfx_utils.h"
 
+// DEBUG
+#include "sfx.h"
+
 
 enum PLFLaserFrame // description of laser sprite frames
 {
@@ -443,11 +446,12 @@ bool PLF_laser_put(u16 orig_x, u16 orig_y, u8 dir)
     u16 curr_x = orig_x;
     u16 curr_y = orig_y;
     bool terminated = FALSE;
-    u8 counter = 0;
+    u16 counter = 0;
 
     while(!terminated)
     {
-        u8 in_dir = dir;
+        u8 in_dir = dir; // todo depends on previous out direction
+        u8 out_dir = DIR_OPPOSITE(dir); // assume laser omes out of same dir
         // update x and y of next in
         DIR_UPDATE_XY(curr_x, curr_y, dir);
         tile = PLF_get_tile_safe(curr_x, curr_y);
@@ -464,7 +468,7 @@ bool PLF_laser_put(u16 orig_x, u16 orig_y, u8 dir)
         if(tile->pobj)
         {
             // TODO do laser query, etc
-            // HINT: update dir and laser frame if mirror
+            // HINT: update out_dir and laser frame if mirror
         }
         else if(tile->attrs & PLF_ATTR_LASER_SOLID)
         {
@@ -490,7 +494,7 @@ bool PLF_laser_put(u16 orig_x, u16 orig_y, u8 dir)
         }
 
         if(!terminated)
-            tile->laser |= (PLF_LASER_OUT_R << dir);
+            tile->laser |= (PLF_LASER_OUT_R << out_dir);
 
         if(laser_frame != 0xff)
         {
@@ -523,13 +527,96 @@ bool PLF_laser_put(u16 orig_x, u16 orig_y, u8 dir)
             }
         }
 
-        counter ++;
+        dir = DIR_OPPOSITE(out_dir);
+        if(++counter == 0xfff)
+        {
+            // sentinel
+            SFX_play(SFX_glass); // TODO remove
+            break;
+        }
     }
 
     // NOTE: think, do something else here, maybe?
 
     return TRUE;
 }
+
+
+void PLF_laser_recalc(u16 plf_x, u16 plf_y)
+{
+    PlfTile *orig_tile = PLF_get_tile_safe(plf_x, plf_y);
+    if(!orig_tile || !orig_tile->laser)
+        return;
+
+    for(u8 orig_out = 0; orig_out < 4; orig_out++)
+    {
+        const u8 OUT_BIT = PLF_LASER_OUT_R << orig_out;
+
+        if(orig_tile->laser & OUT_BIT)
+        {
+            // process this inital direction
+
+            u8 in_dir = DIR_OPPOSITE(orig_out);
+            u16 curr_x = plf_x;
+            u16 curr_y = plf_y;
+            u16 counter = 0;
+            while(TRUE)
+            {
+                // update x and y of next in
+                DIR_UPDATE_XY(curr_x, curr_y, in_dir);
+                u8 out_dir = DIR_OPPOSITE(in_dir); // assume this laser will leave the other way
+
+                PlfTile * tile = PLF_get_tile_safe(curr_x, curr_y);
+                if(!tile)
+                {
+                    // finish if field ended
+                    break;
+                }
+
+                tile->laser &= ~(PLF_LASER_IN_R << in_dir); // remove laser in bit
+
+
+                if(tile->pobj)
+                {
+                    // TODO do laser query, etc
+                    // HINT: update out dir if mirror
+                }
+                else if(tile->attrs & PLF_ATTR_LASER_SOLID)
+                {
+                    out_dir = 0xff;
+                }
+
+                if(tile->attrs & PLF_ATTR_PLANE_A_REUSED)
+                {
+                    // clear graphics
+                    PLF_plane_clear(FALSE, curr_x, curr_y);
+                }
+                // TODO update other gfx maybe
+
+                if(out_dir != 0xff)
+                {
+                    // this laser not coming out of current tile anymore
+                    // remove laser out bit
+                    tile->laser &= ~(PLF_LASER_OUT_R << out_dir);
+                    in_dir = DIR_OPPOSITE(out_dir); // in direction for next tile
+                }
+                else
+                {
+                    // laser was terminated (no out)
+                    break;
+                }
+
+                if(++counter == 0xfff)
+                {
+                    // sentinel
+                    SFX_play(SFX_glass); // TODO remove
+                    break;
+                }
+            }
+        }
+    }
+}
+
 
 void PLF_plane_draw(bool planeB, u16 x, u16 y, u16 tile_attr)
 {
@@ -540,6 +627,26 @@ void PLF_plane_draw(bool planeB, u16 x, u16 y, u16 tile_attr)
     GFX_draw_sprite_in_plane_2x2_inline(planeB? BG_B : BG_A, x*2, y*2, tile_attr);
 
     tile->attrs |= (planeB? PLF_ATTR_PLANE_B_REUSED : PLF_ATTR_PLANE_A_REUSED);
+}
+
+void PLF_plane_clear(bool planeB, u16 x, u16 y)
+{
+    PlfTile * const tile = PLF_get_tile_safe(x, y);
+    if(!tile)
+        return;
+
+    if(planeB)
+    {
+        u16 orig_tiles[4];
+        // TODO impl
+        //MAP_getTilemapRect(m_a, x*2, y*2, 2, 2, FALSE, orig_tiles);
+        //VDP_setTileMapData(VDP_BG_B, orig_tiles, ?, ?, ?, ?); // twice for each y value?
+    }
+    else
+    {
+        VDP_clearTileMapRect(BG_A, x*2, y*2, 2, 2);
+        tile->attrs &= ~PLF_ATTR_PLANE_A_REUSED;
+    }
 }
 
 /*

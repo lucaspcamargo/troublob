@@ -128,7 +128,7 @@ void exec_debug_menu(DirectorCommand *next_cmd)
                 {
                     curr_subopts[curr_idx] = new;
                     redraw_opts = TRUE;
-                    SFX_play(SFX_ding);
+                    SFX_play(curr_idx == 2? new : SFX_ding);
                 }
             }
 

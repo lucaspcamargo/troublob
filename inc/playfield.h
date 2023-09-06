@@ -90,6 +90,7 @@ void* PLF_obj_create(u16 pobj_type, u16 pobj_subtype, u16 px, u16 py);   // retu
 void* PLF_obj_at(u16 px, u16 py);       // returns PobjHnd
 
 bool PLF_laser_put(u16 orig_x, u16 orig_y, u8 dir);
+void PLF_laser_recalc(u16 plf_x, u16 plf_y);  // undoes lasers that goes out from the tile, and puts them again
 
 inline s16 PLF_get_sprite_depth(fix16 x, fix16 y) { (void) x; return 0x8000 - y; }
 
@@ -104,7 +105,7 @@ void PLF_update_scroll(bool forceRedraw);
 void PLF_plane_draw(bool planeB, u16 x, u16 y, u16 tile_attr);
 
 // undo a PLF_plane_draw at the specified position
-void PLF_plane_clear(bool planeB);  // TODO unimpl
+void PLF_plane_clear(bool planeB, u16 x, u16 y);
 
 // get a tile index table (u16**) preloaded by the playfield theming
 // may return a NULL value in case gfx is not part of theme

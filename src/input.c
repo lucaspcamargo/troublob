@@ -18,8 +18,6 @@ static bool is_mouse_1;
 static bool is_mouse_2;
 static s16 last_mx, last_my = -1;
 
-#define MOUSE_DIV (FORCE_MOUSE_ABSOLUTE?2:1)   // HACK DIVIDING MOUSE INPUT BY 2 TO GET PARITY WITH EMULATOR WINDOW SZ
-
 
 void _INPUT_handler( u16 joy, u16 changed, u16 state)
 {
@@ -99,6 +97,15 @@ void INPUT_do_move_abs( s16 mx, s16 my, bool do_clamp )
     }
     SPR_setPosition(mouse_cursor, mx, my);
     mouse_x = mx; mouse_y = my;
+
+    // update SGDK value to make clamp count internally
+    u16 mouse_joy = is_mouse_2? JOY_2 : (is_mouse_1? JOY_1 : 0xffff);
+    if (mouse_joy != 0xffff)
+    {
+        JOY_writeJoypadX(mouse_joy, mouse_x);
+        JOY_writeJoypadY(mouse_joy, mouse_y);
+    }
+
     if( DEBUG_INPUT )
     {
         char buf[40];
@@ -116,7 +123,7 @@ void INPUT_step()
 {
 
     // Huh. Docs say mouse is relative BUT BlastEm gives me absolute coords. Hence this flag.
-    u16 mouse_joy = is_mouse_2? JOY_2 : (is_mouse_1? JOY_1 : 0xffff); // still force at least joy_1 for mouse control
+    u16 mouse_joy = is_mouse_2? JOY_2 : (is_mouse_1? JOY_1 : 0xffff);
     if (mouse_joy != 0xffff)
     {
         if(FORCE_MOUSE_ABSOLUTE)
@@ -125,7 +132,7 @@ void INPUT_step()
             s16 my = JOY_readJoypadY(mouse_joy);
 
             if (mx != last_mx || my != last_my) // only move on change
-                INPUT_do_move_abs(mx/MOUSE_DIV, my/MOUSE_DIV, TRUE);
+                INPUT_do_move_abs(mx, my, TRUE);
 
             if( DEBUG_INPUT )
             {

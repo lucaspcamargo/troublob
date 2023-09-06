@@ -60,3 +60,4 @@
 
 #define DIR_IS_VERTICAL(dir) (dir == DIR_U || dir == DIR_D)
 #define DIR_IS_HORIZONTAL(dir) (dir == DIR_R || dir == DIR_L)
+#define DIR_OPPOSITE(dir) (dir ^ 0x01)  // flip LSB

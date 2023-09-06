@@ -27,5 +27,8 @@ void PobjHandler_Mirror(PobjData *data, enum PobjEventType evt, void* evt_arg)
         SPR_setVRAMTileIndex(extraData->spr, PLF_theme_data_idx_table(PLF_THEME_MIRROR)[0][0]);
         SPR_setHFlip(extraData->spr,extraData->var? TRUE : FALSE);
         SPR_setDepth(extraData->spr, PLF_get_sprite_depth(data->x, data->y));
+
+        if(args->plftile && ((PlfTile*)args->plftile)->laser)
+            PLF_laser_recalc(fix16ToInt(data->x), fix16ToInt(data->y));
     }
 }
