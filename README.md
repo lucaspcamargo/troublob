@@ -41,7 +41,7 @@ For the initial steps, you'll need Python 3 with the `lxml` library.
 2. Run the map processor script beforehand (`./scripts/process_all_maps.sh`).
 3. Also run the string processor script (`./scripts/process_strings.sh`).
 
-After this, it should not be different to build than any other SGDK project. Using version 1.82.
+After this, it should not be different to build than any other SGDK project. Using version 1.90.
 After [installing the toolchain](https://github.com/Stephane-D/SGDK/wiki/SGDK-Installation),
 check the [usage documentation](https://github.com/Stephane-D/SGDK/wiki/SGDK-Usage).
 But in general, running `make -f ${SGDK_LOCATION}/makefile.gen build` should do it.

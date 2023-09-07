@@ -52,7 +52,7 @@ void TITLE_main(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd)
     // force palette to black
     u16 zeroes[64];
     memset(zeroes, 0x0000, 64*2);
-    PAL_setColorsDMA(0, zeroes, 64);
+    PAL_setColors(0, zeroes, 64, DMA);
     SYS_doVBlankProcess();
 
     // now load graphics in the peace of darkness

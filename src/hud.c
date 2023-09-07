@@ -165,7 +165,7 @@ void HUD_update()
                 if(hud_dialog_portrait)
                 {
                     SPR_setAnimAndFrame(hud_dialog_portrait, 0, 0);
-                    SPR_setAlwaysOnTop(hud_dialog_portrait, TRUE);
+                    SPR_setDepth(hud_dialog_portrait, SPR_MIN_DEPTH);
                     SPR_setPriority(hud_dialog_portrait, TRUE);
                 }
             }
