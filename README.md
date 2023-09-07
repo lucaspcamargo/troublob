@@ -3,6 +3,8 @@ A demake of [Dweep](https://en.wikipedia.org/wiki/Dweep) for the Sega MegaDrive.
 
 ![Screenshot of the game](./doc/screenshot.png "Game screenshot")
 
+Build status: [![Build Status](https://jenkins.camargo.eng.br/buildStatus/icon?job=dweep-gen)](https://jenkins.camargo.eng.br/job/dweep-gen/)
+
 ## About
 
 This is a work-in-progress SGDK port of the old shareware game Dweep.
