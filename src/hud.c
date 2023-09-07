@@ -113,7 +113,7 @@ void HUD_update()
     {
         case HUD_ST_NORMAL:
         {
-            bool show_marker = hud_state_timer%64 >= 32;
+            bool show_marker = hud_inventory_curr ? hud_state_timer%32 >= 16 : TRUE;
             if(show_marker != hud_inventory_marker)
             {
                 hud_inventory_marker = show_marker;

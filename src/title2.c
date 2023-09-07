@@ -66,6 +66,7 @@ void TITLE_main(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd)
 
     Sprite * spr_ltr_dweep = SPR_addSprite(&title_letters_dweep, 60, 128, TILE_ATTR(PAL2, 1, 0, 0));
     Sprite * spr_ltr_genesis = SPR_addSprite(&title_letters_genesis, 72, 180, TILE_ATTR(PAL3, 1, 0, 0));
+    Sprite * spr_ltr_prompt = SPR_addSprite(&title_prompt, 96, 210, TILE_ATTR(PAL_LINE_HUD, 1, 0, 0));
     PCTRL_set_source(PAL2, title_letters_dweep.palette->data);
     PCTRL_set_source(PAL3, title_letters_genesis.palette->data);
 
@@ -81,6 +82,8 @@ void TITLE_main(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd)
     {
         VDP_setHorizontalScroll(BG_B, -((i/2)&0xf));
         VDP_setVerticalScroll(BG_B, (i/2)&0xf);
+        SPR_setVisibility(spr_ltr_prompt, framecounter%64 >= 32? VISIBLE : HIDDEN);
+
         SPR_update();
         PCTRL_step(framecounter);
         SYS_doVBlankProcess();
@@ -92,6 +95,7 @@ void TITLE_main(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd)
 
     SPR_releaseSprite(spr_ltr_dweep);
     SPR_releaseSprite(spr_ltr_genesis);
+    SPR_releaseSprite(spr_ltr_prompt);
 
     memset(next_cmd, 0x00, sizeof(DirectorCommand));
     next_cmd->cmd = DIREC_CMD_LEVEL;
