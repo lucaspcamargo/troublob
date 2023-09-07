@@ -35,7 +35,16 @@ The original Dweep was created and programmed by Steve Pavlina, with music by Mi
 
 ## Building
 
-For the initial steps, you'll need Python 3 with the `lxml` library.
+For any way you choose, you'll need Python 3 with the `lxml` library.
+
+### Using the CI script
+
+This requires `docker`. Just run `scripts/ci-build.sh`. The output will be at `ci-build/out/rom.bin`.
+Thanks to doragasu for the docker container script.
+Note that this toolchain seems to build slower binaries (at least for this project)
+
+### Manually
+
 
 1. Init and update git submodules (`git submodule update --init`)
 2. Run the map processor script beforehand (`./scripts/process_all_maps.sh`).
