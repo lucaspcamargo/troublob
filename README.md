@@ -35,7 +35,7 @@ The original Dweep was created and programmed by Steve Pavlina, with music by Mi
 
 ## Download
 
-Download the latest build [here](https://jenkins.camargo.eng.br/job/dweep-gen/lastSuccessfulBuild/artifact/ci-build/out/rom.bin).
+Download the latest build [here](https://jenkins.camargo.eng.br/job/dweep-gen/lastSuccessfulBuild/artifact/ci-build/out/Dweep_Genesis_(latest).bin).
 
 ## Building
 
