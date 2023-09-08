@@ -32,15 +32,25 @@ enum PobjEventType {
     POBJ_EVT_DESTROYED,   // object data will be deallocated
     POBJ_EVT_STEPPED,     // player is on top of object
     POBJ_EVT_DAMAGE,      // the object suffers damage of some kind (laser hit it, explosion, hammer...)
+    POBJ_EVT_LASER_QUERY, // ask about what object does to a laser beam
     POBJ_EVT_TOOL_QUERY,  // get to know which tools can be used on the object
     POBJ_EVT_TOOL,        // tool was used on the object
     POBJ_EVT_FRAME        // invoked on the object every frame (TODO? use bit in handle to not call every obj every frame?)
+} ENUM_PACK;
+
+enum PobjLaserBehavior
+{
+    POBJ_LASER_PASS = 0,
+    POBJ_LASER_REFLECT_LEFT_UP = 1,
+    POBJ_LASER_REFLECT_LEFT_DOWN = 2,
+    POBJ_LASER_BLOCK = 3
 } ENUM_PACK;
 
 typedef struct PobjEvtCreatedArgs_st {
     void * plftile;
     u16 subtype;
 } PobjEvtCreatedArgs;
+
 
 typedef void (*PobjEventHandler)(PobjData *data, enum PobjEventType evt, void* evt_arg);
 extern const PobjEventHandler POBJ_HANDLERS[];

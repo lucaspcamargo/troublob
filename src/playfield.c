@@ -9,7 +9,7 @@
 #include "sfx.h"
 
 
-enum PLFLaserFrame // description of laser sprite frames
+enum PlfLaserFrame // description of laser sprite frames
 {
     PLF_LASER_FRAME_H,
     PLF_LASER_FRAME_UL,
@@ -19,6 +19,27 @@ enum PLFLaserFrame // description of laser sprite frames
     PLF_LASER_FRAME_DR,
     PLF_LASER_FRAME_UR,
     PLF_LASER_FRAME_LT,
+    PLF_LASER_FRAME_CROSS,
+    PLF_LASER_FRAME_RT,  // draw as flipped LT
+    PLF_LASER_FRAME_NONE = 0xff
+} ENUM_PACK;
+
+enum PlfLaserGfx
+{
+    PLF_LASER_GFX_NONE = 0,
+    PLF_LASER_GFX_H = 1,
+    PLF_LASER_GFX_V = 2,
+    PLF_LASER_GFX_QUAD_UL = 4, // top-left
+    PLF_LASER_GFX_QUAD_UR = 8, // top-right
+    PLF_LASER_GFX_QUAD_DL = 16, // bottom-left
+    PLF_LASER_GFX_QUAD_DR = 32, // bottom-right
+    PLF_LASER_GFX_TERM_D = 64, // bottom termination
+    PLF_LASER_GFX_TERM_R = 128, // right termination
+    PLF_LASER_GFX_TERM_L = 256, // left termination
+    PLF_LASER_GFX_HV = 512, // crossed lasers
+
+    // utility values
+    PLF_LASER_GFX_QUAD_ANY = 0b111100
 } ENUM_PACK;
 
 
@@ -31,8 +52,6 @@ typedef struct MapObject_st {
 } MapObject;
 
 
-
-// VARS
 static u16 plf_curr_lvl_id;
 static u16 plf_w;
 static u16 plf_h;
@@ -47,19 +66,20 @@ fix16 plf_player_initial_y;
 static const u8 * plf_plane_a_alloc;
 static u16 plf_plane_a_alloc_stride;
 
-// gfx data
 static const SpriteDefinition* plf_theme_sprite_defs[PLF_THEME_COUNT];
 static u16 ** plf_theme_tile_indices[PLF_THEME_COUNT];
 static u8     plf_theme_palette_line[PLF_THEME_COUNT];
 
+
 #define TILE_AT(x, y) (plf_tiles[(x) + (y)*plf_w])
 #define PLANE_A_ALLOCATION_AT(x, y) (plf_plane_a_alloc[(y)*plf_plane_a_alloc_stride + (x)/8]&(1<<((x)%8)))
-
 
 //private
 void _PLF_load_theme();
 void _PLF_load_objects();
 void _PLF_init_create_object(const MapObject * obj, u16 x, u16 y);
+void _PLF_laser_gfx_update(u16 x, u16 y, bool force_sprite);
+inline enum PlfLaserFrame _PLF_laser_gfx_to_frame(enum PlfLaserGfx gfx);
 
 
 void PLF_init(u16 lvl_id)
@@ -427,21 +447,11 @@ bool PLF_laser_put(u16 orig_x, u16 orig_y, u8 dir)
 {
     PlfTile * tile = PLF_get_tile(orig_x, orig_y);
     const u16 OUTFLAG = PLF_LASER_OUT_R << dir;
+
     if(tile->laser & OUTFLAG)
         return FALSE; // laser coming out of here in this dir already
-
-    tile->laser |= OUTFLAG;
-
-    if( dir == DIR_D )
-    {
-        // in this special case, we start with graphics placement
-        // CONSIDER: maybe just embed this into the canon graphics?
-        Sprite *s = SPR_addSprite(&spr_laser, orig_x*16, orig_y*16, TILE_ATTR_FULL(PAL_LINE_BG_1,0,0,0,0));
-        SPR_setAutoTileUpload(s, FALSE);
-        SPR_setAnimAndFrame(s, 0, 4);
-        SPR_setVRAMTileIndex(s, PLF_theme_data_idx_table(PLF_THEME_LASER_LIGHT)[0][PLF_LASER_FRAME_DT]);
-        SPR_setDepth(s, PLF_get_sprite_depth(FIX16(orig_x), FIX16(orig_y)) - 1); // <-- note the minus one for laser
-    }
+    else
+        tile->laser |= OUTFLAG;
 
     u16 curr_x = orig_x;
     u16 curr_y = orig_y;
@@ -462,8 +472,6 @@ bool PLF_laser_put(u16 orig_x, u16 orig_y, u8 dir)
         }
 
         tile->laser |= (PLF_LASER_IN_R << dir);
-        u8 laser_frame = DIR_IS_HORIZONTAL(dir)? PLF_LASER_FRAME_H : PLF_LASER_FRAME_V;
-        bool flip_laser_frame = FALSE;
 
         if(tile->pobj)
         {
@@ -473,19 +481,6 @@ bool PLF_laser_put(u16 orig_x, u16 orig_y, u8 dir)
         else if(tile->attrs & PLF_ATTR_LASER_SOLID)
         {
             terminated = TRUE;
-            switch(dir)
-            {
-                case DIR_L:
-                    flip_laser_frame = TRUE;
-                case DIR_R:
-                    laser_frame = PLF_LASER_FRAME_LT;
-                    break;
-                case DIR_U:
-                    laser_frame = PLF_LASER_FRAME_DT;
-                    break;
-                case DIR_D:
-                    laser_frame = 0xff;
-            }
         }
         else
         {
@@ -496,36 +491,7 @@ bool PLF_laser_put(u16 orig_x, u16 orig_y, u8 dir)
         if(!terminated)
             tile->laser |= (PLF_LASER_OUT_R << out_dir);
 
-        if(laser_frame != 0xff)
-        {
-            const bool free_layer_A = plf_plane_a_alloc &&
-                                        !PLANE_A_ALLOCATION_AT(curr_x, curr_y) &&
-                                        !(tile->attrs & PLF_ATTR_PLANE_A_REUSED);
-            if(free_layer_A && !(in_dir == DIR_U && !counter))  // special case excludes laser going up (stay behind cannon)
-            {
-                const u16 tile_attr = TILE_ATTR_FULL(PAL_LINE_BG_1, 1,
-                                                     DIR_IS_VERTICAL(dir) && flip_laser_frame,
-                                                     DIR_IS_HORIZONTAL(dir) && flip_laser_frame,
-                                                     PLF_theme_data_idx_table(PLF_THEME_LASER_LIGHT)[0][laser_frame]);
-                PLF_plane_draw(FALSE, curr_x, curr_y, tile_attr);
-            }
-            else
-            {
-                // TODO own this sprite somewhere somehow
-                Sprite *s = SPR_addSprite(&spr_laser, curr_x*16, curr_y*16, TILE_ATTR_FULL(PAL_LINE_BG_1,0,0,0,0));
-                SPR_setAutoTileUpload(s, FALSE);
-                SPR_setAnimAndFrame(s, 0, laser_frame);
-                SPR_setVRAMTileIndex(s, PLF_theme_data_idx_table(PLF_THEME_LASER_LIGHT)[0][laser_frame]);
-                SPR_setDepth(s, PLF_get_sprite_depth(FIX16(curr_x), FIX16(curr_y)) + 1); // <-- note the plus one for laser
-                if(flip_laser_frame)
-                {
-                    if(DIR_IS_HORIZONTAL(dir))
-                        SPR_setHFlip(s, TRUE);
-                    else
-                        SPR_setVFlip(s, TRUE);
-                }
-            }
-        }
+        _PLF_laser_gfx_update(curr_x, curr_y, FALSE);
 
         dir = DIR_OPPOSITE(out_dir);
         if(++counter == 0xfff)
@@ -536,7 +502,7 @@ bool PLF_laser_put(u16 orig_x, u16 orig_y, u8 dir)
         }
     }
 
-    // NOTE: think, do something else here, maybe?
+    _PLF_laser_gfx_update(orig_x, orig_y, FALSE);
 
     return TRUE;
 }
@@ -586,12 +552,6 @@ void PLF_laser_recalc(u16 plf_x, u16 plf_y)
                     out_dir = 0xff;
                 }
 
-                if(tile->attrs & PLF_ATTR_PLANE_A_REUSED)
-                {
-                    // clear graphics
-                    PLF_plane_clear(FALSE, curr_x, curr_y);
-                }
-                // TODO update other gfx maybe
 
                 if(out_dir != 0xff)
                 {
@@ -599,10 +559,12 @@ void PLF_laser_recalc(u16 plf_x, u16 plf_y)
                     // remove laser out bit
                     tile->laser &= ~(PLF_LASER_OUT_R << out_dir);
                     in_dir = DIR_OPPOSITE(out_dir); // in direction for next tile
+                    _PLF_laser_gfx_update(curr_x, curr_y, FALSE);
                 }
                 else
                 {
                     // laser was terminated (no out)
+                    _PLF_laser_gfx_update(curr_x, curr_y, FALSE);
                     break;
                 }
 
@@ -615,8 +577,152 @@ void PLF_laser_recalc(u16 plf_x, u16 plf_y)
             }
         }
     }
+
+    // no lasers coming out of recalc point anymore
+    orig_tile->laser &= 0xf;
+
+    _PLF_laser_gfx_update(plf_x, plf_y, FALSE);
 }
 
+
+
+void _PLF_laser_gfx_update(u16 x, u16 y, bool force_sprite)
+{
+    PlfTile * const t = &plf_tiles[x + plf_w * y];
+    const u8 attrs = t->attrs;
+    const u8 laser = t->laser;
+    const u8 laser_nibble = (t->laser&0xf)|(t->laser>>4); // merges ins and outs, single nibble
+    const bool plane_a_usable = plf_plane_a_alloc && !PLANE_A_ALLOCATION_AT(x, y);
+
+    enum PlfLaserGfx final_gfx = PLF_LASER_GFX_NONE;
+
+    if(laser)
+    {
+        enum PobjLaserBehavior behavior = POBJ_LASER_PASS;
+
+        if(t->pobj)
+            Pobj_event(Pobj_get_data(t->pobj), POBJ_EVT_LASER_QUERY, &behavior);
+
+        if(laser == PLF_LASER_OUT_D)
+        {
+            // laser going out the bottom and nothing else (bottom cannon)
+            force_sprite = TRUE;
+            final_gfx = PLF_LASER_GFX_TERM_D;
+        }
+        else if (laser == PLF_LASER_IN_U)
+        {
+            // single termination
+            final_gfx = PLF_LASER_GFX_TERM_D;
+        }
+        else if (laser == PLF_LASER_IN_R)
+        {
+            // single terminatiUn
+            final_gfx = PLF_LASER_GFX_TERM_L;
+        }
+        else if (laser == PLF_LASER_IN_L)
+        {
+            // single termination
+            final_gfx = PLF_LASER_GFX_TERM_R;
+        }
+        else if (laser_nibble == (PLF_LASER_IN_U|PLF_LASER_IN_D))
+        {
+            // vertical only
+            if(laser == (PLF_LASER_IN_U|PLF_LASER_IN_D))
+                final_gfx = PLF_LASER_GFX_TERM_D;
+            else
+                final_gfx = PLF_LASER_GFX_V;
+        }
+        else if (laser_nibble == (PLF_LASER_IN_L|PLF_LASER_IN_R))
+        {
+            // horizontal only
+            if(laser == (PLF_LASER_IN_R|PLF_LASER_IN_L))
+                final_gfx = PLF_LASER_GFX_TERM_R|PLF_LASER_GFX_TERM_L;
+            else
+                final_gfx = PLF_LASER_GFX_H;
+        }else
+        {
+            // something more complex is going on
+            for(int in_dir = 0; in_dir < 4; in_dir++)
+            {
+                u8 in_bit = PLF_LASER_IN_R << in_dir;
+                if(!(laser&in_bit))
+                    continue;
+
+                // laser in from this direction
+                // TODO figure it out later
+            }
+
+        }
+
+        // adjustments
+        if(final_gfx == (PLF_LASER_GFX_H|PLF_LASER_GFX_V))
+            final_gfx = PLF_LASER_GFX_HV;
+    }
+
+
+
+    u8 plane_a_frame = PLF_LASER_FRAME_NONE;
+    u8 front_sprite_tile = PLF_LASER_FRAME_NONE;
+    u8 back_sprite_tile = PLF_LASER_FRAME_NONE;
+
+    // now, distribute gfx bits into frames in the above slots
+    while (final_gfx)
+    {
+        u16 curr_gfx = (final_gfx & ((u16)-((s16)final_gfx))); // get lsb
+
+        // TODO distribution logic
+        plane_a_frame = _PLF_laser_gfx_to_frame(curr_gfx);
+
+        final_gfx &= ~curr_gfx;
+        break; // TODO remove, distribution logic
+    }
+
+    if(plane_a_frame != PLF_LASER_FRAME_NONE)
+    {
+        u16 final_frame_idx = PLF_theme_data_idx_table(PLF_THEME_LASER_LIGHT)[0][plane_a_frame == PLF_LASER_FRAME_RT? PLF_LASER_FRAME_LT : plane_a_frame];
+        const u16 tile_attr = TILE_ATTR_FULL(PAL_LINE_BG_1, 1,
+                                                0,
+                                                plane_a_frame == PLF_LASER_FRAME_RT,
+                                                final_frame_idx);
+        PLF_plane_draw(FALSE, x, y, tile_attr);
+    }
+    else if(t->attrs&PLF_ATTR_PLANE_A_REUSED)
+    {
+        // clear plane a
+        PLF_plane_clear(FALSE, x, y);
+    }
+
+
+}
+
+inline enum PlfLaserFrame _PLF_laser_gfx_to_frame(enum PlfLaserGfx gfx)
+{
+    switch(gfx)
+    {
+        case PLF_LASER_GFX_H:
+            return PLF_LASER_FRAME_H;
+        case PLF_LASER_GFX_V:
+            return PLF_LASER_FRAME_V;
+        case PLF_LASER_GFX_HV:
+            return PLF_LASER_FRAME_CROSS;
+        case PLF_LASER_GFX_QUAD_DL:
+            return PLF_LASER_FRAME_DL;
+        case PLF_LASER_GFX_QUAD_DR:
+            return PLF_LASER_FRAME_DR;
+        case PLF_LASER_GFX_QUAD_UL:
+            return PLF_LASER_FRAME_UL;
+        case PLF_LASER_GFX_QUAD_UR:
+            return PLF_LASER_FRAME_UR;
+        case PLF_LASER_GFX_TERM_D:
+            return PLF_LASER_FRAME_DT;
+        case PLF_LASER_GFX_TERM_R:
+            return PLF_LASER_FRAME_RT;
+        case PLF_LASER_GFX_TERM_L:
+            return PLF_LASER_FRAME_LT;
+        default:
+            return PLF_LASER_FRAME_NONE;
+    }
+}
 
 void PLF_plane_draw(bool planeB, u16 x, u16 y, u16 tile_attr)
 {
