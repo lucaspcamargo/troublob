@@ -121,6 +121,8 @@ void _PLR_update_bounce(u32 framecounter)
 bool _PLR_check_danger(u8 dist)
 {
     // see if there are dangerous things within "radius" (square centered around the player)
+    // TODO move this to playfield code, optimize, reenable
+    return FALSE;
 
     u16 curr_x = player_int_x - dist;
     u16 curr_y = player_int_y - dist;
