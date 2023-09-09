@@ -5,6 +5,7 @@
 #include "dweep_config.h"
 #include "resources.h"
 #include "pathfind.h"
+#include "tools.h"
 
 // TYPE DFINITIONS
 
@@ -38,8 +39,8 @@ enum PlfLaserBits {
 // I could add flip/rotation flags for directional objects, BUT i'll just list them for every direction,
 //     since most objects are not directional
 // This is also different to POBJ_TYPE, although it may seem redundant
-// PlfObjType are the object types that can come from level data
-// PobjType are the types of objects that exist at runtime
+// PlfObjType are the object types that can come from level data, no subtypes
+// PobjType are the types of objects that exist at runtime, they have subtypes
 enum PlfObjectType {
     PLF_OBJ_WALL    = 0, // usually rect, marks any tile that contains it as a wall
     PLF_OBJ_PLAYER  = 1, // usually point, where dweep begins
@@ -50,7 +51,12 @@ enum PlfObjectType {
     PLF_OBJ_LASER_D = 6, // laser, down
     PLF_OBJ_MIRROR  = 7, // laser, reflects left up /.
     PLF_OBJ_MIRROR2 = 8, // mirror, reflects left down \.
-    PLF_OBJ_MAX,         // number of existing specs, value >= to this is invalid, ignored
+    PLF_OBJ_HEAT    = 9, // heat plate
+    PLF_OBJ_COLD   = 10, // ice plate
+    PLF_OBJ_BOMB   = 11, // bomb
+
+    PLF_OBJ_ITEM_BASE = 128,    // initial tool index
+    PLF_OBJ_MAX =  PLF_OBJ_ITEM_BASE + TOOL_COUNT,         // number of existing specs, value >= to this is invalid, ignored
 } ENUM_PACK;
 
 #define PLF_OBJ_IS_Y_BOTTOM(spec_enum) ((spec_enum)>PLF_OBJ_WALL) // specs that have y origin in bottom of box (tile/obj)

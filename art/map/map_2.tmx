@@ -1,27 +1,28 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="20" height="14" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="43">
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="20" height="14" tilewidth="16" tileheight="16" infinite="0" nextlayerid="4" nextobjectid="44">
  <tileset firstgid="1" source="../spr/tileset1.tsx"/>
  <tileset firstgid="65" source="../spr/editor-objs.tsx"/>
+ <tileset firstgid="97" source="../spr/tileset0.tsx"/>
  <layer id="1" name="B" width="20" height="14">
   <data encoding="csv">
-5,6,7,6,6,6,6,7,6,6,6,6,6,6,7,6,6,33,6,8,
-13,40,15,38,39,15,40,37,14,15,15,14,15,40,14,38,39,14,40,16,
-13,28,26,19,12,1,23,3,35,18,18,20,27,11,10,17,42,43,35,24,
-21,26,17,2,18,1,35,2,35,1,34,34,34,35,17,1,1,1,35,16,
-13,19,9,1,1,1,35,11,35,1,1,1,3,35,1,1,3,11,35,16,
-13,2,17,1,1,1,35,28,35,1,1,1,4,35,34,1,2,20,35,16,
-13,35,34,34,34,34,34,28,35,1,1,35,12,35,1,1,1,34,34,24,
-13,35,28,28,28,28,28,28,35,34,34,35,28,35,1,1,1,4,28,16,
-13,35,28,35,34,34,34,34,35,11,10,34,28,35,34,34,34,2,20,16,
-13,35,26,34,28,26,17,2,35,18,17,2,18,35,1,1,1,3,12,16,
-13,35,25,2,18,17,1,1,34,1,1,1,3,35,1,1,3,12,26,16,
-13,35,17,1,1,1,1,1,1,1,35,35,35,35,9,1,2,18,17,16,
-13,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35,16,
-13,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35,35,16
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
  <objectgroup id="3" name="OBJ">
-  <object id="1" x="9.61899" y="102.142" width="15" height="83.6663">
+  <object id="1" x="5.61899" y="107.142" width="6.5" height="83.6663">
    <properties>
     <property name="exportDimensions" type="bool" value="true"/>
     <property name="exportPosition" type="bool" value="true"/>
@@ -29,104 +30,6 @@
    </properties>
   </object>
   <object id="4" x="8.30783" y="7.52483" width="304.718" height="18.2777">
-   <properties>
-    <property name="exportDimensions" type="bool" value="true"/>
-    <property name="exportPosition" type="bool" value="true"/>
-    <property name="type" type="int" value="0"/>
-   </properties>
-  </object>
-  <object id="13" x="258.149" y="28.4085" width="26.7023" height="15.683">
-   <properties>
-    <property name="exportDimensions" type="bool" value="true"/>
-    <property name="exportPosition" type="bool" value="true"/>
-    <property name="type" type="int" value="0"/>
-   </properties>
-  </object>
-  <object id="14" x="131.167" y="9.667" width="8" height="161.999">
-   <properties>
-    <property name="exportDimensions" type="bool" value="true"/>
-    <property name="exportPosition" type="bool" value="true"/>
-    <property name="type" type="int" value="0"/>
-   </properties>
-  </object>
-  <object id="15" x="212" y="53.3338" width="8" height="131.666">
-   <properties>
-    <property name="exportDimensions" type="bool" value="true"/>
-    <property name="exportPosition" type="bool" value="true"/>
-    <property name="type" type="int" value="0"/>
-   </properties>
-  </object>
-  <object id="16" x="99.6667" y="52.167" width="8" height="53.3327">
-   <properties>
-    <property name="exportDimensions" type="bool" value="true"/>
-    <property name="exportPosition" type="bool" value="true"/>
-    <property name="type" type="int" value="0"/>
-   </properties>
-  </object>
-  <object id="17" x="179" y="99.3336" width="8" height="40.9994">
-   <properties>
-    <property name="exportDimensions" type="bool" value="true"/>
-    <property name="exportPosition" type="bool" value="true"/>
-    <property name="type" type="int" value="0"/>
-   </properties>
-  </object>
-  <object id="18" x="51.3333" y="132.5" width="8" height="23.3327">
-   <properties>
-    <property name="exportDimensions" type="bool" value="true"/>
-    <property name="exportPosition" type="bool" value="true"/>
-    <property name="type" type="int" value="0"/>
-   </properties>
-  </object>
-  <object id="19" x="52.6667" y="131.334" width="83" height="9.3327">
-   <properties>
-    <property name="exportDimensions" type="bool" value="true"/>
-    <property name="exportPosition" type="bool" value="true"/>
-    <property name="type" type="int" value="0"/>
-   </properties>
-  </object>
-  <object id="20" x="35.1667" y="99.3337" width="71.3333" height="9.3327">
-   <properties>
-    <property name="exportDimensions" type="bool" value="true"/>
-    <property name="exportPosition" type="bool" value="true"/>
-    <property name="type" type="int" value="0"/>
-   </properties>
-  </object>
-  <object id="21" x="133.5" y="115.334" width="51.3333" height="7.3327">
-   <properties>
-    <property name="exportDimensions" type="bool" value="true"/>
-    <property name="exportPosition" type="bool" value="true"/>
-    <property name="type" type="int" value="0"/>
-   </properties>
-  </object>
-  <object id="22" x="164.333" y="52.0003" width="51.3333" height="7.3327">
-   <properties>
-    <property name="exportDimensions" type="bool" value="true"/>
-    <property name="exportPosition" type="bool" value="true"/>
-    <property name="type" type="int" value="0"/>
-   </properties>
-  </object>
-  <object id="23" x="166.333" y="180.334" width="51.3333" height="7.3327">
-   <properties>
-    <property name="exportDimensions" type="bool" value="true"/>
-    <property name="exportPosition" type="bool" value="true"/>
-    <property name="type" type="int" value="0"/>
-   </properties>
-  </object>
-  <object id="24" x="214.667" y="132.334" width="51.3333" height="7.3327">
-   <properties>
-    <property name="exportDimensions" type="bool" value="true"/>
-    <property name="exportPosition" type="bool" value="true"/>
-    <property name="type" type="int" value="0"/>
-   </properties>
-  </object>
-  <object id="25" x="214" y="84.667" width="22" height="7.3327">
-   <properties>
-    <property name="exportDimensions" type="bool" value="true"/>
-    <property name="exportPosition" type="bool" value="true"/>
-    <property name="type" type="int" value="0"/>
-   </properties>
-  </object>
-  <object id="26" x="279" y="100.334" width="22" height="7.3327">
    <properties>
     <property name="exportDimensions" type="bool" value="true"/>
     <property name="exportPosition" type="bool" value="true"/>
@@ -147,13 +50,6 @@
     <property name="type" type="int" value="0"/>
    </properties>
   </object>
-  <object id="29" gid="68" x="80" y="96" width="16" height="16"/>
-  <object id="30" gid="68" x="160" y="112" width="16" height="16"/>
-  <object id="31" gid="66" x="272" y="96" width="16" height="16"/>
-  <object id="34" gid="70" x="240" y="160" width="16" height="16"/>
-  <object id="35" gid="68" x="80" y="192" width="16" height="16"/>
-  <object id="36" gid="67" x="160" y="144" width="16" height="16"/>
-  <object id="38" gid="68" x="256" y="192" width="16" height="16"/>
   <object id="39" gid="77" x="32" y="64" width="16" height="16"/>
   <object id="40" x="4.30767" y="195.194" width="311.718" height="24.9444">
    <properties>
@@ -162,29 +58,29 @@
     <property name="type" type="int" value="0"/>
    </properties>
   </object>
-  <object id="41" gid="67" x="224" y="160" width="16" height="16"/>
-  <object id="42" x="287.482" y="9.99182" width="21.7023" height="85.3497">
+  <object id="42" x="308.482" y="9.99182" width="5.2023" height="85.3497">
    <properties>
     <property name="exportDimensions" type="bool" value="true"/>
     <property name="exportPosition" type="bool" value="true"/>
     <property name="type" type="int" value="0"/>
    </properties>
   </object>
+  <object id="43" gid="70" x="272" y="176" width="16" height="16"/>
  </objectgroup>
  <layer id="2" name="A" width="20" height="14">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,36,0,0,0,0,0,0,0,0,41,36,0,
-0,0,0,0,0,0,36,0,0,0,36,36,36,36,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,36,0,0,0,0,0,
-0,36,36,36,36,36,0,0,0,0,0,36,0,0,0,0,0,36,0,0,
-0,0,0,0,0,0,0,0,0,36,36,0,0,0,0,0,0,0,0,0,
-0,0,0,36,36,36,36,36,0,0,0,0,0,0,36,36,36,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
-0,0,0,0,0,0,0,0,0,0,36,36,36,0,0,0,0,0,0,0,
-0,0,36,36,36,36,36,36,36,36,0,0,0,0,36,36,36,36,36,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>

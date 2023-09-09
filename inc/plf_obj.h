@@ -17,6 +17,7 @@ enum PobjType {
     POBJ_TYPE_HEAT,
     POBJ_TYPE_COLD,
     POBJ_TYPE_GOAL,
+    POBJ_TYPE_TOOL_ITEM,
     POBJ_TYPE_COUNT
 } ENUM_PACK;
 
@@ -60,7 +61,7 @@ void Pobj_init();    // initialize playfield object system
 void Pobj_destroy(); // free playfield object system
 
 PobjHnd Pobj_alloc();                                                           // allocate
-void Pobj_dealloc(PobjHnd *obj);                                                // deallocate
+void Pobj_dealloc(PobjHnd *handle);                                                // deallocate
 inline PobjData * Pobj_get_data(PobjHnd handle) {return (PobjData*) handle;}    // since handle is just pointer to data, optimize this getter here
-void Pobj_event(PobjHnd data, enum PobjEventType evt, void* evt_arg);         // post an event to an object
+void Pobj_event(PobjHnd handle, enum PobjEventType evt, void* evt_arg);         // post an event to an object
 void Pobj_event_to_all(enum PobjEventType evt, void* evt_arg);                  // post an event to all objects

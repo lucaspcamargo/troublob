@@ -51,6 +51,15 @@ typedef struct MapObject_st {
     u16 h;
 } MapObject;
 
+typedef struct PlfLaserPutTicket_st
+{
+    u8 used;
+    u8 dir;
+    u16 x;
+    u16 y;
+} PlfLaserPutTicket;
+
+#define PLF_LASER_PUT_TICKET_MAX 32
 
 static u16 plf_curr_lvl_id;
 static u16 plf_w;
@@ -70,6 +79,9 @@ static const SpriteDefinition* plf_theme_sprite_defs[PLF_THEME_COUNT];
 static u16 ** plf_theme_tile_indices[PLF_THEME_COUNT];
 static u8     plf_theme_palette_line[PLF_THEME_COUNT];
 
+static bool plf_laser_put_defer;
+static PlfLaserPutTicket plf_laser_put_tickets[PLF_LASER_PUT_TICKET_MAX];
+static u8 plf_laser_put_tickets_mark;
 
 #define TILE_AT(x, y) (plf_tiles[(x) + (y)*plf_w])
 #define PLANE_A_ALLOCATION_AT(x, y) (plf_plane_a_alloc[(y)*plf_plane_a_alloc_stride + (x)/8]&(1<<((x)%8)))
@@ -79,6 +91,7 @@ void _PLF_load_theme();
 void _PLF_load_objects();
 void _PLF_init_create_object(const MapObject * obj, u16 x, u16 y);
 void _PLF_laser_gfx_update(u16 x, u16 y, bool force_sprite);
+inline enum PlfLaserGfx _PLF_laser_in_out_to_gfx(u8 in_dir, u8 out_dir);
 inline enum PlfLaserFrame _PLF_laser_gfx_to_frame(enum PlfLaserGfx gfx);
 inline u8 _PLF_laser_behavior_apply(u8 behavior, u8 in_dir);
 
@@ -182,6 +195,10 @@ void _PLF_load_objects()
 {
     const RGST_lvl curr_lvl = RGST_levels[plf_curr_lvl_id];
 
+    plf_laser_put_defer = TRUE;
+    plf_laser_put_tickets_mark = 0;
+    memset(&plf_laser_put_tickets, 0x00, sizeof(plf_laser_put_tickets));
+
     // process object definitions
     const void** const objs = curr_lvl.obj_map;
     const u16 obj_count = curr_lvl.obj_count;
@@ -276,6 +293,13 @@ void _PLF_load_objects()
         }
     }
 
+    plf_laser_put_defer = FALSE;
+    for(u8 i = 0; i < PLF_LASER_PUT_TICKET_MAX; i++)
+    {
+        if(plf_laser_put_tickets[i].used)
+            PLF_laser_put(plf_laser_put_tickets[i].x, plf_laser_put_tickets[i].y, plf_laser_put_tickets[i].dir);
+    }
+
     if (DEBUG_TILES)
     {
         for(u16 x = 0; x < plf_w; x++)
@@ -312,6 +336,7 @@ void _PLF_init_create_object(const MapObject* obj, u16 x, u16 y)
 
     PobjEvtCreatedArgs args;
     args.plftile = t;
+    args.subtype = 0;
     u16 final_type = 0xffff;
     switch(obj->type)
     {
@@ -329,11 +354,17 @@ void _PLF_init_create_object(const MapObject* obj, u16 x, u16 y)
             final_type = POBJ_TYPE_LASER;
             args.subtype = obj->type - PLF_OBJ_LASER_R;
             break;
-        case PLF_OBJ_MIRROR  :
         case PLF_OBJ_MIRROR2 :
-            final_type = POBJ_TYPE_LASER;
-            args.subtype = obj->type - DIR_R;
+            args.subtype = 1;
+        case PLF_OBJ_MIRROR  :
+            final_type = POBJ_TYPE_MIRROR;
             break;
+    }
+
+    if(obj->type >= PLF_OBJ_ITEM_BASE)
+    {
+        final_type = POBJ_TYPE_TOOL_ITEM;
+        args.subtype = obj->type-PLF_OBJ_ITEM_BASE;
     }
 
     if(final_type == 0xffff)
@@ -350,7 +381,7 @@ void _PLF_init_create_object(const MapObject* obj, u16 x, u16 y)
     dat->y = FIX16(y);
     dat->type = final_type;
     memset(dat->extra, 0, sizeof(dat->extra));
-    Pobj_event(dat, POBJ_EVT_CREATED, &args);
+    Pobj_event(hnd, POBJ_EVT_CREATED, &args);
 }
 
 
@@ -449,6 +480,24 @@ void* PLF_obj_at(u16 px, u16 py)
  */
 bool PLF_laser_put(u16 orig_x, u16 orig_y, u8 dir)
 {
+    if(plf_laser_put_defer)
+    {
+        for(u8 i = 0; i < PLF_LASER_PUT_TICKET_MAX; i++)
+        {
+            u8 curr = (plf_laser_put_tickets_mark + 1 + i) % PLF_LASER_PUT_TICKET_MAX;
+            if(!plf_laser_put_tickets[i].used)
+            {
+                plf_laser_put_tickets[i].used = TRUE;
+                plf_laser_put_tickets[i].x = orig_x;
+                plf_laser_put_tickets[i].y = orig_y;
+                plf_laser_put_tickets[i].dir = dir;
+                plf_laser_put_tickets_mark = curr;
+                return TRUE;
+            }
+        }
+        return FALSE;
+    }
+
     PlfTile * tile = PLF_get_tile(orig_x, orig_y);
     const u16 OUTFLAG = PLF_LASER_OUT_R << dir;
 
@@ -540,6 +589,12 @@ void PLF_laser_recalc(u16 plf_x, u16 plf_y)
                     break;
                 }
 
+                if(!(tile->laser & (PLF_LASER_IN_R << in_dir)))
+                {
+                    // finish if laser stoppped for some reason
+                    break;
+                }
+
                 tile->laser &= ~(PLF_LASER_IN_R << in_dir); // remove laser in bit
 
 
@@ -556,6 +611,11 @@ void PLF_laser_recalc(u16 plf_x, u16 plf_y)
 
                 if(out_dir != 0xff)
                 {
+                    if(!(tile->laser & (PLF_LASER_OUT_R << out_dir)))
+                    {
+                        // laser desync (no out bit corresponds)
+                        break;
+                    }
                     // this laser not coming out of current tile anymore
                     // remove laser out bit
                     tile->laser &= ~(PLF_LASER_OUT_R << out_dir);
@@ -675,14 +735,20 @@ void _PLF_laser_gfx_update(u16 x, u16 y, bool force_sprite)
         }else
         {
             // something more complex is going on
+
+            enum PobjLaserBehavior behavior = (t->attrs&PLF_ATTR_LASER_SOLID)? POBJ_LASER_BLOCK : POBJ_LASER_PASS;
+            if(t->pobj)
+                Pobj_event(Pobj_get_data(t->pobj), POBJ_EVT_LASER_QUERY, &behavior);
+
             for(int in_dir = 0; in_dir < 4; in_dir++)
             {
+                // laser in from this direction
                 u8 in_bit = PLF_LASER_IN_R << in_dir;
                 if(!(laser&in_bit))
                     continue;
 
-                // laser in from this direction
-                // TODO figure it out later
+                u8 out_dir = _PLF_laser_behavior_apply(behavior, in_dir);
+                final_gfx |= _PLF_laser_in_out_to_gfx(in_dir, out_dir);
             }
 
         }
@@ -726,6 +792,74 @@ void _PLF_laser_gfx_update(u16 x, u16 y, bool force_sprite)
     }
 }
 
+
+inline enum PlfLaserGfx _PLF_laser_in_out_to_gfx(u8 in_dir, u8 out_dir)
+{
+    switch (in_dir)
+    {
+        case DIR_R:
+            switch (out_dir)
+            {
+                case DIR_R:
+                    return PLF_LASER_GFX_H;
+                case DIR_L:
+                case 0xff:
+                    return PLF_LASER_GFX_TERM_L;
+                case DIR_U:
+                    return PLF_LASER_GFX_QUAD_UL;
+                case DIR_D:
+                    return PLF_LASER_GFX_QUAD_DL;
+            }
+            break;
+        case DIR_L:
+            switch (out_dir)
+            {
+                case DIR_L:
+                    return PLF_LASER_GFX_H;
+                case DIR_R:
+                case 0xff:
+                    return PLF_LASER_GFX_TERM_L;
+                case DIR_U:
+                    return PLF_LASER_GFX_QUAD_UR;
+                case DIR_D:
+                    return PLF_LASER_GFX_QUAD_DR;
+            }
+            break;
+        case DIR_U:
+            switch (out_dir)
+            {
+                case DIR_L:
+                    return PLF_LASER_GFX_QUAD_DL;
+                case DIR_R:
+                    return PLF_LASER_GFX_QUAD_DR;
+                case DIR_U:
+                    return PLF_LASER_GFX_V;
+                case 0xff:
+                case DIR_D:
+                    return PLF_LASER_GFX_TERM_D;
+            }
+            break;
+        case DIR_D:
+            switch (out_dir)
+            {
+                case DIR_L:
+                    return PLF_LASER_GFX_QUAD_UL;
+                case DIR_R:
+                    return PLF_LASER_GFX_QUAD_UR;
+                case DIR_D:
+                    return PLF_LASER_GFX_V;
+                case 0xff:
+                case DIR_U:
+                    return PLF_LASER_GFX_NONE;
+            }
+            break;
+
+    };
+
+    return PLF_LASER_GFX_NONE;
+}
+
+
 inline enum PlfLaserFrame _PLF_laser_gfx_to_frame(enum PlfLaserGfx gfx)
 {
     switch(gfx)
@@ -754,6 +888,7 @@ inline enum PlfLaserFrame _PLF_laser_gfx_to_frame(enum PlfLaserGfx gfx)
             return PLF_LASER_FRAME_NONE;
     }
 }
+
 
 inline u8 _PLF_laser_behavior_apply(u8 behavior, u8 in_dir)
 {
@@ -800,6 +935,7 @@ inline u8 _PLF_laser_behavior_apply(u8 behavior, u8 in_dir)
     return 0xff;
 }
 
+
 void PLF_plane_draw(bool planeB, u16 x, u16 y, u16 tile_attr)
 {
     PlfTile * const tile = PLF_get_tile_safe(x, y);
@@ -810,6 +946,7 @@ void PLF_plane_draw(bool planeB, u16 x, u16 y, u16 tile_attr)
 
     tile->attrs |= (planeB? PLF_ATTR_PLANE_B_REUSED : PLF_ATTR_PLANE_A_REUSED);
 }
+
 
 void PLF_plane_clear(bool planeB, u16 x, u16 y)
 {

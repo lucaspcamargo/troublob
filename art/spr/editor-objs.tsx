@@ -38,7 +38,7 @@
    <property name="exportDimensions" type="bool" value="true"/>
    <property name="exportPosition" type="bool" value="true"/>
    <property name="exportSize" type="bool" value="true"/>
-   <property name="type" type="int" value="0"/>
+   <property name="type" type="int" value="9"/>
   </properties>
  </tile>
  <tile id="5">
@@ -54,7 +54,7 @@
    <property name="exportDimensions" type="bool" value="true"/>
    <property name="exportPosition" type="bool" value="true"/>
    <property name="exportSize" type="bool" value="true"/>
-   <property name="type" type="int" value="0"/>
+   <property name="type" type="int" value="10"/>
   </properties>
  </tile>
  <tile id="7">
@@ -62,7 +62,7 @@
    <property name="exportDimensions" type="bool" value="true"/>
    <property name="exportPosition" type="bool" value="true"/>
    <property name="exportSize" type="bool" value="true"/>
-   <property name="type" type="int" value="0"/>
+   <property name="type" type="int" value="7"/>
   </properties>
  </tile>
  <tile id="8">
@@ -118,7 +118,7 @@
    <property name="exportDimensions" type="bool" value="true"/>
    <property name="exportPosition" type="bool" value="true"/>
    <property name="exportSize" type="bool" value="true"/>
-   <property name="type" type="int" value="0"/>
+   <property name="type" type="int" value="11"/>
   </properties>
  </tile>
  <tile id="15">
@@ -126,7 +126,7 @@
    <property name="exportDimensions" type="bool" value="true"/>
    <property name="exportPosition" type="bool" value="true"/>
    <property name="exportSize" type="bool" value="true"/>
-   <property name="type" type="int" value="0"/>
+   <property name="type" type="int" value="8"/>
   </properties>
  </tile>
  <tile id="16">
@@ -134,7 +134,7 @@
    <property name="exportDimensions" type="bool" value="true"/>
    <property name="exportPosition" type="bool" value="true"/>
    <property name="exportSize" type="bool" value="true"/>
-   <property name="type" type="int" value="0"/>
+   <property name="type" type="int" value="135"/>
   </properties>
  </tile>
  <tile id="17">
@@ -142,7 +142,7 @@
    <property name="exportDimensions" type="bool" value="true"/>
    <property name="exportPosition" type="bool" value="true"/>
    <property name="exportSize" type="bool" value="true"/>
-   <property name="type" type="int" value="0"/>
+   <property name="type" type="int" value="134"/>
   </properties>
  </tile>
  <tile id="18">
@@ -150,7 +150,7 @@
    <property name="exportDimensions" type="bool" value="true"/>
    <property name="exportPosition" type="bool" value="true"/>
    <property name="exportSize" type="bool" value="true"/>
-   <property name="type" type="int" value="0"/>
+   <property name="type" type="int" value="133"/>
   </properties>
  </tile>
  <tile id="19">
@@ -158,7 +158,7 @@
    <property name="exportDimensions" type="bool" value="true"/>
    <property name="exportPosition" type="bool" value="true"/>
    <property name="exportSize" type="bool" value="true"/>
-   <property name="type" type="int" value="0"/>
+   <property name="type" type="int" value="132"/>
   </properties>
  </tile>
  <tile id="20">
@@ -166,7 +166,7 @@
    <property name="exportDimensions" type="bool" value="true"/>
    <property name="exportPosition" type="bool" value="true"/>
    <property name="exportSize" type="bool" value="true"/>
-   <property name="type" type="int" value="0"/>
+   <property name="type" type="int" value="141"/>
   </properties>
  </tile>
  <tile id="21">
@@ -174,7 +174,7 @@
    <property name="exportDimensions" type="bool" value="true"/>
    <property name="exportPosition" type="bool" value="true"/>
    <property name="exportSize" type="bool" value="true"/>
-   <property name="type" type="int" value="0"/>
+   <property name="type" type="int" value="145"/>
   </properties>
  </tile>
  <tile id="22">
@@ -182,7 +182,7 @@
    <property name="exportDimensions" type="bool" value="true"/>
    <property name="exportPosition" type="bool" value="true"/>
    <property name="exportSize" type="bool" value="true"/>
-   <property name="type" type="int" value="0"/>
+   <property name="type" type="int" value="140"/>
   </properties>
  </tile>
  <tile id="23">
@@ -190,7 +190,7 @@
    <property name="exportDimensions" type="bool" value="true"/>
    <property name="exportPosition" type="bool" value="true"/>
    <property name="exportSize" type="bool" value="true"/>
-   <property name="type" type="int" value="0"/>
+   <property name="type" type="int" value="131"/>
   </properties>
  </tile>
  <tile id="24">
@@ -198,7 +198,7 @@
    <property name="exportDimensions" type="bool" value="true"/>
    <property name="exportPosition" type="bool" value="true"/>
    <property name="exportSize" type="bool" value="true"/>
-   <property name="type" type="int" value="0"/>
+   <property name="type" type="int" value="139"/>
   </properties>
  </tile>
  <tile id="25">
@@ -206,7 +206,7 @@
    <property name="exportDimensions" type="bool" value="true"/>
    <property name="exportPosition" type="bool" value="true"/>
    <property name="exportSize" type="bool" value="true"/>
-   <property name="type" type="int" value="0"/>
+   <property name="type" type="int" value="138"/>
   </properties>
  </tile>
  <tile id="26">
@@ -214,7 +214,7 @@
    <property name="exportDimensions" type="bool" value="true"/>
    <property name="exportPosition" type="bool" value="true"/>
    <property name="exportSize" type="bool" value="true"/>
-   <property name="type" type="int" value="0"/>
+   <property name="type" type="int" value="137"/>
   </properties>
  </tile>
  <tile id="27">
@@ -222,7 +222,7 @@
    <property name="exportDimensions" type="bool" value="true"/>
    <property name="exportPosition" type="bool" value="true"/>
    <property name="exportSize" type="bool" value="true"/>
-   <property name="type" type="int" value="0"/>
+   <property name="type" type="int" value="136"/>
   </properties>
  </tile>
  <tile id="28">
@@ -230,7 +230,7 @@
    <property name="exportDimensions" type="bool" value="true"/>
    <property name="exportPosition" type="bool" value="true"/>
    <property name="exportSize" type="bool" value="true"/>
-   <property name="type" type="int" value="0"/>
+   <property name="type" type="int" value="144"/>
   </properties>
  </tile>
  <tile id="29">
@@ -238,7 +238,7 @@
    <property name="exportDimensions" type="bool" value="true"/>
    <property name="exportPosition" type="bool" value="true"/>
    <property name="exportSize" type="bool" value="true"/>
-   <property name="type" type="int" value="0"/>
+   <property name="type" type="int" value="142"/>
   </properties>
  </tile>
  <tile id="30">
@@ -246,7 +246,7 @@
    <property name="exportDimensions" type="bool" value="true"/>
    <property name="exportPosition" type="bool" value="true"/>
    <property name="exportSize" type="bool" value="true"/>
-   <property name="type" type="int" value="0"/>
+   <property name="type" type="int" value="143"/>
   </properties>
  </tile>
  <tile id="31">
@@ -254,7 +254,7 @@
    <property name="exportDimensions" type="bool" value="true"/>
    <property name="exportPosition" type="bool" value="true"/>
    <property name="exportSize" type="bool" value="true"/>
-   <property name="type" type="int" value="0"/>
+   <property name="type" type="int" value="130"/>
   </properties>
  </tile>
 </tileset>

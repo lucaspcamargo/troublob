@@ -94,7 +94,7 @@ for layerA in root.findall("layer[@name = 'A']"):
     data = layerA.find("data[@encoding = 'csv']")
     if data is not None:
         csv:str = data.text
-        print(csv)
+        #print(csv)
         for y, line in enumerate(csv.strip().split("\n")):
             for x, token in enumerate(line.strip().split(',')):
                 if token and int(token) > 0:
@@ -102,7 +102,7 @@ for layerA in root.findall("layer[@name = 'A']"):
     else:
         print("Found layer A, but no usable data!")
 
-print(repr(plane_a_allocation))
+#print(repr(plane_a_allocation))
 
 # save final file
 f = open(out, 'wb')
