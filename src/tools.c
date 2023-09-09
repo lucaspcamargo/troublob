@@ -16,9 +16,9 @@ bool TOOL_get_gfx(enum ToolId tool, u16 *out_frame, bool *out_flip_h, bool *out_
             (*out_frame) = 0;
             ret = TRUE;
             break;
-        case TOOL_PLACE_MIRROR_LEFT_DOWN:
+        case TOOL_PLACE_MIRROR_RIGHT_DOWN:
             (*out_flip_h) = TRUE;
-        case TOOL_PLACE_MIRROR_LEFT_UP:
+        case TOOL_PLACE_MIRROR_RIGHT_UP:
             (*out_frame) = 1;
             ret = TRUE;
             break;
@@ -102,9 +102,9 @@ void TOOL_query(enum ToolId tool, u16 plf_x, u16 plf_y, ToolQuery *ret)
             ret->can_use = TRUE;
             ret->cursor = INPUT_CURSOR_MOVE;
             return;
-        case TOOL_PLACE_MIRROR_LEFT_DOWN:
+        case TOOL_PLACE_MIRROR_RIGHT_DOWN:
             ret->prev_flip_h = TRUE;
-        case TOOL_PLACE_MIRROR_LEFT_UP:
+        case TOOL_PLACE_MIRROR_RIGHT_UP:
             ret->prev_sprite = &spr_mirror;
             goto place_obj;
         case TOOL_PLACE_LASER_DOWN:
@@ -177,9 +177,9 @@ void TOOL_exec(enum ToolId tool, u16 plf_x, u16 plf_y)
             else
                 PLR_goto(plf_x, plf_y);
             break;
-        case TOOL_PLACE_MIRROR_LEFT_DOWN:
+        case TOOL_PLACE_MIRROR_RIGHT_DOWN:
             create_subtype = 1;
-        case TOOL_PLACE_MIRROR_LEFT_UP:
+        case TOOL_PLACE_MIRROR_RIGHT_UP:
             create_type = POBJ_TYPE_MIRROR;
             goto place_obj;
         default:

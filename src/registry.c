@@ -37,12 +37,12 @@ const RGST_lvl RGST_levels[] = {
             PCTRL_NOP
         },
         {
-            TOOL_PLACE_MIRROR_LEFT_UP,
-            TOOL_PLACE_MIRROR_LEFT_UP,
-            TOOL_PLACE_MIRROR_LEFT_UP,
-            TOOL_PLACE_MIRROR_LEFT_DOWN,
-            TOOL_PLACE_MIRROR_LEFT_DOWN,
-            TOOL_PLACE_MIRROR_LEFT_DOWN,
+            TOOL_PLACE_MIRROR_RIGHT_UP,
+            TOOL_PLACE_MIRROR_RIGHT_UP,
+            TOOL_PLACE_MIRROR_RIGHT_UP,
+            TOOL_PLACE_MIRROR_RIGHT_DOWN,
+            TOOL_PLACE_MIRROR_RIGHT_DOWN,
+            TOOL_PLACE_MIRROR_RIGHT_DOWN,
             TOOL_NONE,
             TOOL_NONE,
             TOOL_NONE
@@ -65,12 +65,12 @@ const RGST_lvl RGST_levels[] = {
             PCTRL_NOP
         },
         {
-            TOOL_PLACE_MIRROR_LEFT_UP,
-            TOOL_PLACE_MIRROR_LEFT_UP,
-            TOOL_PLACE_MIRROR_LEFT_UP,
-            TOOL_PLACE_MIRROR_LEFT_DOWN,
-            TOOL_PLACE_MIRROR_LEFT_DOWN,
-            TOOL_PLACE_MIRROR_LEFT_DOWN,
+            TOOL_PLACE_MIRROR_RIGHT_UP,
+            TOOL_PLACE_MIRROR_RIGHT_UP,
+            TOOL_PLACE_MIRROR_RIGHT_UP,
+            TOOL_PLACE_MIRROR_RIGHT_DOWN,
+            TOOL_PLACE_MIRROR_RIGHT_DOWN,
+            TOOL_PLACE_MIRROR_RIGHT_DOWN,
             TOOL_PLACE_BOMB,
             TOOL_NONE,
             TOOL_NONE

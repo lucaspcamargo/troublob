@@ -1,4 +1,3 @@
-
 #include "plf_obj.h"
 #include "resources.h"
 #include "playfield.h"
@@ -16,7 +15,7 @@ void PobjHandler_Mirror(PobjData *data, enum PobjEventType evt, void* evt_arg)
     if(evt == POBJ_EVT_CREATED)
     {
         const PobjEvtCreatedArgs * const args = (PobjEvtCreatedArgs *) evt_arg;
-        ((PlfTile*)args->plftile)->attrs |= (PLF_ATTR_PLAYER_SOLID | PLF_ATTR_DANGER);
+        ((PlfTile*)args->plftile)->attrs |= PLF_ATTR_DANGER;
         extraData->var = args->subtype;
 
         extraData->spr = SPR_addSprite(PLF_theme_data_sprite_def(PLF_THEME_MIRROR),
@@ -30,5 +29,9 @@ void PobjHandler_Mirror(PobjData *data, enum PobjEventType evt, void* evt_arg)
 
         if(args->plftile && ((PlfTile*)args->plftile)->laser)
             PLF_laser_recalc(fix16ToInt(data->x), fix16ToInt(data->y));
+    }
+    else if(evt == POBJ_EVT_LASER_QUERY)
+    {
+         *((enum PobjLaserBehavior*)evt_arg) = (extraData->var? POBJ_LASER_REFLECT_RIGHT_DOWN : POBJ_LASER_REFLECT_RIGHT_UP);
     }
 }
