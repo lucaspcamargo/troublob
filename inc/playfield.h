@@ -11,11 +11,13 @@
 
 // uniform attributes for every playfield tile
 enum PlfAttrBits {
-    PLF_ATTR_PLAYER_SOLID = 1,           // dweep stops_here
+    PLF_ATTR_PLAYER_SOLID = 1,    // cannot walk or put objects
     PLF_ATTR_PLANE_A_REUSED = 2,  // in this position, plane A is being used by a laser
     PLF_ATTR_PLANE_B_REUSED = 4,  // in this position, plane B is being used by object
     PLF_ATTR_DANGER = 8,          // dweep is afraid of this tile (laser handled separately)
     PLF_ATTR_LASER_SOLID = 16,    // laser stops here
+    PLF_ATTR_HOLE = 32,           // player or objects cannot be placed
+    PLF_ATTR_COVERED = 64,        // a sprite overlaps this tile, don't use plane A
 } ENUM_PACK;
 
 // laser attributes for every playfield tile
@@ -55,11 +57,12 @@ enum PlfObjectType {
     PLF_OBJ_COLD   = 10, // ice plate
     PLF_OBJ_BOMB   = 11, // bomb
 
+    PLF_OBJ_HOLE = 127,  // like wall, but a hole
     PLF_OBJ_ITEM_BASE = 128,    // initial tool index
     PLF_OBJ_MAX =  PLF_OBJ_ITEM_BASE + TOOL_COUNT,         // number of existing specs, value >= to this is invalid, ignored
 } ENUM_PACK;
 
-#define PLF_OBJ_IS_Y_BOTTOM(spec_enum) ((spec_enum)>PLF_OBJ_WALL) // specs that have y origin in bottom of box (tile/obj)
+#define PLF_OBJ_IS_Y_BOTTOM(spec_enum) ((spec_enum) && (spec_enum) != PLF_OBJ_HOLE) // specs that have y origin in bottom of box (tile/obj)
 
 
 enum PlfThemeData{

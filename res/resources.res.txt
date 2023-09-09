@@ -46,6 +46,8 @@ TILESET tset_0 ../art/spr/tileset0.tsx AUTO ALL
 PALETTE pal_tset_0 ../art/spr/tileset0.png
 TILESET tset_1 ../art/spr/tileset1.tsx AUTO ALL
 PALETTE pal_tset_1 ../art/spr/tileset1.png
+TILESET tset_2 ../art/spr/tileset2.tsx AUTO ALL
+PALETTE pal_tset_2 ../art/spr/tileset2.png
 
 
 

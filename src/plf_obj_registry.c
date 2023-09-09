@@ -6,6 +6,7 @@
 DECL_POBJ_HANDLER(Test)
 DECL_POBJ_HANDLER(Mirror)
 DECL_POBJ_HANDLER(Laser)
+DECL_POBJ_HANDLER(Bomb)
 DECL_POBJ_HANDLER(Hot)
 DECL_POBJ_HANDLER(Cold)
 DECL_POBJ_HANDLER(Goal)
@@ -16,10 +17,10 @@ const PobjEventHandler POBJ_HANDLERS[] =
     PobjHandler_Test,
     PobjHandler_Mirror,
     PobjHandler_Laser,
-    NULL, // POBJ_TYPE_FAN,
-    NULL, // POBJ_TYPE_BOMB,
-    PobjHandler_Hot, // POBJ_TYPE_HEAT,
-    PobjHandler_Cold, // POBJ_TYPE_COLD,
+    NULL,               // POBJ_TYPE_FAN,
+    PobjHandler_Bomb,
+    PobjHandler_Hot,
+    PobjHandler_Cold,
     PobjHandler_Goal,
     PobjHandler_ToolItem
 };

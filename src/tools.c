@@ -91,14 +91,14 @@ void TOOL_query(enum ToolId tool, u16 plf_x, u16 plf_y, ToolQuery *ret)
     ret->preview_anim = 0;
     ret->preview_pal_line = PAL_LINE_SPR_A;
 
-    const bool solid = t->attrs & PLF_ATTR_PLAYER_SOLID;
+    const bool solid_or_hole = t->attrs & (PLF_ATTR_PLAYER_SOLID|PLF_ATTR_HOLE);
     const bool has_obj = t->pobj != NULL;
     const bool is_player = PLR_curr_tile_x() == plf_x && PLR_curr_tile_y() == plf_y;
 
     switch(tool)
     {
         case TOOL_MOVE:
-            if (solid)
+            if (solid_or_hole)
                 goto no;
             ret->can_use = TRUE;
             ret->cursor = INPUT_CURSOR_MOVE;
@@ -177,7 +177,7 @@ no:
     return;
 
 place_obj:
-    if(has_obj || solid || is_player)
+    if(has_obj || solid_or_hole || is_player)
         goto no;
     ret->can_use = TRUE;
     ret->cursor = INPUT_CURSOR_NORMAL;
@@ -225,6 +225,9 @@ void TOOL_exec(enum ToolId tool, u16 plf_x, u16 plf_y)
         case TOOL_PLACE_LASER_DOWN:
             create_type = POBJ_TYPE_LASER;
             create_subtype = 3;
+            goto place_obj;
+        case TOOL_PLACE_BOMB:
+            create_type = POBJ_TYPE_BOMB;
             goto place_obj;
 
         case TOOL_HAMMER:

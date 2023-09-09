@@ -33,7 +33,7 @@ void PobjHandler_Laser(PobjData *data, enum PobjEventType evt, void* evt_arg)
             SPR_setVRAMTileIndex(extraData->spr, PLF_theme_data_idx_table(PLF_THEME_LASER_CANNON)[extraData->dir][0]);
             SPR_setDepth(extraData->spr, PLF_get_sprite_depth(data->x, data->y));
         }
-        // FIXME maybe world is not built yet, watch out
+
         PLF_laser_put(fix16ToInt(data->x), fix16ToInt(data->y), extraData->dir);
     }
     else if(evt == POBJ_EVT_TOOL_QUERY)

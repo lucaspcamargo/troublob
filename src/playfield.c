@@ -103,7 +103,7 @@ void PLF_init(u16 lvl_id)
 
     // init playfield vars
     plf_w = PLAYFIELD_VIEW_W; // curr_lvl.bg_b_map->w; not working???? TODO DEBUG THIS
-    plf_h = PLAYFIELD_VIEW_H + 2;
+    plf_h = PLAYFIELD_VIEW_H;
     m_a = NULL;
     m_b = NULL;
 
@@ -262,6 +262,13 @@ void _PLF_load_objects()
                     {
                         TILE_AT(x,y).attrs |= (PLF_ATTR_PLAYER_SOLID | PLF_ATTR_LASER_SOLID);
                     }
+            } else if(obj->type == PLF_OBJ_HOLE)
+            {
+                for(u16 x = startx; x <= endx; x++)
+                    for(u16 y = starty; y <= endy; y++)
+                    {
+                        TILE_AT(x,y).attrs |= (PLF_ATTR_HOLE);
+                    }
             } else if(single_pos)
             {
                 if( obj->type == PLF_OBJ_PLAYER)
@@ -369,6 +376,9 @@ void _PLF_init_create_object(const MapObject* obj, u16 x, u16 y)
         case PLF_OBJ_MIRROR  :
             final_type = POBJ_TYPE_MIRROR;
             break;
+        case PLF_OBJ_BOMB:
+            final_type = POBJ_TYPE_BOMB;
+            break;
         case PLF_OBJ_HEAT:
             final_type = POBJ_TYPE_HEAT;
             break;
@@ -431,7 +441,7 @@ bool PLF_player_pathfind(u16 px, u16 py, u16 destx, u16 desty)
     //      and limit the pathfinding to the visible screen via stride_y
     //      for now, just convert to u8
     enum PathfindingResult res = PATH_find(PLAYFIELD_VIEW_W, PLAYFIELD_VIEW_H, (u8)px, (u8)py, (u8)destx, (u8)desty,
-                                           ((u8*)&(plf_tiles->attrs)), sizeof(PlfTile), sizeof(PlfTile)*plf_w, PLF_ATTR_PLAYER_SOLID);
+                                           ((u8*)&(plf_tiles->attrs)), sizeof(PlfTile), sizeof(PlfTile)*plf_w, PLF_ATTR_PLAYER_SOLID | PLF_ATTR_HOLE);
 
     if(DEBUG_PATHFINDING)
     {
