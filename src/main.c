@@ -81,22 +81,22 @@ int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
             INPUT_set_cursor(tq.cursor);
 
             // handle item preview existance
-            if(item_preview_def != tq.prev_sprite)
+            if(item_preview_def != tq.preview_sprite)
             {
                 if(item_preview)
                 {
                     SPR_releaseSprite(item_preview);
                     item_preview = NULL;
                 }
-                item_preview_def = tq.prev_sprite;
+                item_preview_def = tq.preview_sprite;
                 if(item_preview_def)
                 {
                     item_preview = SPR_addSprite(item_preview_def,
                                                  16*mouse_pf_x,
                                                  16*mouse_pf_y-(item_preview_def->h-16),
-                                                 TILE_ATTR(tq.prev_pal_line, 0, 0, 0));
-                    SPR_setHFlip(item_preview, tq.prev_flip_h);
-                    SPR_setAnim(item_preview, tq.prev_anim);
+                                                 TILE_ATTR(tq.preview_pal_line, 0, 0, 0));
+                    SPR_setHFlip(item_preview, tq.preview_flip_h);
+                    SPR_setAnim(item_preview, tq.preview_anim);
                 }
             }
 
@@ -108,11 +108,11 @@ int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
                 {
                     SPR_setPosition(item_preview, 16*mouse_pf_x, 16*mouse_pf_y-(item_preview_def->h-16));
                     SPR_setDepth(item_preview, PLF_get_sprite_depth(intToFix16(mouse_pf_x), intToFix16(mouse_pf_y)));
-                    if(tq.prev_sprite) // tool query has preview sprite info now
+                    if(tq.preview_sprite) // tool query has preview sprite info now
                     {
-                        if(tq.prev_anim != item_preview->animInd)
-                            SPR_setAnim(item_preview, tq.prev_anim);
-                        SPR_setHFlip(item_preview, tq.prev_flip_h);
+                        if(tq.preview_anim != item_preview->animInd)
+                            SPR_setAnim(item_preview, tq.preview_anim);
+                        SPR_setHFlip(item_preview, tq.preview_flip_h);
                     }
                 }
             }

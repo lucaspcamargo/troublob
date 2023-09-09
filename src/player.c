@@ -56,8 +56,8 @@ void PLR_init()
     dest_pf_y = player_pf_y;
     final_dest_pf_x = player_pf_x;
     final_dest_pf_y = player_pf_y;
-    player_int_x = fix16Int(player_pf_x);
-    player_int_y = fix16Int(player_pf_y);
+    player_int_x = fix16ToInt(player_pf_x);
+    player_int_y = fix16ToInt(player_pf_y);
     player_state = PLR_STATE_IDLE;
     player_emote = PLR_EMOTE_NEUTRAL;
 

@@ -96,6 +96,7 @@ bool PLF_player_path_next(u16 px, u16 py, u16 *nextx, u16 *nexty);
 
 void* PLF_obj_create(u16 pobj_type, u16 pobj_subtype, u16 px, u16 py);   // returns PobjHnd
 void* PLF_obj_at(u16 px, u16 py);       // returns PobjHnd
+void  PLF_obj_destroy(u16 px, u16 py, void *evt_arg);   // destroy object at
 
 bool PLF_laser_put(u16 orig_x, u16 orig_y, u8 dir);
 void PLF_laser_recalc(u16 plf_x, u16 plf_y);  // undoes lasers that goes out from the tile, and puts them again

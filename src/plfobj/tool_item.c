@@ -37,7 +37,7 @@ void PobjHandler_ToolItem(PobjData *data, enum PobjEventType evt, void* evt_arg)
             PLF_plane_clear(TRUE, fix16ToInt(data->x), fix16ToInt(data->y));
             extraData->tool_id = TOOL_NONE;
             SFX_play(SFX_ding);
-            // TODO delete object
+            PLF_obj_destroy(fix16ToInt(data->x), fix16ToInt(data->y), NULL);
         }
     }
 }

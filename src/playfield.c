@@ -253,7 +253,7 @@ void _PLF_load_objects()
                endy >= plf_h || starty >= plf_h )
                 continue; // out of bounds
 
-            bool single_pos = (startx==endx) && (starty==endy); // TODO use for single objects
+            bool single_pos = (startx==endx) && (starty==endy);
 
             if(obj->type == PLF_OBJ_WALL)
             {
@@ -487,6 +487,21 @@ void* PLF_obj_at(u16 px, u16 py)
 
     return t->pobj;
 }
+
+void PLF_obj_destroy(u16 px, u16 py, void *evt_arg)
+{
+    PlfTile * t = PLF_get_tile_safe(px, py);
+    if(!t)
+        return;
+
+    if(t->pobj)
+    {
+        Pobj_event(Pobj_get_data(t->pobj), POBJ_EVT_DESTROYED, evt_arg);
+        Pobj_dealloc(t->pobj);
+        t->pobj = NULL;
+    }
+}
+
 
 /***
  * This function lets us add a laser to the playfield,

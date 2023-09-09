@@ -67,3 +67,33 @@
 #define DIR_IS_VERTICAL(dir) (dir == DIR_U || dir == DIR_D)
 #define DIR_IS_HORIZONTAL(dir) (dir == DIR_R || dir == DIR_L)
 #define DIR_OPPOSITE(dir) (dir ^ 0x01)  // flip LSB
+
+inline unsigned char DIR_ROT_CW(unsigned char dir) {
+    switch(dir)
+    {
+        case DIR_R:
+            return DIR_D;
+        case DIR_D:
+            return DIR_L;
+        case DIR_L:
+            return DIR_U;
+        case DIR_U:
+            return DIR_R;
+    }
+    return 0xff;
+}
+
+inline unsigned char DIR_ROT_CCW(unsigned char dir) {
+    switch(dir)
+    {
+        case DIR_R:
+            return DIR_U;
+        case DIR_U:
+            return DIR_L;
+        case DIR_L:
+            return DIR_D;
+        case DIR_D:
+            return DIR_R;
+    }
+    return 0xff;
+}

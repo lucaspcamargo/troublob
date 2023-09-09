@@ -82,17 +82,18 @@ void TOOL_query(enum ToolId tool, u16 plf_x, u16 plf_y, ToolQuery *ret)
     {
         ret->can_use = FALSE;
         ret->cursor = INPUT_CURSOR_NORMAL;
-        ret->prev_sprite = NULL;
+        ret->preview_sprite = NULL;
         return;
     }
 
-    ret->prev_sprite = NULL;
-    ret->prev_flip_h = FALSE;
-    ret->prev_anim = 0;
-    ret->prev_pal_line = PAL_LINE_SPR_A;
-    bool solid = t->attrs & PLF_ATTR_PLAYER_SOLID;
-    bool has_obj = t->pobj != NULL;
-    bool is_player = PLR_curr_tile_x() == plf_x && PLR_curr_tile_y() == plf_y;
+    ret->preview_sprite = NULL;
+    ret->preview_flip_h = FALSE;
+    ret->preview_anim = 0;
+    ret->preview_pal_line = PAL_LINE_SPR_A;
+
+    const bool solid = t->attrs & PLF_ATTR_PLAYER_SOLID;
+    const bool has_obj = t->pobj != NULL;
+    const bool is_player = PLR_curr_tile_x() == plf_x && PLR_curr_tile_y() == plf_y;
 
     switch(tool)
     {
@@ -103,25 +104,49 @@ void TOOL_query(enum ToolId tool, u16 plf_x, u16 plf_y, ToolQuery *ret)
             ret->cursor = INPUT_CURSOR_MOVE;
             return;
         case TOOL_PLACE_MIRROR_RIGHT_DOWN:
-            ret->prev_flip_h = TRUE;
+            ret->preview_flip_h = TRUE;
         case TOOL_PLACE_MIRROR_RIGHT_UP:
-            ret->prev_sprite = &spr_mirror;
+            ret->preview_sprite = &spr_mirror;
+            goto place_obj;
+        case TOOL_PLACE_LASER_RIGHT:
+            ret->preview_sprite = &spr_laser_cannon;
+            ret->preview_anim = 0;
+            goto place_obj;
+        case TOOL_PLACE_LASER_LEFT:
+            ret->preview_sprite = &spr_laser_cannon;
+            ret->preview_anim = 1;
+            goto place_obj;
+        case TOOL_PLACE_LASER_UP:
+            ret->preview_sprite = &spr_laser_cannon;
+            ret->preview_anim = 2;
             goto place_obj;
         case TOOL_PLACE_LASER_DOWN:
-        case TOOL_PLACE_LASER_UP:
-        case TOOL_PLACE_LASER_LEFT:
-        case TOOL_PLACE_LASER_RIGHT:
+            ret->preview_sprite = &spr_laser_cannon;
+            ret->preview_anim = 3;
+            goto place_obj;
         case TOOL_PLACE_FAN_DOWN:
         case TOOL_PLACE_FAN_UP:
         case TOOL_PLACE_FAN_LEFT:
         case TOOL_PLACE_FAN_RIGHT:
         case TOOL_PLACE_BOMB:
-            ret->prev_sprite = &spr_bomb;
+            ret->preview_sprite = &spr_bomb;
             goto place_obj;
 
+        case TOOL_HAMMER:
+        if(is_player)
+        {
+            // TODO unfloat?
+        }
         case TOOL_ROTATE_CCW:
         case TOOL_ROTATE_CW:
-            // TODO obj query
+            if(t->pobj)
+            {
+                PobjEvtToolQueryArgs args = {tool, FALSE, INPUT_CURSOR_NO};
+                Pobj_event(Pobj_get_data(t->pobj), POBJ_EVT_TOOL_QUERY, &args);
+                ret->can_use = args.out_can_use;
+                ret->cursor = args.out_cursor;
+                return;
+            }
             goto no;
         case TOOL_TORCH:
             if(is_player)
@@ -152,7 +177,7 @@ no:
     return;
 
 place_obj:
-    if(has_obj || solid)
+    if(has_obj || solid || is_player)
         goto no;
     ret->can_use = TRUE;
     ret->cursor = INPUT_CURSOR_NORMAL;
@@ -165,23 +190,56 @@ void TOOL_exec(enum ToolId tool, u16 plf_x, u16 plf_y)
     if (!t)
         return;
 
+    const bool is_player = PLR_curr_tile_x() == plf_x && PLR_curr_tile_y() == plf_y;
+
     u16 create_type = POBJ_TYPE_COUNT;
     u16 create_subtype = 0;
 
     switch(tool)
     {
         case TOOL_MOVE:
-
             if(t->attrs & PLF_ATTR_PLAYER_SOLID)
                 SFX_play(SFX_no);
             else
                 PLR_goto(plf_x, plf_y);
             break;
+
         case TOOL_PLACE_MIRROR_RIGHT_DOWN:
             create_subtype = 1;
         case TOOL_PLACE_MIRROR_RIGHT_UP:
             create_type = POBJ_TYPE_MIRROR;
             goto place_obj;
+
+        case TOOL_PLACE_LASER_RIGHT:
+            create_type = POBJ_TYPE_LASER;
+            create_subtype = 0;
+            goto place_obj;
+        case TOOL_PLACE_LASER_LEFT:
+            create_type = POBJ_TYPE_LASER;
+            create_subtype = 1;
+            goto place_obj;
+        case TOOL_PLACE_LASER_UP:
+            create_type = POBJ_TYPE_LASER;
+            create_subtype = 2;
+            goto place_obj;
+        case TOOL_PLACE_LASER_DOWN:
+            create_type = POBJ_TYPE_LASER;
+            create_subtype = 3;
+            goto place_obj;
+
+        case TOOL_HAMMER:
+            if(is_player)
+            {
+                // TODO unfloat
+            }
+        case TOOL_ROTATE_CCW:
+        case TOOL_ROTATE_CW:
+            if(t->pobj)
+            {
+                PobjEvtToolArgs args = {tool};
+                Pobj_event(Pobj_get_data(t->pobj), POBJ_EVT_TOOL, &args);
+            }
+            return;
         default:
             break;
     }

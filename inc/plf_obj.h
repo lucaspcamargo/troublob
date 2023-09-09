@@ -52,6 +52,15 @@ typedef struct PobjEvtCreatedArgs_st {
     u16 subtype;
 } PobjEvtCreatedArgs;
 
+typedef struct PobjEvtToolQueryArgs_st {
+    u16 tool_id;
+    bool out_can_use;
+    u8 out_cursor;
+} PobjEvtToolQueryArgs;
+
+typedef struct PobjEvtToolArgs_st {
+    u16 tool_id;
+} PobjEvtToolArgs;
 
 typedef void (*PobjEventHandler)(PobjData *data, enum PobjEventType evt, void* evt_arg);
 extern const PobjEventHandler POBJ_HANDLERS[];
