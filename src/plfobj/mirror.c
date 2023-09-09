@@ -6,6 +6,8 @@
 
 #include <genesis.h>
 
+#define TILE_BITS (PLF_ATTR_PLAYER_SOLID | PLF_ATTR_DANGER)
+
 typedef struct {
     Sprite * spr;
     u16 var;
@@ -17,7 +19,7 @@ void PobjHandler_Mirror(PobjData *data, enum PobjEventType evt, void* evt_arg)
     if(evt == POBJ_EVT_CREATED)
     {
         const PobjEvtCreatedArgs * const args = (PobjEvtCreatedArgs *) evt_arg;
-        ((PlfTile*)args->plftile)->attrs |= (PLF_ATTR_PLAYER_SOLID|PLF_ATTR_DANGER);
+        ((PlfTile*)args->plftile)->attrs |= TILE_BITS;
         extraData->var = args->subtype;
 
         extraData->spr = SPR_addSprite(PLF_theme_data_sprite_def(PLF_THEME_MIRROR),
@@ -71,6 +73,7 @@ void PobjHandler_Mirror(PobjData *data, enum PobjEventType evt, void* evt_arg)
             if(extraData->spr)
                 SPR_releaseSprite(extraData->spr);
             PLF_obj_destroy(fix16ToInt(data->x), fix16ToInt(data->y), NULL);
+            PLF_get_tile(fix16ToInt(data->x), fix16ToInt(data->y))->attrs &= ~TILE_BITS;
             PLF_laser_recalc(fix16ToInt(data->x), fix16ToInt(data->y));
         }
     }

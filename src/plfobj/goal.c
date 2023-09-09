@@ -30,4 +30,19 @@ void PobjHandler_Goal(PobjData *data, enum PobjEventType evt, void* evt_arg)
         SPR_setVRAMTileIndex(extraData->baby, PLF_theme_data_idx_table(PLF_THEME_GOAL_BABIES)[0][baby_color]);
         SPR_setDepth(extraData->baby, PLF_get_sprite_depth(FIX16(data->x), FIX16(data->y)) - 1);
     }
+    else if(evt == POBJ_EVT_STEPPED)
+    {
+        // TODO elaborate on this
+        // change player state to victory or something
+        // and reimpl this on playfield exec
+        VDP_drawText("              ",13, 11);
+        VDP_drawText("  VICTORY!!!  ",13, 12);
+        VDP_drawText("              ",13, 13);
+        XGM_setLoopNumber(0);
+        XGM_startPlay(bgm_victory);
+        SYS_doVBlankProcess();
+        while(XGM_isPlaying())
+            SYS_doVBlankProcess();
+        XGM_setLoopNumber(-1);
+    }
 }
