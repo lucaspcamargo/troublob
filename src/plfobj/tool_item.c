@@ -2,11 +2,13 @@
 #include "resources.h"
 #include "playfield.h"
 #include "tools.h"
+#include "hud.h"
+#include "sfx.h"
 
 #include <genesis.h>
 
 typedef struct {
-    u16 tool_id;
+    enum ToolId tool_id;
 } PobjItemExtraData;
 
 void PobjHandler_ToolItem(PobjData *data, enum PobjEventType evt, void* evt_arg)
@@ -25,6 +27,17 @@ void PobjHandler_ToolItem(PobjData *data, enum PobjEventType evt, void* evt_arg)
                                             0, flipV, flipH,
                                             PLF_theme_data_idx_table(PLF_THEME_TOOLS)[0][frame]);
             PLF_plane_draw(TRUE, fix16ToInt(data->x), fix16ToInt(data->y), tile_attrs);
+        }
+    }
+    else if(evt == POBJ_EVT_STEPPED)
+    {
+        // player stepped on me
+        if(HUD_inventory_push(extraData->tool_id))
+        {
+            PLF_plane_clear(TRUE, fix16ToInt(data->x), fix16ToInt(data->y));
+            extraData->tool_id = TOOL_NONE;
+            SFX_play(SFX_ding);
+            // TODO delete object
         }
     }
 }

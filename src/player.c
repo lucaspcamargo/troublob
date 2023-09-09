@@ -5,6 +5,7 @@
 #include "palette_ctrl.h"
 #include "playfield.h"
 #include "sfx.h"
+#include "plf_obj.h"
 
 static fix16 player_pf_x;
 static fix16 player_pf_y;
@@ -223,6 +224,13 @@ void PLR_update(u32 framecounter)
                 player_int_y = ry;
                 int_changed = TRUE;
             }
+        }
+
+        if(int_changed)
+        {
+            PlfTile *t = PLF_get_tile_safe(player_int_x, player_int_y);
+            if(t && t->pobj)
+                Pobj_event(Pobj_get_data(t->pobj), POBJ_EVT_STEPPED, NULL);
         }
 
         // TODO instead of doing this, keep track of which tile dweep is actually in, and then act on that

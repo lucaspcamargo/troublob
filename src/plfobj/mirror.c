@@ -15,7 +15,7 @@ void PobjHandler_Mirror(PobjData *data, enum PobjEventType evt, void* evt_arg)
     if(evt == POBJ_EVT_CREATED)
     {
         const PobjEvtCreatedArgs * const args = (PobjEvtCreatedArgs *) evt_arg;
-        ((PlfTile*)args->plftile)->attrs |= PLF_ATTR_DANGER;
+        ((PlfTile*)args->plftile)->attrs |= (PLF_ATTR_PLAYER_SOLID|PLF_ATTR_DANGER);
         extraData->var = args->subtype;
 
         extraData->spr = SPR_addSprite(PLF_theme_data_sprite_def(PLF_THEME_MIRROR),

@@ -28,6 +28,7 @@ void HUD_dialog_end();
 
 void HUD_inventory_set(const enum ToolId * tool_arr);
 void HUD_inventory_set_curr_idx(u8 idx);
+bool HUD_inventory_push(enum ToolId tool);
 void HUD_inventory_pop(u8 idx);
 void HUD_inventory_pop_curr();
 void HUD_inventory_clear();

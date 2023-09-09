@@ -11,6 +11,7 @@ rm -rfv ./ci-build/
 mkdir ci-build
 cd ci-build
 
+docker run --rm -v $PWD/..:/m68k --user ${UID} -t registry.gitlab.com/doragasu/docker-sgdk:v1.90 clean
 docker run --rm -v $PWD/..:/m68k --user ${UID} -t registry.gitlab.com/doragasu/docker-sgdk:v1.90 debug
 
 mv ../out .

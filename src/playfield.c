@@ -20,7 +20,7 @@ enum PlfLaserFrame // description of laser sprite frames
     PLF_LASER_FRAME_UR,
     PLF_LASER_FRAME_LT,
     PLF_LASER_FRAME_CROSS,
-    PLF_LASER_FRAME_RT,  // draw as flipped LT
+    PLF_LASER_FRAME_RT,
     PLF_LASER_FRAME_NONE = 0xff
 } ENUM_PACK;
 
@@ -187,6 +187,16 @@ void _PLF_load_theme()
     plf_theme_sprite_defs[PLF_THEME_BOMB] = &spr_bomb;
     plf_theme_palette_line[PLF_THEME_BOMB] = PAL_LINE_SPR_A;
     plf_theme_tile_indices[PLF_THEME_BOMB] = SPR_loadAllFrames(&spr_bomb, GLOBAL_vdp_tile_watermark, &loadedTiles);
+    GLOBAL_vdp_tile_watermark += loadedTiles;
+
+    plf_theme_sprite_defs[PLF_THEME_HOT] = &spr_plate_hot;
+    plf_theme_palette_line[PLF_THEME_HOT] = PAL_LINE_SPR_A;
+    plf_theme_tile_indices[PLF_THEME_HOT] = SPR_loadAllFrames(&spr_plate_hot, GLOBAL_vdp_tile_watermark, &loadedTiles);
+    GLOBAL_vdp_tile_watermark += loadedTiles;
+
+    plf_theme_sprite_defs[PLF_THEME_COLD] = &spr_plate_cold;
+    plf_theme_palette_line[PLF_THEME_COLD] = PAL_LINE_SPR_A;
+    plf_theme_tile_indices[PLF_THEME_COLD] = SPR_loadAllFrames(&spr_plate_cold, GLOBAL_vdp_tile_watermark, &loadedTiles);
     GLOBAL_vdp_tile_watermark += loadedTiles;
 }
 
@@ -358,6 +368,12 @@ void _PLF_init_create_object(const MapObject* obj, u16 x, u16 y)
             args.subtype = 1;
         case PLF_OBJ_MIRROR  :
             final_type = POBJ_TYPE_MIRROR;
+            break;
+        case PLF_OBJ_HEAT:
+            final_type = POBJ_TYPE_HEAT;
+            break;
+        case PLF_OBJ_COLD:
+            final_type = POBJ_TYPE_COLD;
             break;
     }
 
@@ -778,10 +794,10 @@ void _PLF_laser_gfx_update(u16 x, u16 y, bool force_sprite)
 
     if(plane_a_frame != PLF_LASER_FRAME_NONE)
     {
-        u16 final_frame_idx = PLF_theme_data_idx_table(PLF_THEME_LASER_LIGHT)[0][plane_a_frame == PLF_LASER_FRAME_RT? PLF_LASER_FRAME_LT : plane_a_frame];
+        u16 final_frame_idx = PLF_theme_data_idx_table(PLF_THEME_LASER_LIGHT)[0][plane_a_frame];
         const u16 tile_attr = TILE_ATTR_FULL(PAL_LINE_BG_1, 1,
                                                 0,
-                                                plane_a_frame == PLF_LASER_FRAME_RT,
+                                                0,
                                                 final_frame_idx);
         PLF_plane_draw(FALSE, x, y, tile_attr);
     }
@@ -818,7 +834,7 @@ inline enum PlfLaserGfx _PLF_laser_in_out_to_gfx(u8 in_dir, u8 out_dir)
                     return PLF_LASER_GFX_H;
                 case DIR_R:
                 case 0xff:
-                    return PLF_LASER_GFX_TERM_L;
+                    return PLF_LASER_GFX_TERM_R;
                 case DIR_U:
                     return PLF_LASER_GFX_QUAD_UR;
                 case DIR_D:
@@ -957,9 +973,11 @@ void PLF_plane_clear(bool planeB, u16 x, u16 y)
     if(planeB)
     {
         u16 orig_tiles[4];
-        // TODO impl
-        //MAP_getTilemapRect(m_a, x*2, y*2, 2, 2, FALSE, orig_tiles);
-        //VDP_setTileMapData(VDP_BG_B, orig_tiles, ?, ?, ?, ?); // twice for each y value?
+        MAP_getTilemapRect(m_b, x, y, 1, 1, FALSE, orig_tiles);
+        VDP_setTileMapXY(BG_B, orig_tiles[0], x*2, y*2);
+        VDP_setTileMapXY(BG_B, orig_tiles[1], x*2+1, y*2);
+        VDP_setTileMapXY(BG_B, orig_tiles[2], x*2, y*2+1);
+        VDP_setTileMapXY(BG_B, orig_tiles[3], x*2+1, y*2+1);
     }
     else
     {

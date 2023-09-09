@@ -7,8 +7,13 @@
 #define GAME_VERSION "v 0.1"
 
 // Debug Switches
+#if DEBUG == 1
 #define DEBUG_MENU 1
 #define DEBUG_CPU_LOAD 1
+#else
+#define DEBUG_MENU 0
+#define DEBUG_CPU_LOAD 0
+#endif
 #define DEBUG_TILES 0
 #define DEBUG_MAP_OBJS 0
 #define DEBUG_MAP_PLANE_A_ALLOC 0
@@ -18,7 +23,7 @@
 #define DEBUG_PATHFINDING 0
 #define DEBUG_PATHFINDING_FIELD 0
 #define DEBUG_PATHFINDING_SLOW 0
-#define DEBUG_LASER_BEHAVIOR 1
+#define DEBUG_LASER_BEHAVIOR 0
 #define FORCE_MOUSE 0
 #define FORCE_MOUSE_ABSOLUTE 1
 

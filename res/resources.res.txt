@@ -30,6 +30,8 @@ SPRITE spr_goal_plate ../art/spr/goal-plate.png         2 2  FAST   0       NONE
 SPRITE spr_goal_babies ../art/spr/goal-babies.png       1 1  FAST   0       NONE    SPRITE
 SPRITE spr_bomb ../art/spr/bomb.png                     2 2  FAST   0       NONE    NONE
 SPRITE spr_mirror ../art/spr/mirror.png                 2 3  FAST   0       NONE    NONE
+SPRITE spr_plate_hot ../art/spr/plate-hot.png           2 2  FAST   0       NONE    NONE
+SPRITE spr_plate_cold ../art/spr/plate-cold.png         2 2  FAST   0       NONE    NONE
 
 
 
@@ -52,7 +54,7 @@ PALETTE pal_tset_1 ../art/spr/tileset1.png
 #
 
 # 0. Core maps
-TILEMAP map_hud ../art/map/__map_H.tmx SINGLE AUTO AUTO
+TILEMAP map_hud ../art/map/__map_H.tmx SINGLE NONE NONE
 
 # 1. Level maps
 MAP map_0_a ../art/map/__map_0.tmx A AUTO AUTO

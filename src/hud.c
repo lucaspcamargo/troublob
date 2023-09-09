@@ -244,6 +244,24 @@ void HUD_inventory_set_curr_idx(u8 idx)
     }
 }
 
+bool HUD_inventory_push(enum ToolId tool)
+{
+    if(tool == TOOL_NONE)
+        return TRUE;
+
+    for(u8 i = 0; i < HUD_INVENTORY_COUNT; i++)
+    {
+        if(hud_inventory[i] == TOOL_NONE)
+        {
+            hud_inventory[i] = tool;
+            hud_dirty = TRUE;
+            return TRUE;
+        }
+    }
+
+    return FALSE;
+}
+
 void HUD_inventory_pop(u8 idx)
 {
     for(u8 i = idx; i < HUD_INVENTORY_COUNT; i++)

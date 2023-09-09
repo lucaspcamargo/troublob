@@ -121,8 +121,8 @@ int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
             {
                 // field click
                 TOOL_exec(curr_tool, mouse_pf_x, mouse_pf_y);
-                //if(curr_tool != TOOL_MOVE)
-                //    HUD_inventory_pop_curr();
+                if(curr_tool != TOOL_MOVE)
+                    HUD_inventory_pop_curr();
             }
         }
         else
