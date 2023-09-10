@@ -24,6 +24,7 @@ int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
     const u16 level_id = curr_cmd->arg0;
     const RGST_lvl * curr_lvl = RGST_levels + level_id;
 
+    INPUT_center_cursor();
     INPUT_set_cursor_visible(TRUE);
 
     // init playfield and hud

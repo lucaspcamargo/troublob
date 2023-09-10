@@ -63,6 +63,7 @@ void exec_debug_menu(DirectorCommand *next_cmd)
     subopt_min[2] = SFX_USER_OFFSET;
     subopt_max[2] = SFX_END - 1;
     memcpy(curr_subopts, subopt_min, sizeof(curr_subopts));
+    curr_subopts[0] = 1;
 
     PCTRL_set_source(0, pal_tset_hud.data);
     PCTRL_set_source(PAL_LINE_HUD, pal_tset_hud.data);

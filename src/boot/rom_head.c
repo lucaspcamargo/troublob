@@ -9,12 +9,12 @@ const ROMHeader rom_header = {
 #else
     "SEGA MEGA DRIVE ",
 #endif
-    "(C)SGDK 2023    ",
-    "SAMPLE PROGRAM                                  ",
-    "SAMPLE PROGRAM                                  ",
+    "(C) CAMARGO 2023",
+    "DWEEP GENESIS                                   ",
+    "DWEEP GENESIS                                   ",
     "GM 00000000-00",
     0x000,
-    "JD              ",
+    "J6M             ",
     0x00000000,
 #if (ENABLE_BANK_SWITCH != 0)
     0x003FFFFF,

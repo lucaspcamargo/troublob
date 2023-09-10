@@ -7,6 +7,11 @@ A demake of [Dweep](https://en.wikipedia.org/wiki/Dweep) for the Sega MegaDrive.
 ![Screenshot of the game](./doc/screenshot.png "Game screenshot")
 
 
+## Download
+
+Download the latest build [here](https://jenkins.camargo.eng.br/job/dweep-gen/lastSuccessfulBuild/artifact/ci-build/out/Dweep_Genesis_(latest).bin).
+
+
 ## About
 
 This is a work-in-progress SGDK port of the old shareware game Dweep.
@@ -32,10 +37,6 @@ SFX was imported straight from the original game.
 Art uses [LibreSprite](https://github.com/LibreSprite/LibreSprite) for tilesets and sprites, and [Tiled](https://github.com/mapeditor/tiled) for tilemaps.
 
 The original Dweep was created and programmed by Steve Pavlina, with music by Michael Huang.
-
-## Download
-
-Download the latest build [here](https://jenkins.camargo.eng.br/job/dweep-gen/lastSuccessfulBuild/artifact/ci-build/out/Dweep_Genesis_(latest).bin).
 
 ## Building
 

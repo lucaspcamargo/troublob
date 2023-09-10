@@ -32,5 +32,6 @@ void INPUT_set_cursor_visible(bool visible);
 void INPUT_set_cursor(enum InputCursor img);
 bool INPUT_is_cursor_visible();
 void INPUT_get_cursor_position( s16 *dest_x, s16 *dest_y );
+void INPUT_center_cursor();
 
 u8 INPUT_get_input_dev_icon( u16 port );

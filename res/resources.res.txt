@@ -48,6 +48,8 @@ TILESET tset_1 ../art/spr/tileset1.tsx AUTO ALL
 PALETTE pal_tset_1 ../art/spr/tileset1.png
 TILESET tset_2 ../art/spr/tileset2.tsx AUTO ALL
 PALETTE pal_tset_2 ../art/spr/tileset2.png
+TILESET tset_3 ../art/spr/tileset3.tsx AUTO ALL
+PALETTE pal_tset_3 ../art/spr/tileset3.png
 
 
 
@@ -77,13 +79,14 @@ OBJECTS map_2_o ../art/map/__map_2.tmx OBJ type:u16;x:u16;y:u16;width:u16;height
 MAP map_3_a ../art/map/__map_3.tmx A AUTO AUTO
 MAP map_3_b ../art/map/__map_3.tmx B AUTO AUTO
 BIN map_3_a_alloc ../art/map/__map_3.tmx.A.bin
-OBJECTS map_3_o ../art/map/__map_2.tmx OBJ type:u16;x:u16;y:u16;width:u16;height:u16
+OBJECTS map_3_o ../art/map/__map_3.tmx OBJ type:u16;x:u16;y:u16;width:u16;height:u16
 
 
 #
 #  MUSIC
 #
 
+XGM bgm_title "vgm/conv_title.vgm" AUTO
 XGM bgm_stage_1 "vgm/stage_1.vgm" AUTO
 XGM bgm_stage_2 "vgm/stage_2.vgm" AUTO
 XGM bgm_stage_3 "vgm/conv_stage_3.vgm" AUTO

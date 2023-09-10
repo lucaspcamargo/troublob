@@ -21,17 +21,8 @@ static s16 last_mx, last_my = -1;
 
 void _INPUT_handler( u16 joy, u16 changed, u16 state)
 {
-    enum InputMethod im = curr_im;
     const u16 mouse_joy = mouse_present? (is_mouse_1? JOY_1 : JOY_2) : 0xffff;
-    if(joy == mouse_joy)
-    {
-        // in case of mouse
-        // just save curr state for movement handling in callback
-        mouse_last_joy_state = state;
-        im = INPUT_METHOD_MOUSE;
-    }
-    else
-        im = INPUT_METHOD_PAD;
+    enum InputMethod im = (joy == mouse_joy)? INPUT_METHOD_MOUSE : INPUT_METHOD_PAD;
 
     last_changed = changed;
     last_state = state;
@@ -77,7 +68,7 @@ void INPUT_init()
     is_mouse_1 = ( joy_type_1==JOY_TYPE_MOUSE && port_type_1 == PORT_TYPE_MOUSE );
     is_mouse_2 = ( joy_type_2==JOY_TYPE_MOUSE && port_type_2 == PORT_TYPE_MOUSE );
 
-    if( FORCE_MOUSE || is_mouse_1 || is_mouse_2)
+    if(is_mouse_1 || is_mouse_2)
     {
         mouse_present = TRUE;
         mouse_cursor = SPR_addSprite(&spr_cursor, mouse_x, mouse_y, PAL_LINE_HUD<<TILE_ATTR_PALETTE_SFT);
@@ -95,8 +86,12 @@ void INPUT_do_move_abs( s16 mx, s16 my, bool do_clamp )
         mx = clamp(mx, MOUSE_MIN, MOUSE_X_MAX);
         my = clamp(my, MOUSE_MIN, MOUSE_Y_MAX);
     }
-    SPR_setPosition(mouse_cursor, mx, my);
-    mouse_x = mx; mouse_y = my;
+
+    if(mouse_cursor)
+        SPR_setPosition(mouse_cursor, mx, my);
+
+    mouse_x = mx;
+    mouse_y = my;
 
     // update SGDK value to make clamp count internally
     u16 mouse_joy = is_mouse_2? JOY_2 : (is_mouse_1? JOY_1 : 0xffff);
@@ -126,42 +121,39 @@ void INPUT_step()
     u16 mouse_joy = is_mouse_2? JOY_2 : (is_mouse_1? JOY_1 : 0xffff);
     if (mouse_joy != 0xffff)
     {
-        if(FORCE_MOUSE_ABSOLUTE)
+        s16 mx = JOY_readJoypadX(mouse_joy);
+        s16 my = JOY_readJoypadY(mouse_joy);
+
+        if (mx != last_mx || my != last_my) // only move on change
+            INPUT_do_move_abs(mx, my, TRUE);
+
+        if( DEBUG_INPUT )
         {
-            s16 mx = JOY_readJoypadX(mouse_joy);
-            s16 my = JOY_readJoypadY(mouse_joy);
-
-            if (mx != last_mx || my != last_my) // only move on change
-                INPUT_do_move_abs(mx, my, TRUE);
-
-            if( DEBUG_INPUT )
-            {
-                char buf[40];
-                memset(buf,0,40);
-                sprintf(buf, "%d/%d @%d,%d\n",
-                        (int) JOY_getPortType(JOY_1),
-                        (int) JOY_getJoypadType(JOY_1),
-                        (int) mx,
-                        (int) my);
-                VDP_drawTextBG(BG_A, buf, 0, 0);
-            }
-            last_mx = mx;
-            last_my = my;
+            char buf[40];
+            memset(buf,0,40);
+            sprintf(buf, "%d/%d @%d,%d\n",
+                    (int) JOY_getPortType(JOY_1),
+                    (int) JOY_getJoypadType(JOY_1),
+                    (int) mx,
+                    (int) my);
+            VDP_drawTextBG(BG_A, buf, 0, 0);
         }
-        else
-        {
-            s16 dx = JOY_readJoypadX(mouse_joy);
-            s16 dy = JOY_readJoypadY(mouse_joy);
-            u16 jp = mouse_last_joy_state;
-
-            dx += (jp&BUTTON_RIGHT?MOUSE_SPEED:0);
-            dx += (jp&BUTTON_LEFT?-MOUSE_SPEED:0);
-            dy += (jp&BUTTON_UP?-MOUSE_SPEED:0);
-            dy += (jp&BUTTON_DOWN?MOUSE_SPEED:0);
-
-            INPUT_do_move_abs(mouse_x+dx, mouse_y+dy, TRUE);
-        }
+        last_mx = mx;
+        last_my = my;
     }
+    /*
+    else
+    {
+        s16 dx = JOY_readJoypadX(mouse_joy);
+        s16 dy = JOY_readJoypadY(mouse_joy);
+
+        dx += (jp&BUTTON_RIGHT?MOUSE_SPEED:0);
+        dx += (jp&BUTTON_LEFT?-MOUSE_SPEED:0);
+        dy += (jp&BUTTON_UP?-MOUSE_SPEED:0);
+        dy += (jp&BUTTON_DOWN?MOUSE_SPEED:0);
+
+        INPUT_do_move_abs(mouse_x+dx, mouse_y+dy, TRUE);
+    }*/
 }
 
 
@@ -215,6 +207,13 @@ void INPUT_get_cursor_position( s16 *dest_x, s16 *dest_y )
 {
     *dest_x = mouse_x;
     *dest_y = mouse_y;
+}
+
+
+void INPUT_center_cursor()
+{
+    INPUT_do_move_abs(160, 112, TRUE);
+
 }
 
 u8 INPUT_get_input_dev_icon( u16 port )

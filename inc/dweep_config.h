@@ -24,8 +24,6 @@
 #define DEBUG_PATHFINDING_FIELD 0
 #define DEBUG_PATHFINDING_SLOW 0
 #define DEBUG_LASER_BEHAVIOR 0
-#define FORCE_MOUSE 0
-#define FORCE_MOUSE_ABSOLUTE 1
 
 // Feature switches
 #define DISABLE_SFX 0

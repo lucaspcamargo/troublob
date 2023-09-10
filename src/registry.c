@@ -103,12 +103,41 @@ const RGST_lvl RGST_levels[] = {
             TOOL_NONE,
             TOOL_NONE
         }
+    },
+    {
+        "House of Mirrors\0              ",
+        &map_3_a,
+        &map_3_b,
+        &tset_3,
+        &pal_tset_3,
+        map_3_o,
+        sizeof(map_3_o)/sizeof(void*),
+        map_3_a_alloc,
+        bgm_stage_3,
+        {
+            {PCTRL_OP_CYCLE, 16*PAL_LINE_BG_0 + 30, 2, 0x03},
+            PCTRL_NOP,
+            PCTRL_NOP,
+            PCTRL_NOP
+        },
+        {
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE
+        }
     }
 };
 const uint16_t RGST_lvl_count = sizeof(RGST_levels)/sizeof(RGST_lvl);
 
 
 const void* RGST_bgms[] = {
+    bgm_title,
     bgm_stage_1,
     bgm_stage_2,
     bgm_stage_3,

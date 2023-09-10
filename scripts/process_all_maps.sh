@@ -11,3 +11,4 @@ for i in *.tmx ; do
 done
 
 touch ../../res/resources.res
+touch ../../src/registry.c
