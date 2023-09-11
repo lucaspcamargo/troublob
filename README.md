@@ -35,7 +35,9 @@ For any way you choose, you will need Python 3 with the `lxml` library.
 
 ### Using the CI script
 
-This requires `docker`. Just run `scripts/ci-build.sh`. The output will be at `ci-build/out/rom.bin`.
+This requires `docker`.
+Just run `scripts/ci-build.sh`.
+The output will be at `ci-build/out/rom.bin`.
 Thanks to doragasu for the docker container script.
 
 ### Manually
