@@ -30,13 +30,13 @@ Next major milestones would be:
 + Game states (victory, defeat)
 + Menu
 
-
 Some songs were rearranged using the [Furnace](https://github.com/tildearrow/furnace/) tracker.
 Others were converted using libOPNMIDI (midi2vgm), and still need some manual adjustment or a proper arrangement.
 SFX was imported straight from the original game.
 Art uses [LibreSprite](https://github.com/LibreSprite/LibreSprite) for tilesets and sprites, and [Tiled](https://github.com/mapeditor/tiled) for tilemaps.
 
 The original Dweep was created and programmed by Steve Pavlina, with music by Michael Huang.
+
 
 ## Building
 
@@ -46,10 +46,8 @@ For any way you choose, you'll need Python 3 with the `lxml` library.
 
 This requires `docker`. Just run `scripts/ci-build.sh`. The output will be at `ci-build/out/rom.bin`.
 Thanks to doragasu for the docker container script.
-Note that this toolchain seems to build slower binaries (at least for this project)
 
 ### Manually
-
 
 1. Init and update git submodules (`git submodule update --init`)
 2. Run the map processor script beforehand (`./scripts/process_all_maps.sh`).
