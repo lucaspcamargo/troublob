@@ -21,15 +21,6 @@ as well as a way to realize a long-standing desire to code for the Genesis.
 Most of the game subsystems are in place, and we have a good base for the game.
 Now the focus is on getting the gameplay mechanics and objects working.
 
-Next major milestones would be:
-+ ~~A* navigation for Dweep~~
-+ ~~Collision with walls and objs~~
-+ Lasers (almost there)
-+ Some items and inventory
-+ Player States
-+ Game states (victory, defeat)
-+ Menu
-
 Some songs were rearranged using the [Furnace](https://github.com/tildearrow/furnace/) tracker.
 Others were converted using libOPNMIDI (midi2vgm), and still need some manual adjustment or a proper arrangement.
 SFX was imported straight from the original game.
