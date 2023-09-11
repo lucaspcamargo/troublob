@@ -31,7 +31,7 @@ The original Dweep was created and programmed by Steve Pavlina, with music by Mi
 
 ## Building
 
-For any way you choose, you'll need Python 3 with the `lxml` library.
+For any way you choose, you will need Python 3 with the `lxml` library.
 
 ### Using the CI script
 
