@@ -1,4 +1,4 @@
-# dweep-gen SGDK rescomp
+# dweep-gen RESCOMP RESOURCES
 
 #
 #  TITLE SCREEN
