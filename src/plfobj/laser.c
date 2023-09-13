@@ -87,6 +87,7 @@ void PobjHandler_Laser(PobjData *data, enum PobjEventType evt, void* evt_arg)
     {
         if(extraData->timer_destroy && !(--(extraData->timer_destroy)))
         {
+            SFX_play(SFX_boom);
             if(extraData->spr)
                 SPR_releaseSprite(extraData->spr);
             PLF_obj_destroy(fix16ToInt(data->x), fix16ToInt(data->y), NULL);

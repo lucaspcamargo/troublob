@@ -137,6 +137,14 @@ void TOOL_query(enum ToolId tool, u16 plf_x, u16 plf_y, ToolQuery *ret)
         {
             // TODO unfloat?
         }
+        case TOOL_TORCH:
+        case TOOL_BUCKET:
+            if(is_player)
+            {
+                ret->can_use = TRUE;
+                ret->cursor = tool == TOOL_BUCKET? INPUT_CURSOR_DEATH : INPUT_CURSOR_WATER; // TODO fire cursor
+                return;
+            }
         case TOOL_ROTATE_CCW:
         case TOOL_ROTATE_CW:
             if(t->pobj)
@@ -147,25 +155,6 @@ void TOOL_query(enum ToolId tool, u16 plf_x, u16 plf_y, ToolQuery *ret)
                 ret->cursor = args.out_cursor;
                 return;
             }
-            goto no;
-        case TOOL_TORCH:
-            if(is_player)
-            {
-                ret->can_use = TRUE;
-                // TODO is player wet?
-                ret->cursor = INPUT_CURSOR_DEATH;
-                return;
-            }
-            // TODO obj query
-            break;
-        case TOOL_BUCKET:
-            if(is_player)
-            {
-                ret->can_use = TRUE;
-                ret->cursor = INPUT_CURSOR_WATER;
-                return;
-            }
-            // TODO obj query
             goto no;
         default:
             break;
@@ -240,7 +229,8 @@ void TOOL_exec(enum ToolId tool, u16 plf_x, u16 plf_y)
         case TOOL_ROTATE_CW:
             if(t->pobj)
             {
-                PobjEvtToolArgs args = {tool};
+                PobjEvtToolArgs args;
+                args.tool_id = tool;
                 Pobj_event(Pobj_get_data(t->pobj), POBJ_EVT_TOOL, &args);
             }
             return;

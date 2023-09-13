@@ -131,6 +131,34 @@ const RGST_lvl RGST_levels[] = {
             TOOL_NONE,
             TOOL_NONE
         }
+    },
+    {
+        "Bombing Alley\0                 ",
+        &map_4_a,
+        &map_4_b,
+        &tset_4,
+        &pal_tset_4,
+        map_4_o,
+        sizeof(map_4_o)/sizeof(void*),
+        map_4_a_alloc,
+        bgm_stage_4,
+        {
+            {PCTRL_OP_CYCLE, 16*PAL_LINE_BG_0 + 30, 2, 0x03},
+            PCTRL_NOP,
+            PCTRL_NOP,
+            PCTRL_NOP
+        },
+        {
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE
+        }
     }
 };
 const uint16_t RGST_lvl_count = sizeof(RGST_levels)/sizeof(RGST_lvl);

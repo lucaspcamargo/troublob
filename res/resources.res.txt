@@ -51,6 +51,8 @@ TILESET tset_2 ../art/spr/tileset2.tsx AUTO ALL
 PALETTE pal_tset_2 ../art/spr/tileset2.png
 TILESET tset_3 ../art/spr/tileset3.tsx AUTO ALL
 PALETTE pal_tset_3 ../art/spr/tileset3.png
+TILESET tset_4 ../art/spr/tileset4.tsx AUTO ALL
+PALETTE pal_tset_4 ../art/spr/tileset4.png
 
 
 
@@ -81,6 +83,11 @@ MAP map_3_a ../art/map/__map_3.tmx A AUTO AUTO
 MAP map_3_b ../art/map/__map_3.tmx B AUTO AUTO
 BIN map_3_a_alloc ../art/map/__map_3.tmx.A.bin
 OBJECTS map_3_o ../art/map/__map_3.tmx OBJ type:u16;x:u16;y:u16;width:u16;height:u16
+
+MAP map_4_a ../art/map/__map_4.tmx A AUTO AUTO
+MAP map_4_b ../art/map/__map_4.tmx B AUTO AUTO
+BIN map_4_a_alloc ../art/map/__map_4.tmx.A.bin
+OBJECTS map_4_o ../art/map/__map_4.tmx OBJ type:u16;x:u16;y:u16;width:u16;height:u16
 
 
 #

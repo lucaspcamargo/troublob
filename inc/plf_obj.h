@@ -67,7 +67,7 @@ typedef struct PobjEvtToolQueryArgs_st {
 } PobjEvtToolQueryArgs;
 
 typedef struct PobjEvtToolArgs_st {
-    u16 tool_id;
+    u8 tool_id;  // FIXME u8 is assumption
 } PobjEvtToolArgs;
 
 typedef struct PobjEvtDamageArgs_st {

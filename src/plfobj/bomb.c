@@ -9,9 +9,9 @@
 
 #define TILE_BITS (PLF_ATTR_PLAYER_SOLID | PLF_ATTR_DANGER)
 #define BOMB_FUSE_FRAMES 180
-#define BOMB_FUSE_FRAMES_SHORT 30 // damage from another bomb
+#define BOMB_FUSE_FRAMES_SHORT 20 // damage from another bomb
 #define BOMB_TIMER_NONE 0xff
-#define BOMB_TIMER_EXPLODING 0xfd
+#define BOMB_TIMER_EXPLODING 0xfe
 typedef struct {
     Sprite * spr;
     u8 fuse_timer;
@@ -46,7 +46,7 @@ void PobjHandler_Bomb(PobjData *data, enum PobjEventType evt, void* evt_arg)
         else
         {
             // not lit
-            extraData->fuse_timer = 0xff;
+            extraData->fuse_timer = BOMB_TIMER_NONE;
             extraData->spr = SPR_addSprite(PLF_theme_data_sprite_def(PLF_THEME_BOMB),
                                         fix16ToInt(data->x)*16, fix16ToInt(data->y)*16, 0);
             if(extraData->spr)
@@ -70,6 +70,8 @@ void PobjHandler_Bomb(PobjData *data, enum PobjEventType evt, void* evt_arg)
                 SFX_play(SFX_boom);
                 if(extraData->spr)
                 {
+                    SPR_setHFlip(extraData->spr, random()%2);
+                    SPR_setVFlip(extraData->spr, random()%2);
                     SPR_setDefinition(extraData->spr, PLF_theme_data_sprite_def(PLF_THEME_EXPLOSION));
                     SPR_setPosition(extraData->spr, fix16ToInt(data->x)*16-8, fix16ToInt(data->y)*16-8);
                     SPR_setVRAMTileIndex(extraData->spr, PLF_theme_data_idx_table(PLF_THEME_EXPLOSION)[0][0]);
@@ -153,12 +155,18 @@ void PobjHandler_Bomb(PobjData *data, enum PobjEventType evt, void* evt_arg)
             args->out_can_use = TRUE;
             args->out_cursor = INPUT_CURSOR_DEATH; // TODO flame cursor
         }
+        else if(args->tool_id == TOOL_BUCKET && extraData->fuse_timer != BOMB_TIMER_NONE)
+        {
+            args->out_can_use = TRUE;
+            args->out_cursor = INPUT_CURSOR_WATER;
+        }
     }
     else if(evt == POBJ_EVT_TOOL)
     {
         if(extraData->fuse_timer == BOMB_TIMER_EXPLODING)
             return;
-        enum ToolId tool = *((enum ToolId*) evt_arg);
+
+        enum ToolId tool = ((PobjEvtToolArgs*) evt_arg)->tool_id;
         if(tool == TOOL_BUCKET)
         {
             SFX_play(SFX_water);
@@ -171,19 +179,17 @@ void PobjHandler_Bomb(PobjData *data, enum PobjEventType evt, void* evt_arg)
             }
             else
             {
-                extraData->fuse_timer = -1;
-                SPR_setAnim(extraData->spr, 0);
+                extraData->fuse_timer = BOMB_TIMER_NONE;
                 SPR_setVRAMTileIndex(extraData->spr, PLF_theme_data_idx_table(PLF_THEME_BOMB)[0][0]);
             }
-        } else
-        if(tool == TOOL_TORCH && extraData->fuse_timer == BOMB_TIMER_NONE)
+        }
+        else if(tool == TOOL_TORCH && extraData->fuse_timer == BOMB_TIMER_NONE)
         {
             // light up normally
             SFX_play(SFX_fuse);
             extraData->fuse_timer = BOMB_FUSE_FRAMES;
             if(extraData->spr)
             {
-                SPR_setAnim(extraData->spr, 0);
                 SPR_setVRAMTileIndex(extraData->spr, PLF_theme_data_idx_table(PLF_THEME_BOMB)[0][1]);
             }
         }
