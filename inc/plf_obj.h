@@ -11,13 +11,14 @@ static const PobjHnd POBJ_HND_INVAL = NULL;
 enum PobjType {
     POBJ_TYPE_TEST,
     POBJ_TYPE_MIRROR,
-    POBJ_TYPE_LASER,
-    POBJ_TYPE_FAN,
-    POBJ_TYPE_BOMB,
     POBJ_TYPE_HEAT,
     POBJ_TYPE_COLD,
-    POBJ_TYPE_GOAL,
     POBJ_TYPE_TOOL_ITEM,
+    POBJ_TYPE_FRAME_UPDATE_WATERMARK, // types equal or larger than this receive frame update events
+    POBJ_TYPE_LASER = POBJ_TYPE_FRAME_UPDATE_WATERMARK,
+    POBJ_TYPE_FAN,
+    POBJ_TYPE_BOMB,
+    POBJ_TYPE_GOAL,
     POBJ_TYPE_COUNT
 } ENUM_PACK;
 
@@ -36,7 +37,7 @@ enum PobjEventType {
     POBJ_EVT_LASER_QUERY, // ask about what object does to a laser beam
     POBJ_EVT_TOOL_QUERY,  // get to know which tools can be used on the object
     POBJ_EVT_TOOL,        // tool was used on the object
-    POBJ_EVT_FRAME        // invoked on the object every frame (TODO? use bit in handle to not call every obj every frame?)
+    POBJ_EVT_FRAME        // invoked on the object every frame (TODO? use bit in handle to not call every obj every frame?)'
 } ENUM_PACK;
 
 enum PobjLaserBehavior
@@ -45,6 +46,13 @@ enum PobjLaserBehavior
     POBJ_LASER_REFLECT_RIGHT_UP = 1,
     POBJ_LASER_REFLECT_RIGHT_DOWN = 2,
     POBJ_LASER_BLOCK = 3
+} ENUM_PACK;
+
+enum PobjDamageType
+{
+    POBJ_DAMAGE_LASER,
+    POBJ_DAMAGE_BOMB,
+    POBJ_DAMAGE_HAMMER
 } ENUM_PACK;
 
 typedef struct PobjEvtCreatedArgs_st {
@@ -62,6 +70,10 @@ typedef struct PobjEvtToolArgs_st {
     u16 tool_id;
 } PobjEvtToolArgs;
 
+typedef struct PobjEvtDamageArgs_st {
+    enum PobjDamageType damage_type;
+} PobjEvtDamageArgs;
+
 typedef void (*PobjEventHandler)(PobjData *data, enum PobjEventType evt, void* evt_arg);
 extern const PobjEventHandler POBJ_HANDLERS[];
 
@@ -73,4 +85,4 @@ PobjHnd Pobj_alloc();                                                           
 void Pobj_dealloc(PobjHnd *handle);                                                // deallocate
 inline PobjData * Pobj_get_data(PobjHnd handle) {return (PobjData*) handle;}    // since handle is just pointer to data, optimize this getter here
 void Pobj_event(PobjHnd handle, enum PobjEventType evt, void* evt_arg);         // post an event to an object
-void Pobj_event_to_all(enum PobjEventType evt, void* evt_arg);                  // post an event to all objects
+void Pobj_event_to_all(enum PobjEventType evt, void* evt_arg, bool frame_update);  // post an event to all objects

@@ -198,6 +198,11 @@ void _PLF_load_theme()
     plf_theme_palette_line[PLF_THEME_COLD] = PAL_LINE_SPR_A;
     plf_theme_tile_indices[PLF_THEME_COLD] = SPR_loadAllFrames(&spr_plate_cold, GLOBAL_vdp_tile_watermark, &loadedTiles);
     GLOBAL_vdp_tile_watermark += loadedTiles;
+
+    plf_theme_sprite_defs[PLF_THEME_EXPLOSION] = &spr_explosion;
+    plf_theme_palette_line[PLF_THEME_EXPLOSION] = PAL_LINE_SPR_A;
+    plf_theme_tile_indices[PLF_THEME_EXPLOSION] = SPR_loadAllFrames(&spr_explosion, GLOBAL_vdp_tile_watermark, &loadedTiles);
+    GLOBAL_vdp_tile_watermark += loadedTiles;
 }
 
 
@@ -513,6 +518,19 @@ void PLF_obj_destroy(u16 px, u16 py, void *evt_arg)
 }
 
 
+void  PLF_obj_damage(u8 type, u16 px, u16 py)
+{
+    PlfTile * t = PLF_get_tile_safe(px, py);
+    if(!t)
+        return;
+
+    if(t->pobj)
+    {
+        Pobj_event(Pobj_get_data(t->pobj), POBJ_EVT_DAMAGE, &type);
+    }
+
+}
+
 /***
  * This function lets us add a laser to the playfield,
  * give the tile it is coming from, and the direction.
@@ -565,6 +583,12 @@ bool PLF_laser_put(u16 orig_x, u16 orig_y, u8 dir)
         }
 
         tile->laser |= (PLF_LASER_IN_R << dir);
+
+        if(tile->pobj)
+        {
+            enum PobjDamageType damage = POBJ_DAMAGE_LASER;
+            Pobj_event(Pobj_get_data(tile->pobj), POBJ_EVT_DAMAGE, &damage);
+        }
 
         if(tile->attrs & PLF_ATTR_LASER_SOLID)
         {
@@ -1037,6 +1061,12 @@ void PLF_update_scroll(bool forceRedraw)
         sprintf(buf, "@%d,%d   ", fix16ToRoundedInt(plf_cam_cx), fix16ToRoundedInt(plf_cam_cy));
         VDP_drawTextBG(WINDOW, buf, 0, 27);
     }
+}
+
+
+void PLF_update_objects(u32 framecounter)
+{
+    Pobj_event_to_all(POBJ_EVT_FRAME, &framecounter, TRUE);
 }
 
 const SpriteDefinition* PLF_theme_data_sprite_def(enum PlfThemeData ref)

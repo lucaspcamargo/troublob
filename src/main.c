@@ -142,8 +142,8 @@ int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
         }
 
 
-
         PLR_update(framecounter);
+        PLF_update_objects(framecounter);
         HUD_update();
 
 

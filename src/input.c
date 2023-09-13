@@ -13,7 +13,6 @@ static Sprite *mouse_cursor;
 static s16 mouse_x = 160;
 static s16 mouse_y = 92;
 static bool mouse_present = FALSE;
-static u16 mouse_last_joy_state = 0;
 static bool is_mouse_1;
 static bool is_mouse_2;
 static s16 last_mx, last_my = -1;

@@ -32,6 +32,7 @@ SPRITE spr_bomb ../art/spr/bomb.png                     2 2  FAST   0       NONE
 SPRITE spr_mirror ../art/spr/mirror.png                 2 3  FAST   0       NONE    NONE
 SPRITE spr_plate_hot ../art/spr/plate-hot.png           2 2  FAST   0       NONE    NONE
 SPRITE spr_plate_cold ../art/spr/plate-cold.png         2 2  FAST   0       NONE    NONE
+SPRITE spr_explosion ../art/spr/explosion.png           4 4  FAST   2       NONE    NONE
 
 
 

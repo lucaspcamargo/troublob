@@ -174,8 +174,7 @@ void _PLR_update_gfx(bool blink_frame, u8 anim_frame)
     SPR_setPosition(spr_player_shadow,
         _fix16ToRoundedInt(fix16Mul(player_pf_x, FIX16(16))),
         _fix16ToRoundedInt(fix16Mul(player_pf_y, FIX16(16)))+4+3);
-    SPR_setFrame(spr_player_shadow, \
-    ((s16) (fix16Div(player_pf_z, FIX16(3)) >> FIX16_FRAC_BITS)) );
+    SPR_setFrame(spr_player_shadow, max(0,min(3, fix16ToRoundedInt(player_pf_z)/2-1)) );
 
 
     // eyes

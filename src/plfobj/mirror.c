@@ -77,4 +77,18 @@ void PobjHandler_Mirror(PobjData *data, enum PobjEventType evt, void* evt_arg)
             PLF_laser_recalc(fix16ToInt(data->x), fix16ToInt(data->y));
         }
     }
+    else if(evt == POBJ_EVT_DAMAGE)
+    {
+        enum PobjDamageType damage = *((enum PobjDamageType*)evt_arg);
+        if(damage == POBJ_DAMAGE_BOMB)
+        {
+            // TODO destruction anim
+            SFX_play(SFX_glass);
+            if(extraData->spr)
+                SPR_releaseSprite(extraData->spr);
+            PLF_obj_destroy(fix16ToInt(data->x), fix16ToInt(data->y), NULL);
+            PLF_get_tile(fix16ToInt(data->x), fix16ToInt(data->y))->attrs &= ~TILE_BITS;
+            PLF_laser_recalc(fix16ToInt(data->x), fix16ToInt(data->y));
+        }
+    }
 }

@@ -48,8 +48,8 @@ static const uint32_t SFX_SZ[] = {
 
 // reserve channel 1 for music PCM
 static const u16 SFX_CH[] = {
-    SOUND_PCM_CH3, //sfx_boom),
-    SOUND_PCM_CH4, //sfx_burn),
+    SOUND_PCM_CH4, //sfx_boom),
+    SOUND_PCM_CH2, //sfx_burn),
     SOUND_PCM_CH2, //sfx_crush),
     SOUND_PCM_CH2, //sfx_ding),
     SOUND_PCM_CH2, //sfx_dry),
@@ -58,12 +58,12 @@ static const u16 SFX_CH[] = {
     SOUND_PCM_CH2, //sfx_freeze),
     SOUND_PCM_CH2, //sfx_fuse),
     SOUND_PCM_CH2, //sfx_glass),
-    SOUND_PCM_CH4, //sfx_go1),
-    SOUND_PCM_CH4, //sfx_go3),
-    SOUND_PCM_CH4, //sfx_go4),
+    SOUND_PCM_CH2, //sfx_go1),
+    SOUND_PCM_CH2, //sfx_go3),
+    SOUND_PCM_CH2, //sfx_go4),
     SOUND_PCM_CH2, //sfx_mop),
     SOUND_PCM_CH2, //sfx_no),
-    SOUND_PCM_CH2, //sfx_short),
+    SOUND_PCM_CH3, //sfx_short),
     SOUND_PCM_CH2, //sfx_thaw),
     SOUND_PCM_CH2, //sfx_water),
     SOUND_PCM_CH2  //sfx_wrench)

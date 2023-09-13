@@ -231,9 +231,10 @@ void TOOL_exec(enum ToolId tool, u16 plf_x, u16 plf_y)
             goto place_obj;
 
         case TOOL_HAMMER:
+        case TOOL_TORCH:
             if(is_player)
             {
-                // TODO unfloat
+                // TODO player logic here
             }
         case TOOL_ROTATE_CCW:
         case TOOL_ROTATE_CW:

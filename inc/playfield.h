@@ -75,6 +75,7 @@ enum PlfThemeData{
     PLF_THEME_BOMB,
     PLF_THEME_HOT,
     PLF_THEME_COLD,
+    PLF_THEME_EXPLOSION,
     PLF_THEME_COUNT
 } ENUM_PACK;
 
@@ -100,6 +101,7 @@ bool PLF_player_path_next(u16 px, u16 py, u16 *nextx, u16 *nexty);
 void* PLF_obj_create(u16 pobj_type, u16 pobj_subtype, u16 px, u16 py);   // returns PobjHnd
 void* PLF_obj_at(u16 px, u16 py);       // returns PobjHnd
 void  PLF_obj_destroy(u16 px, u16 py, void *evt_arg);   // destroy object at
+void  PLF_obj_damage(u8 type, u16 px, u16 py);
 
 bool PLF_laser_put(u16 orig_x, u16 orig_y, u8 dir);
 void PLF_laser_recalc(u16 plf_x, u16 plf_y);  // undoes lasers that goes out from the tile, and puts them again
@@ -110,6 +112,7 @@ inline s16 PLF_get_sprite_depth(fix16 x, fix16 y) { (void) x; return 0x8000 - y;
  * Note: forceRedraw will call vblank processing twice for uploading map data to planes
  * */
 void PLF_update_scroll(bool forceRedraw);
+void PLF_update_objects(u32 framecounter);
 
 // reuse plane A (for laser) or plane B (for objects) to display 4 column-major tiles at position
 // column major because we can use this with unoptimized sprite data

@@ -41,11 +41,11 @@ const RGST_lvl RGST_levels[] = {
             TOOL_PLACE_MIRROR_RIGHT_UP,
             TOOL_PLACE_MIRROR_RIGHT_DOWN,
             TOOL_PLACE_MIRROR_RIGHT_DOWN,
-            TOOL_NONE,
-            TOOL_NONE,
-            TOOL_NONE,
-            TOOL_NONE,
-            TOOL_NONE,
+            TOOL_PLACE_BOMB,
+            TOOL_PLACE_BOMB,
+            TOOL_PLACE_BOMB,
+            TOOL_PLACE_BOMB,
+            TOOL_PLACE_BOMB,
         }
     },
     {

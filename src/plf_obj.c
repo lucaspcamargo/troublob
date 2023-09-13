@@ -51,12 +51,14 @@ void Pobj_event(PobjHnd handle, enum PobjEventType evt, void* evt_arg)
 }
 
 
-void Pobj_event_to_all(enum PobjEventType evt, void* evt_arg)
+void Pobj_event_to_all(enum PobjEventType evt, void* evt_arg, bool frame_update)
 {
     void ** base_ptr = POOL_getFirst(_pobj_pool);
     u16 cnt = POOL_getNumAllocated(_pobj_pool);
     for(u16 i = 0; i < cnt; i++)
     {
+        if(frame_update && ((PobjData*)base_ptr[i])->type < POBJ_TYPE_FRAME_UPDATE_WATERMARK)
+            continue;
         Pobj_event((PobjData*)base_ptr[i], evt, evt_arg);
     }
 }
