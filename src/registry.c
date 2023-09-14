@@ -159,6 +159,34 @@ const RGST_lvl RGST_levels[] = {
             TOOL_NONE,
             TOOL_NONE
         }
+    },
+    {
+        "Dexterity\0                     ",
+        &map_5_a,
+        &map_5_b,
+        &tset_5,
+        &pal_tset_5,
+        map_5_o,
+        sizeof(map_5_o)/sizeof(void*),
+        map_5_a_alloc,
+        bgm_stage_5,
+        {
+            {PCTRL_OP_CYCLE, 16*PAL_LINE_BG_0 + 30, 2, 0x03},
+            PCTRL_NOP,
+            PCTRL_NOP,
+            PCTRL_NOP
+        },
+        {
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE
+        }
     }
 };
 const uint16_t RGST_lvl_count = sizeof(RGST_levels)/sizeof(RGST_lvl);

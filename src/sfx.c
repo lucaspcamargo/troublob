@@ -56,7 +56,7 @@ static const u16 SFX_CH[] = {
     SOUND_PCM_CH2, //sfx_dull),
     SOUND_PCM_CH2, //sfx_float),
     SOUND_PCM_CH2, //sfx_freeze),
-    SOUND_PCM_CH2, //sfx_fuse),
+    SOUND_PCM_CH3, //sfx_fuse),
     SOUND_PCM_CH2, //sfx_glass),
     SOUND_PCM_CH2, //sfx_go1),
     SOUND_PCM_CH2, //sfx_go3),
