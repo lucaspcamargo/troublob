@@ -28,7 +28,7 @@ void PobjHandler_Goal(PobjData *data, enum PobjEventType evt, void* evt_arg)
         SPR_setAutoTileUpload(extraData->baby, FALSE);
         SPR_setAnimAndFrame(extraData->baby, 0, baby_color);
         SPR_setVRAMTileIndex(extraData->baby, PLF_theme_data_idx_table(PLF_THEME_GOAL_BABIES)[0][baby_color]);
-        SPR_setDepth(extraData->baby, PLF_get_sprite_depth(FIX16(data->x), FIX16(data->y)) - 1);
+        SPR_setDepth(extraData->baby, PLF_get_sprite_depth(fix16ToInt(data->x), fix16ToInt(data->y)) - 1);
     }
     else if(evt == POBJ_EVT_STEPPED)
     {

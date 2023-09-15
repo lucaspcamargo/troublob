@@ -8,6 +8,7 @@
 
 #define TILE_BITS (PLF_ATTR_PLAYER_SOLID | PLF_ATTR_LASER_SOLID | PLF_ATTR_DANGER)
 #define LASER_DESTROY_FRAMES 50
+#define LASER_EXPLOSION_MARK 0x80
 typedef struct {
     Sprite * spr;
     u8 dir;
@@ -41,6 +42,18 @@ void PobjHandler_Laser(PobjData *data, enum PobjEventType evt, void* evt_arg)
             SFX_play(SFX_short);
             extraData->timer_destroy = LASER_DESTROY_FRAMES;
             PLF_laser_recalc(fix16ToInt(data->x), fix16ToInt(data->y));
+            if(extraData->spr)
+            {
+                SPR_releaseSprite(extraData->spr);
+                extraData->spr = SPR_addSprite(&spr_laser_cannon_d,
+                                               fix16ToInt(data->x)*16, fix16ToInt(data->y)*16 - 8,
+                                               TILE_ATTR(PAL_LINE_BG_1, 0, 0, 0));
+                if(extraData->spr)
+                {
+                    SPR_setAutoTileUpload(extraData->spr, TRUE);
+                    SPR_setAnim(extraData->spr, extraData->dir);
+                }
+            }
         }
 
         PLF_laser_put(fix16ToInt(data->x), fix16ToInt(data->y), extraData->dir);
@@ -81,29 +94,84 @@ void PobjHandler_Laser(PobjData *data, enum PobjEventType evt, void* evt_arg)
         {
             SFX_play(SFX_short);
             extraData->timer_destroy = LASER_DESTROY_FRAMES;
+            if(extraData->spr)
+            {
+                SPR_releaseSprite(extraData->spr);
+                extraData->spr = SPR_addSprite(&spr_laser_cannon_d,
+                                               fix16ToInt(data->x)*16, fix16ToInt(data->y)*16 - 8,
+                                               TILE_ATTR(PAL_LINE_BG_1, 0, 0, 0));
+                if(extraData->spr)
+                {
+                    SPR_setAutoTileUpload(extraData->spr, TRUE);
+                    SPR_setAnim(extraData->spr, extraData->dir);
+                }
+            }
         }
     }
     else if(evt == POBJ_EVT_FRAME)
     {
-        if(extraData->timer_destroy && !(--(extraData->timer_destroy)))
+        if(extraData->timer_destroy >= LASER_EXPLOSION_MARK)
+        {
+            // explosion now
+            extraData->timer_destroy ++;
+            if(extraData->timer_destroy < (LASER_EXPLOSION_MARK+12))
+            {
+                // update anim
+                if(extraData->spr)
+                {
+                    SPR_setVRAMTileIndex(extraData->spr, PLF_theme_data_idx_table(PLF_THEME_EXPLOSION)[0][(extraData->timer_destroy&~LASER_EXPLOSION_MARK)/2]);
+                }
+            }
+            else
+            {
+                PLF_obj_destroy(fix16ToInt(data->x), fix16ToInt(data->y), NULL);
+                if(extraData->spr)
+                    SPR_releaseSprite(extraData->spr);
+            }
+        }
+        else if(extraData->timer_destroy && !(--(extraData->timer_destroy)))
         {
             SFX_play(SFX_boom);
+            extraData->timer_destroy = LASER_EXPLOSION_MARK;
             if(extraData->spr)
-                SPR_releaseSprite(extraData->spr);
-            PLF_obj_destroy(fix16ToInt(data->x), fix16ToInt(data->y), NULL);
+            {
+                SPR_setAutoTileUpload(extraData->spr, FALSE);
+                SPR_setPalette(extraData->spr, PAL_LINE_SPR_A);
+                SPR_setHFlip(extraData->spr, random()%2);
+                SPR_setVFlip(extraData->spr, random()%2);
+                SPR_setDefinition(extraData->spr, PLF_theme_data_sprite_def(PLF_THEME_EXPLOSION));
+                SPR_setPosition(extraData->spr, fix16ToInt(data->x)*16-8, fix16ToInt(data->y)*16-8);
+                SPR_setVRAMTileIndex(extraData->spr, PLF_theme_data_idx_table(PLF_THEME_EXPLOSION)[0][0]);
+                SPR_setDepth(extraData->spr, SPR_MIN_DEPTH + 1);
+            }
             PLF_get_tile(fix16ToInt(data->x), fix16ToInt(data->y))->attrs &= ~TILE_BITS;
             PLF_laser_recalc(fix16ToInt(data->x), fix16ToInt(data->y));
+
         }
-        else if(extraData->spr)
+        else if(extraData->spr && !extraData->timer_destroy)
             SPR_setVRAMTileIndex(extraData->spr, PLF_theme_data_idx_table(PLF_THEME_LASER_CANNON)[extraData->dir][*((u32*)evt_arg)/4 % 2]);
     }
     else if(evt == POBJ_EVT_DAMAGE)
     {
+        if(extraData->timer_destroy)
+            return;
         enum PobjDamageType damage = *((enum PobjDamageType*)evt_arg);
         if(damage == POBJ_DAMAGE_BOMB || damage == POBJ_DAMAGE_LASER)
         {
             SFX_play(SFX_short);
             extraData->timer_destroy = LASER_DESTROY_FRAMES;
+            if(extraData->spr)
+            {
+                SPR_releaseSprite(extraData->spr);
+                extraData->spr = SPR_addSprite(&spr_laser_cannon_d,
+                                               fix16ToInt(data->x)*16, fix16ToInt(data->y)*16 - 8,
+                                               TILE_ATTR(PAL_LINE_BG_1, 0, 0, 0));
+                if(extraData->spr)
+                {
+                    SPR_setAutoTileUpload(extraData->spr, TRUE);
+                    SPR_setAnim(extraData->spr, extraData->dir);
+                }
+            }
         }
     }
 }
