@@ -187,6 +187,90 @@ const RGST_lvl RGST_levels[] = {
             TOOL_NONE,
             TOOL_NONE
         }
+    },
+    {
+        "Lasermania\0                    ",
+        &map_6_a,
+        &map_6_b,
+        &tset_1,
+        &pal_tset_1,
+        map_6_o,
+        sizeof(map_6_o)/sizeof(void*),
+        map_6_a_alloc,
+        bgm_stage_1,
+        {
+            {PCTRL_OP_CYCLE, 16*PAL_LINE_BG_0 + 30, 2, 0x03},
+            PCTRL_NOP,
+            PCTRL_NOP,
+            PCTRL_NOP
+        },
+        {
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE
+        }
+    },
+    {
+        "Phoenix\0                       ",
+        &map_7_a,
+        &map_7_b,
+        &tset_2,
+        &pal_tset_2,
+        map_7_o,
+        sizeof(map_7_o)/sizeof(void*),
+        map_7_a_alloc,
+        bgm_stage_2,
+        {
+            {PCTRL_OP_CYCLE, 16*PAL_LINE_BG_0 + 30, 2, 0x03},
+            PCTRL_NOP,
+            PCTRL_NOP,
+            PCTRL_NOP
+        },
+        {
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE
+        }
+    },
+    {
+        "Squish Time\0                   ",
+        &map_8_a,
+        &map_8_b,
+        &tset_3,
+        &pal_tset_3,
+        map_8_o,
+        sizeof(map_8_o)/sizeof(void*),
+        map_8_a_alloc,
+        bgm_stage_3,
+        {
+            {PCTRL_OP_CYCLE, 16*PAL_LINE_BG_0 + 30, 2, 0x03},
+            PCTRL_NOP,
+            PCTRL_NOP,
+            PCTRL_NOP
+        },
+        {
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE
+        }
     }
 };
 const uint16_t RGST_lvl_count = sizeof(RGST_levels)/sizeof(RGST_lvl);
