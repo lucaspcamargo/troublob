@@ -221,6 +221,7 @@ void TOOL_exec(enum ToolId tool, u16 plf_x, u16 plf_y)
 
         case TOOL_HAMMER:
         case TOOL_TORCH:
+        case TOOL_BUCKET:
             if(is_player)
             {
                 // TODO player logic here

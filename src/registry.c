@@ -271,6 +271,62 @@ const RGST_lvl RGST_levels[] = {
             TOOL_NONE,
             TOOL_NONE
         }
+    },
+    {
+        "Dweeps on Ice\0                 ",
+        &map_9_a,
+        &map_9_b,
+        &tset_4,
+        &pal_tset_4,
+        map_9_o,
+        sizeof(map_9_o)/sizeof(void*),
+        map_9_a_alloc,
+        bgm_stage_4,
+        {
+            {PCTRL_OP_CYCLE, 16*PAL_LINE_BG_0 + 30, 2, 0x03},
+            PCTRL_NOP,
+            PCTRL_NOP,
+            PCTRL_NOP
+        },
+        {
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE
+        }
+    },
+    {
+        "Badda Bing Badda Boom\0         ",
+        &map_10_a,
+        &map_10_b,
+        &tset_5,
+        &pal_tset_5,
+        map_10_o,
+        sizeof(map_10_o)/sizeof(void*),
+        map_10_a_alloc,
+        bgm_stage_5,
+        {
+            {PCTRL_OP_CYCLE, 16*PAL_LINE_BG_0 + 30, 2, 0x03},
+            PCTRL_NOP,
+            PCTRL_NOP,
+            PCTRL_NOP
+        },
+        {
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE,
+            TOOL_NONE
+        }
     }
 };
 const uint16_t RGST_lvl_count = sizeof(RGST_levels)/sizeof(RGST_lvl);

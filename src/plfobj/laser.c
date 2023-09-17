@@ -26,18 +26,21 @@ void PobjHandler_Laser(PobjData *data, enum PobjEventType evt, void* evt_arg)
         tile->attrs |= TILE_BITS;
         extraData->dir = args->subtype;
 
-        extraData->spr = SPR_addSprite(PLF_theme_data_sprite_def(PLF_THEME_LASER_CANNON),
-                                       fix16ToInt(data->x)*16, fix16ToInt(data->y)*16 - 8, 0);
-        if(extraData->spr)
-        {
-            SPR_setAutoTileUpload(extraData->spr, FALSE);
-            SPR_setPalette(extraData->spr, PAL_LINE_SPR_A);
-            SPR_setAnim(extraData->spr, extraData->dir);
-            SPR_setVRAMTileIndex(extraData->spr, PLF_theme_data_idx_table(PLF_THEME_LASER_CANNON)[extraData->dir][0]);
-            SPR_setDepth(extraData->spr, PLF_get_sprite_depth(data->x, data->y));
-        }
 
-        if(tile->laser)
+        if(!tile->laser)
+        {
+            extraData->spr = SPR_addSprite(PLF_theme_data_sprite_def(PLF_THEME_LASER_CANNON),
+                                fix16ToInt(data->x)*16, fix16ToInt(data->y)*16 - 8, 0);
+            if(extraData->spr)
+            {
+                SPR_setAutoTileUpload(extraData->spr, FALSE);
+                SPR_setPalette(extraData->spr, PAL_LINE_SPR_A);
+                SPR_setAnim(extraData->spr, extraData->dir);
+                SPR_setVRAMTileIndex(extraData->spr, PLF_theme_data_idx_table(PLF_THEME_LASER_CANNON)[extraData->dir][0]);
+                SPR_setDepth(extraData->spr, PLF_get_sprite_depth(data->x, data->y));
+            }
+        }
+        else
         {
             SFX_play(SFX_short);
             extraData->timer_destroy = LASER_DESTROY_FRAMES;
@@ -45,14 +48,16 @@ void PobjHandler_Laser(PobjData *data, enum PobjEventType evt, void* evt_arg)
             if(extraData->spr)
             {
                 SPR_releaseSprite(extraData->spr);
-                extraData->spr = SPR_addSprite(&spr_laser_cannon_d,
-                                               fix16ToInt(data->x)*16, fix16ToInt(data->y)*16 - 8,
-                                               TILE_ATTR(PAL_LINE_BG_1, 0, 0, 0));
-                if(extraData->spr)
-                {
-                    SPR_setAutoTileUpload(extraData->spr, TRUE);
-                    SPR_setAnim(extraData->spr, extraData->dir);
-                }
+                extraData->spr = NULL;
+            }
+
+            extraData->spr = SPR_addSprite(&spr_laser_cannon_d,
+                                            fix16ToInt(data->x)*16, fix16ToInt(data->y)*16 - 8,
+                                            TILE_ATTR(PAL_LINE_BG_1, 0, 0, 0));
+            if(extraData->spr)
+            {
+                SPR_setAutoTileUpload(extraData->spr, TRUE);
+                SPR_setAnim(extraData->spr, extraData->dir);
             }
         }
 
@@ -87,7 +92,7 @@ void PobjHandler_Laser(PobjData *data, enum PobjEventType evt, void* evt_arg)
             PLF_laser_recalc(fix16ToInt(data->x), fix16ToInt(data->y));
             PLF_laser_put(fix16ToInt(data->x), fix16ToInt(data->y), extraData->dir);
             if(extraData->spr)
-            SPR_setVRAMTileIndex(extraData->spr, PLF_theme_data_idx_table(PLF_THEME_LASER_CANNON)[extraData->dir][0]);
+                SPR_setVRAMTileIndex(extraData->spr, PLF_theme_data_idx_table(PLF_THEME_LASER_CANNON)[extraData->dir][0]);
             SFX_play(SFX_wrench);
         }
         else if(args->tool_id == TOOL_HAMMER)

@@ -50,6 +50,23 @@ void PLR_init()
     SPR_setPriority(spr_player_shadow, FALSE);
     SPR_setVisibility(spr_player, VISIBLE);
 
+    player_pf_x = 0;
+    player_pf_y = 0;
+    player_pf_z = FIX16(0);
+    dest_pf_x = player_pf_x;
+    dest_pf_y = player_pf_y;
+    final_dest_pf_x = player_pf_x;
+    final_dest_pf_y = player_pf_y;
+    player_int_x = fix16ToInt(player_pf_x);
+    player_int_y = fix16ToInt(player_pf_y);
+
+    player_state = PLR_STATE_IDLE;
+    player_emote = PLR_EMOTE_NEUTRAL;
+    _PLR_update_gfx(FALSE, 0);
+}
+
+void PLR_reset_position()
+{
     PLF_player_get_initial_pos(&player_pf_x, &player_pf_y);
     player_pf_z = FIX16(0);
     dest_pf_x = player_pf_x;
@@ -58,12 +75,9 @@ void PLR_init()
     final_dest_pf_y = player_pf_y;
     player_int_x = fix16ToInt(player_pf_x);
     player_int_y = fix16ToInt(player_pf_y);
-    player_state = PLR_STATE_IDLE;
-    player_emote = PLR_EMOTE_NEUTRAL;
-
-    _PLR_update_gfx(FALSE, 0);
-
 }
+
+
 
 bool PLR_goto(u16 dest_x, u16 dest_y)
 {

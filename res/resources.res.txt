@@ -113,6 +113,16 @@ MAP map_8_b ../art/map/__map_8.tmx B AUTO AUTO
 BIN map_8_a_alloc ../art/map/__map_8.tmx.A.bin
 OBJECTS map_8_o ../art/map/__map_8.tmx OBJ type:u16;x:u16;y:u16;width:u16;height:u16
 
+MAP map_9_a ../art/map/__map_9.tmx A AUTO AUTO
+MAP map_9_b ../art/map/__map_9.tmx B AUTO AUTO
+BIN map_9_a_alloc ../art/map/__map_9.tmx.A.bin
+OBJECTS map_9_o ../art/map/__map_9.tmx OBJ type:u16;x:u16;y:u16;width:u16;height:u16
+
+MAP map_10_a ../art/map/__map_10.tmx A AUTO AUTO
+MAP map_10_b ../art/map/__map_10.tmx B AUTO AUTO
+BIN map_10_a_alloc ../art/map/__map_10.tmx.A.bin
+OBJECTS map_10_o ../art/map/__map_10.tmx OBJ type:u16;x:u16;y:u16;width:u16;height:u16
+
 
 #
 #  MUSIC

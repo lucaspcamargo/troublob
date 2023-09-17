@@ -173,7 +173,7 @@ void PobjHandler_Bomb(PobjData *data, enum PobjEventType evt, void* evt_arg)
             PlfTile *t = PLF_get_tile_safe(fix16ToInt(data->x), fix16ToInt(data->y));
             if (!t)
                 return; // what???
-            if(t->laser & PLF_LASER_IN_ALL)
+            if(t->laser)
             {
                 extraData->fuse_timer = BOMB_FUSE_FRAMES;
             }

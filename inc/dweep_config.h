@@ -11,7 +11,7 @@
 #define DEBUG_MENU 1
 #define DEBUG_CPU_LOAD 1
 #else
-#define DEBUG_MENU 0
+#define DEBUG_MENU 1
 #define DEBUG_CPU_LOAD 0
 #endif
 #define DEBUG_TILES 0

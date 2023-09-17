@@ -28,9 +28,11 @@ int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
     INPUT_set_cursor_visible(TRUE);
 
     // init playfield and hud
+    PLR_init();
     PLF_init(level_id);
     HUD_init();
-    PLR_init();
+
+    PLR_reset_position();
 
     { // setup hud inventory
         enum ToolId all_tools[10];
