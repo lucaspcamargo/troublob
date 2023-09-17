@@ -379,7 +379,11 @@ void PLR_update(u32 framecounter)
     bool upward = ((framecounter*8) % 512) >= 200? 0 : 1;
     u16 anim_frame = upward;
     if(player_flags & PLAYER_FLAG_WET)
+    {
         anim_frame += 4;
+        if(!(framecounter%64))
+            SFX_play(SFX_mop);
+    }
     if(player_state == PLR_STATE_DYING || player_state == PLR_STATE_DEAD)
     {
         anim_frame = 2;

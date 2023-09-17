@@ -9,7 +9,7 @@
 
 #define TILE_BITS (PLF_ATTR_PLAYER_SOLID | PLF_ATTR_DANGER)
 #define BOMB_FUSE_FRAMES 180
-#define BOMB_FUSE_FRAMES_SHORT 20 // damage from another bomb
+#define BOMB_FUSE_FRAMES_SHORT 30 // damage from another bomb
 #define BOMB_TIMER_NONE 0xff
 #define BOMB_TIMER_EXPLODING 0xfe
 typedef struct {
