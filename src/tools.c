@@ -224,7 +224,15 @@ void TOOL_exec(enum ToolId tool, u16 plf_x, u16 plf_y)
         case TOOL_BUCKET:
             if(is_player)
             {
-                // TODO player logic here
+                if(tool == TOOL_BUCKET)
+                {
+                    PLR_wet();
+                    break;
+                }
+                else if(tool == TOOL_TORCH)
+                {
+                    PLR_fire();
+                }
             }
         case TOOL_ROTATE_CCW:
         case TOOL_ROTATE_CW:

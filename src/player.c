@@ -18,9 +18,15 @@ static u16 player_int_x; // integer tile position player is on
 static u16 player_int_y;
 static enum PlayerState player_state;
 static enum PlayerEmote player_emote;
+static u8 player_flags;
 static Sprite *spr_player;
 static Sprite *spr_player_shadow;
 static Sprite *spr_player_eyes;
+
+enum PlayerFlags {
+    PLAYER_FLAG_NONE = 0,
+    PLAYER_FLAG_WET = 1,
+} ENUM_PACK;
 
 
 #define TILE_IS_DANGEROUS(t) (t && (t->attrs & PLF_ATTR_DANGER || t->laser & PLF_LASER_OUT_ALL))
@@ -62,6 +68,7 @@ void PLR_init()
 
     player_state = PLR_STATE_IDLE;
     player_emote = PLR_EMOTE_NEUTRAL;
+    player_flags = PLAYER_FLAG_NONE;
     _PLR_update_gfx(FALSE, 0);
 }
 
@@ -81,6 +88,12 @@ void PLR_reset_position()
 
 bool PLR_goto(u16 dest_x, u16 dest_y)
 {
+    if(player_state != PLR_STATE_IDLE && player_state != PLR_STATE_MOVING_PATH)
+    {
+        SFX_play(SFX_no);
+        return FALSE;
+    }
+
     bool found = PLF_player_pathfind(fix16ToInt(player_pf_x),fix16ToInt(player_pf_y), dest_x, dest_y);
     if (found)
     {
@@ -120,8 +133,66 @@ u16 PLR_curr_tile_y()
     return player_int_y;
 }
 
+enum PlayerState PLR_curr_state()
+{
+    return player_state;
+}
+
+bool PLR_is_wet()
+{
+    return player_flags & PLAYER_FLAG_WET? TRUE : FALSE;
+}
+
+void PLR_wet()
+{
+    player_flags |= PLAYER_FLAG_WET;
+    SFX_play(SFX_water);
+}
+
+void PLR_freeze()
+{
+    player_state = PLR_STATE_FROZEN;
+    player_pf_x = intToFix16(player_int_x);
+    player_pf_y = intToFix16(player_int_y);
+    player_pf_z = FIX16(0);
+    dest_pf_x = player_pf_x;
+    dest_pf_y = player_pf_y;
+    final_dest_pf_x = player_pf_x;
+    final_dest_pf_y = player_pf_y;
+}
+
+
+void PLR_fire()
+{
+    if(player_state == PLR_STATE_FROZEN)
+    {
+        player_state = PLR_STATE_IDLE;
+        player_flags |= PLAYER_FLAG_WET;
+        SFX_play(SFX_thaw);
+    }
+    else
+    {
+        player_state = PLR_STATE_DYING;
+        SFX_play(SFX_burn);
+    }
+}
+
+void PLR_float()
+{
+    player_state = PLR_STATE_FLOATING_START;
+}
+
+bool PLR_unfloat()
+{
+    // TODO impl
+    return FALSE;
+}
+
+
 void _PLR_update_bounce(u32 framecounter)
 {
+    if(player_state == PLR_STATE_DYING || player_state == PLR_STATE_DEAD || player_state == PLR_STATE_FROZEN)
+        return;
     int angle = (framecounter * 4)&1023;
     /*if(player_float)
     {
@@ -192,7 +263,7 @@ void _PLR_update_gfx(bool blink_frame, u8 anim_frame)
 
 
     // eyes
-    if(player_emote == PLR_EMOTE_NEUTRAL && !blink_frame)
+    if(player_emote == PLR_EMOTE_NONE || (player_emote == PLR_EMOTE_NEUTRAL && !blink_frame))
     {
         SPR_setVisibility(spr_player_eyes, HIDDEN);
     }else{
@@ -207,8 +278,6 @@ void _PLR_update_gfx(bool blink_frame, u8 anim_frame)
 
 void PLR_update(u32 framecounter)
 {
-
-    _PLR_update_bounce(framecounter);
 
     if(player_state == PLR_STATE_MOVING_PATH)
     {
@@ -227,6 +296,8 @@ void PLR_update(u32 framecounter)
         }
 
         bool int_changed = FALSE;
+        u16 prev_int_x = player_int_x;
+        u16 prev_int_y = player_int_y;
         if(changed)
         {
             // FIXME sometimes when moving diagonally,
@@ -241,20 +312,42 @@ void PLR_update(u32 framecounter)
             }
         }
 
-        if(int_changed)
+        if (int_changed)
         {
-            PlfTile *t = PLF_get_tile_safe(player_int_x, player_int_y);
-            if(t && t->pobj)
-                Pobj_event(Pobj_get_data(t->pobj), POBJ_EVT_STEPPED, NULL);
+            // arrived on a tile
+            const PlfTile *tile = PLF_get_tile_safe(player_int_x, player_int_y);
+            const PlfTile *prev_tile = PLF_get_tile_safe(prev_int_x, prev_int_y);
+
+
+            if(tile && tile->laser)
+            {
+                PLF_laser_block(player_int_x, player_int_y);
+                if(player_flags & PLAYER_FLAG_WET)
+                {
+                    player_flags &= ~PLAYER_FLAG_WET;
+                    SFX_play(SFX_dry);
+                }
+                else
+                {
+                    player_state = PLR_STATE_DYING;
+                    SFX_play(SFX_burn);
+                }
+            }
+
+            if(tile && tile->pobj)
+                Pobj_event(Pobj_get_data(tile->pobj), POBJ_EVT_STEPPED, NULL);
+
+            if(prev_tile && prev_tile->laser)
+            {
+                PLF_laser_recalc(prev_int_x, prev_int_y);
+            }
         }
 
         // TODO instead of doing this, keep track of which tile dweep is actually in, and then act on that
         // use int_changed above
-        (void) int_changed;
-        if(changed && fix16Frac(player_pf_x)==0 && fix16Frac(player_pf_y)==0)
+        if(player_state == PLR_STATE_MOVING_PATH && changed && fix16Frac(player_pf_x)==0 && fix16Frac(player_pf_y)==0)
         {
-            // arrived on a tile
-            //PlfTile tile = *PLF_get_tile(fix16ToInt(player_pf_x), fix16ToInt(player_pf_y));
+
             if(player_pf_x == dest_pf_x && player_pf_y == dest_pf_y)
             {
                 // arrived at immediate dest, either we arrived at final destination, or we find our next imm. dest.
@@ -283,8 +376,23 @@ void PLR_update(u32 framecounter)
     else
         player_emote = _PLR_check_danger(3)? PLR_EMOTE_NEUTRAL : PLR_EMOTE_HAPPY;
 
+    bool upward = ((framecounter*8) % 512) >= 200? 0 : 1;
+    u16 anim_frame = upward;
+    if(player_flags & PLAYER_FLAG_WET)
+        anim_frame += 4;
+    if(player_state == PLR_STATE_DYING || player_state == PLR_STATE_DEAD)
+    {
+        anim_frame = 2;
+        player_emote = PLR_EMOTE_NONE;
+    }
+    else if(player_state == PLR_STATE_FROZEN)
+    {
+        anim_frame = 3;
+        player_emote = PLR_EMOTE_NONE;
+    }
 
-    _PLR_update_gfx((framecounter%128)<6, ((framecounter*8) % 512) >= 200? 0 : 1);
+    _PLR_update_bounce(framecounter);
+    _PLR_update_gfx((framecounter%128)<6, anim_frame);
 
     if(DEBUG_PLAYER)
     {

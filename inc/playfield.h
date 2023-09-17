@@ -104,7 +104,8 @@ void  PLF_obj_destroy(u16 px, u16 py, void *evt_arg);   // destroy object at
 void  PLF_obj_damage(u8 type, u16 px, u16 py);
 
 bool PLF_laser_put(u16 orig_x, u16 orig_y, u8 dir);
-void PLF_laser_recalc(u16 plf_x, u16 plf_y);  // undoes lasers that goes out from the tile, and puts them again
+void PLF_laser_block(u16 plf_x, u16 plf_y);  // undoes lasers that go out from the tile
+void PLF_laser_recalc(u16 plf_x, u16 plf_y);  // undoes lasers that goes out from the tile (block), then puts them again
 
 inline s16 PLF_get_sprite_depth(fix16 x, fix16 y) { (void) x; return 0x8000 - y; }
 

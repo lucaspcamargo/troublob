@@ -622,8 +622,7 @@ bool PLF_laser_put(u16 orig_x, u16 orig_y, u8 dir)
     return TRUE;
 }
 
-
-void PLF_laser_recalc(u16 plf_x, u16 plf_y)
+void PLF_laser_block(u16 plf_x, u16 plf_y)
 {
     PlfTile *orig_tile = PLF_get_tile_safe(plf_x, plf_y);
     if(!orig_tile || !orig_tile->laser)
@@ -706,6 +705,19 @@ void PLF_laser_recalc(u16 plf_x, u16 plf_y)
 
     // no lasers coming out of recalc point anymore
     orig_tile->laser &= 0xf;
+
+    _PLF_laser_gfx_update(plf_x, plf_y, FALSE);
+}
+
+
+void PLF_laser_recalc(u16 plf_x, u16 plf_y)
+{
+    PlfTile *orig_tile = PLF_get_tile_safe(plf_x, plf_y);
+    if(!orig_tile || !orig_tile->laser)
+        return;
+
+    PLF_laser_block(plf_x, plf_y);
+
 
     enum PobjLaserBehavior behavior = POBJ_LASER_PASS;
     if(orig_tile->pobj)
