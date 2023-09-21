@@ -4,9 +4,11 @@
  [ ] fix diagonal movement
     [ ] make it work in pathfinding too
  [ ] sync walking to Dweep jumping
+ [ ] basic options
  [ ] SRAM
     [ ] completion state
     [ ] completion time
+    [ ] game options
  [ ] victory and defeat in main loop
     [ ] playfield reset
  [ ] main menu
@@ -14,6 +16,16 @@
  [ ] debug stats in-game
  [ ] Titlecards and hints
  [ ] multiple languages
+ [ ] credits
+ [ ] Heat plates and floating
+ [ ] Fans
+ [ ] Levels 11-20
+ [ ] Levels 21-30
+ 
  
  Some more ambitious goals:
  [ ] save/restore (to diminish repetition)
+ [ ] level file importer
+ [ ] MegaWiFi leaderboards
+ [ ] level editor
+    [ ] MegaWiFi level sharing
