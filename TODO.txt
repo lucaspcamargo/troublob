@@ -1,0 +1,19 @@
+ [ ] plane A keepout flag
+ [ ] finalize laser drawing
+ [ ] reinstate danger check and emotes
+ [ ] fix diagonal movement
+    [ ] make it work in pathfinding too
+ [ ] sync walking to Dweep jumping
+ [ ] SRAM
+    [ ] completion state
+    [ ] completion time
+ [ ] victory and defeat in main loop
+    [ ] playfield reset
+ [ ] main menu
+ [ ] in-game menu
+ [ ] debug stats in-game
+ [ ] Titlecards and hints
+ [ ] multiple languages
+ 
+ Some more ambitious goals:
+ [ ] save/restore (to diminish repetition)
