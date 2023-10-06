@@ -24,8 +24,8 @@
  
  
  Some more ambitious goals:
- [ ] save/restore (to diminish repetition)
+ [ ] save/restore during gameplay (to diminish repetition)
  [ ] level file importer
- [ ] MegaWiFi leaderboards
+ [ ] MegaWiFi version with leaderboards
  [ ] level editor
     [ ] MegaWiFi level sharing
