@@ -32,6 +32,9 @@ bool HUD_inventory_push(enum ToolId tool);
 void HUD_inventory_pop(u8 idx);
 void HUD_inventory_pop_curr();
 void HUD_inventory_clear();
+u16  HUD_inventory_count();
+void HUD_inventory_sel_next();
+void HUD_inventory_sel_prev();
 enum ToolId HUD_inventory_curr();
 
 void HUD_on_click(s16 mouse_x, s16 mouse_y);

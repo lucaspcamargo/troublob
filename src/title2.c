@@ -18,8 +18,13 @@ void _TITLE_disclaimer()
 {
     const u16 txt_y = 16;
 
+    // pure black
     VDP_clearPlane(BG_A, TRUE);
     SPR_clear();
+    u16 zeroes[64];
+    memset(zeroes, 0x0000, 64*2);
+    PAL_setColors(0, zeroes, 64, DMA);
+    SYS_doVBlankProcess();
 
     VDP_fillTileMapRect(BG_B, TILE_FONT_INDEX, 0, txt_y-2, 320/8, 12);
     VDP_drawTextBG(BG_B, "Dweep Genesis ", 10, txt_y);
@@ -29,6 +34,8 @@ void _TITLE_disclaimer()
     VDP_drawTextBG(BG_B, "Original music by Michael Huang", 4, txt_y+7);
 
     PCTRL_set_source(PAL_LINE_BG_0, sgdk_logo.palette->data);
+    u16 orig_gray = PCTRL_sample_color(PAL_LINE_HUD, 6);
+    PCTRL_force_color(PAL_LINE_HUD, 6, 0x0000);
     VDP_drawBitmapEx(BG_A, &sgdk_logo, TILE_ATTR_FULL(PAL_LINE_BG_0, 0, 0, 0, TILE_USER_INDEX), 16, 4, FALSE);
 
     u16 framecounter = 0;
@@ -39,6 +46,7 @@ void _TITLE_disclaimer()
         SYS_doVBlankProcess();
         framecounter++;
     }
+    PCTRL_force_color(PAL_LINE_HUD, 6, orig_gray);
 }
 
 
@@ -87,7 +95,7 @@ void TITLE_main(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd)
 
     XGM_startPlay(bgm_title);
 
-    PCTRL_fade_in(PAL_STD_FADE_DURATION);
+    PCTRL_fade_in(PAL_STD_FADE_DURATION*3);
     u32 framecounter = 0;
     u32 press_frame = 0;
     s16 scroll_a = -DELTA;

@@ -20,6 +20,7 @@ enum InputCursor
     INPUT_CURSOR_DEATH
 } ENUM_PACK;
 
+
 void INPUT_init();
 void INPUT_do_move_abs( s16 mx, s16 my, bool do_clamp );
 void INPUT_step();

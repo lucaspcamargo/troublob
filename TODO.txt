@@ -1,4 +1,7 @@
- [ ] plane A keepout flag
+ [~] joypad control
+    [~] basic cursor emulation
+    [ ] control Dweep directly, debouncing diagonals
+ [ ] plane A keepout flag (for usage by tall objects)
  [ ] finalize laser drawing
  [ ] reinstate danger check and emotes
  [ ] fix diagonal movement
@@ -6,9 +9,9 @@
  [ ] sync walking to Dweep jumping
  [ ] basic options
  [ ] SRAM
-    [ ] completion state
-    [ ] completion time
-    [ ] game options
+    [ ] stage completion state
+    [ ] stage completion time
+    [ ] save game options
  [ ] victory and defeat in main loop
     [ ] playfield reset
  [ ] main menu

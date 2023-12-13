@@ -52,6 +52,16 @@ void PCTRL_set_source(u8 line, const u16* data)
     memcpy(PCTRL_src_lines+(line*PCTRL_PAL_LEN), data, PCTRL_PAL_LEN*sizeof(u16));
 }
 
+void PCTRL_force_color(u8 line, u8 index, u16 data)
+{
+    PCTRL_src_lines[line*PCTRL_PAL_LEN + index] = data;
+}
+
+u16 PCTRL_sample_color(u8 line, u8 index)
+{
+    return PCTRL_src_lines[line*PCTRL_PAL_LEN + index];
+}
+
 void PCTRL_step(u16 framecounter)
 {
     if(PAL_isDoingFade())

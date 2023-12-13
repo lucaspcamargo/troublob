@@ -291,6 +291,39 @@ enum ToolId HUD_inventory_curr()
     return hud_inventory[hud_inventory_curr];
 }
 
+u16 HUD_inventory_count()
+{
+    // TODO this is bad, keep track of how many items?
+    for(u8 i = 0; i < HUD_INVENTORY_COUNT; i++)
+    {
+        if(hud_inventory[i] == TOOL_NONE)
+        {
+            return i;
+        }
+    }
+
+    return HUD_INVENTORY_COUNT;
+}
+
+
+void HUD_inventory_sel_next()
+{
+    u16 count = HUD_inventory_count();
+    u16 next = hud_inventory_curr == count - 1? 0 : hud_inventory_curr + 1;
+    SFX_play(SFX_dull);
+    hud_inventory_curr = next;
+    hud_dirty = TRUE;
+}
+
+void HUD_inventory_sel_prev()
+{
+    u16 count = HUD_inventory_count();
+    u16 next = hud_inventory_curr == 0? count - 1 : hud_inventory_curr - 1;
+    SFX_play(SFX_dull);
+    hud_inventory_curr = next;
+    hud_dirty = TRUE;
+}
+
 
 void HUD_on_click(s16 x, s16 y)
 {
