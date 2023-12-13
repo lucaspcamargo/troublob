@@ -24,7 +24,7 @@
  [ ] Fans
  [ ] Levels 11-20
  [ ] Levels 21-30
- 
+
  
  Some more ambitious goals:
  [ ] save/restore during gameplay (to diminish repetition)
