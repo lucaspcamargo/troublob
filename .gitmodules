@@ -1,3 +1,3 @@
 [submodule "scripts/str2progmem"]
 	path = scripts/str2progmem
-	url = git://git.camargo.eng.br/camargo/str2progmem
+	url = https://github.com/lucaspcamargo/str2progmem.git
