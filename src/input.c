@@ -9,7 +9,7 @@ static enum InputMethod curr_im;
 static bool im_changed;
 static u16 last_changed, last_state;
 
-static Sprite *mouse_cursor;
+static Sprite *mouse_cursor = NULL;
 static s16 mouse_x = 160;
 static s16 mouse_y = 92;
 static bool mouse_present = FALSE;
@@ -66,14 +66,13 @@ void INPUT_init()
 
     is_mouse_1 = ( joy_type_1==JOY_TYPE_MOUSE && port_type_1 == PORT_TYPE_MOUSE );
     is_mouse_2 = ( joy_type_2==JOY_TYPE_MOUSE && port_type_2 == PORT_TYPE_MOUSE );
+    mouse_present = is_mouse_1 || is_mouse_2;
 
-    if(is_mouse_1 || is_mouse_2)
-    {
-        mouse_present = TRUE;
-        mouse_cursor = SPR_addSprite(&spr_cursor, mouse_x, mouse_y, PAL_LINE_HUD<<TILE_ATTR_PALETTE_SFT);
-        SPR_setPriority(mouse_cursor, TRUE);
-        SPR_setDepth(mouse_cursor, SPR_MIN_DEPTH);
-    }
+    // init cursor regardless
+    mouse_cursor = SPR_addSprite(&spr_cursor, mouse_x, mouse_y, PAL_LINE_HUD<<TILE_ATTR_PALETTE_SFT);
+    SPR_setPriority(mouse_cursor, TRUE);
+    SPR_setDepth(mouse_cursor, SPR_MIN_DEPTH);
+    SPR_setVisibility(mouse_cursor, HIDDEN);
 
     JOY_setEventHandler(&_INPUT_handler);
 }

@@ -87,7 +87,7 @@ void exec_debug_menu(DirectorCommand *next_cmd)
     debug_menu_draw_cursor();
     debug_menu_draw_opts();
 
-    INPUT_set_cursor_visible(TRUE);
+    INPUT_set_cursor_visible(INPUT_is_mouse_present());
 
     for(;;)
     {
