@@ -106,7 +106,7 @@ void _HUD_draw_marker()
 }
 
 
-void HUD_update()
+void HUD_update_with_gfx()
 {
     u8 prev_state = hud_state;
     switch(hud_state)
@@ -194,6 +194,14 @@ void HUD_update()
         {
         }
         break;
+        case HUD_ST_MENU:
+        {
+            if(!hud_state_timer)
+            {
+                VDP_drawText("MENU GOES HERE", 4, 4);
+            }
+        }
+        break;
         default:
             break;
     }
@@ -202,6 +210,27 @@ void HUD_update()
         hud_state_timer = 0;
     else
         hud_state_timer++;
+}
+
+enum HUDState HUD_state_curr()
+{
+    return hud_state;
+}
+
+void HUD_menu_toggle()
+{
+    if(hud_state != HUD_ST_MENU)
+    {
+        hud_state = HUD_ST_MENU;
+        hud_state_timer = 0;
+        hud_dirty = TRUE;
+    }
+    else
+    {
+        hud_state = HUD_ST_NORMAL;
+        hud_state_timer = 0;
+        hud_dirty = TRUE;
+    }
 }
 
 void HUD_dialog_start(u8 character_id, u16 string_id)
@@ -325,10 +354,18 @@ void HUD_inventory_sel_prev()
 }
 
 
-void HUD_on_click(s16 x, s16 y)
+enum HUDState HUD_on_click(s16 x, s16 y)
 {
+    if(hud_state == HUD_ST_MENU)
+    {
+        // TODO maybe check if clicked inside menu area
+    }
+
+    if(!(y >= (HUD_Y_POS+8) && y < (HUD_Y_POS+24)))
+        return hud_state; // outside active y range
+
     // check if on a tool square
-    if(x >= 16 && x < 248 && y >= (HUD_Y_POS+8) && y < (HUD_Y_POS+24))
+    if(x >= 16 && x < 248 && hud_state == HUD_ST_NORMAL)
     {
         s16 tool_square_x = (x-16)%24;
         if(tool_square_x < 16)
@@ -342,4 +379,14 @@ void HUD_on_click(s16 x, s16 y)
             }
         }
     }
+    else if(x >= 272 && x < 288 && hud_state == HUD_ST_NORMAL)
+    {
+        // reset button
+    }
+    else if(x >= 296 && x < 312 && (hud_state == HUD_ST_NORMAL || hud_state == HUD_ST_MENU))
+    {
+        HUD_menu_toggle();
+    }
+
+    return hud_state;
 }

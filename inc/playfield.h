@@ -123,6 +123,10 @@ void PLF_plane_draw(bool planeB, u16 x, u16 y, u16 tile_attr);
 // undo a PLF_plane_draw at the specified position
 void PLF_plane_clear(bool planeB, u16 x, u16 y);
 
+// plane a was garbled (usually by in-game menu)
+// all in it needs to be redrawn
+void PLF_plane_a_refresh();
+
 // get a tile index table (u16**) preloaded by the playfield theming
 // may return a NULL value in case gfx is not part of theme
 const SpriteDefinition* PLF_theme_data_sprite_def(enum PlfThemeData ref);

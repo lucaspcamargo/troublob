@@ -16,7 +16,7 @@
     [ ] playfield reset
  [ ] main menu
  [ ] in-game menu
- [ ] debug stats in-game
+ [ ] debug mode in-game
  [ ] Titlecards and hints
  [ ] multiple languages
  [ ] credits

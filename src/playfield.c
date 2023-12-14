@@ -79,7 +79,7 @@ static const SpriteDefinition* plf_theme_sprite_defs[PLF_THEME_COUNT];
 static u16 ** plf_theme_tile_indices[PLF_THEME_COUNT];
 static u8     plf_theme_palette_line[PLF_THEME_COUNT];
 
-static bool plf_laser_put_defer;
+static bool plf_laser_put_defer; // on playfield init
 static PlfLaserPutTicket plf_laser_put_tickets[PLF_LASER_PUT_TICKET_MAX];
 static u8 plf_laser_put_tickets_mark;
 
@@ -861,6 +861,8 @@ void _PLF_laser_gfx_update(u16 x, u16 y, bool force_sprite)
                                                 0,
                                                 final_frame_idx);
         PLF_plane_draw(FALSE, x, y, tile_attr);
+        PlfTile * const tile = PLF_get_tile(x, y);
+        tile->attrs |= PLF_ATTR_PLANE_A_REUSED;
     }
     else if(attrs & PLF_ATTR_PLANE_A_REUSED)
     {
@@ -1046,6 +1048,29 @@ void PLF_plane_clear(bool planeB, u16 x, u16 y)
         tile->attrs &= ~PLF_ATTR_PLANE_A_REUSED;
     }
 }
+
+void PLF_plane_a_refresh()
+{
+    s16 plf_scroll_x = fix16ToRoundedInt(fix16Sub(plf_cam_cx, FIX16(160)));
+    s16 plf_scroll_y = fix16ToRoundedInt(fix16Sub(plf_cam_cy, FIX16(96)));
+    MAP_scrollToEx(m_a, plf_scroll_x, plf_scroll_y, TRUE);
+    DMA_flushQueue();
+
+    for(int x = 0; x < plf_w; x++)
+    {
+        for(int y = 0; y < plf_h; y++)
+        {
+            PlfTile * const tile = PLF_get_tile(x, y);
+            if(tile->attrs & PLF_ATTR_PLANE_A_REUSED)
+            {
+                // TODO can objects also reuse plane a? for now only laser
+                _PLF_laser_gfx_update(x, y, FALSE);
+            }
+        }
+    }
+    DMA_flushQueue();
+}
+
 
 /*
  * Note: forceRedraw will call vblank processing twice for uploading map data to planes

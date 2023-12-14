@@ -19,7 +19,11 @@
 
 Sprite * epf_item_preview = NULL;
 const SpriteDefinition * epf_item_preview_def = NULL;
+bool epf_paused;
+bool epf_redraw_plane_a;
+
 void exec_playfield_input(u32 framecounter);
+void exec_playfield_pause_toggled();
 
 int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
 
@@ -47,27 +51,27 @@ int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
     XGM_startPlay(curr_lvl->bgm_xgm);
     PCTRL_fade_in(PAL_STD_FADE_DURATION);
 
-
     u32 framecounter = 0;
+    epf_paused = FALSE;
+    epf_redraw_plane_a = FALSE;
 
     for(;;)
     {
         exec_playfield_input(framecounter);
 
-        PLR_update(framecounter);
-        PLF_update_objects(framecounter);
-        HUD_update();
+        if(!epf_paused)
+        {
+            PLR_update(framecounter);
+            PLF_update_objects(framecounter);
+        }
 
 
         // Done with game logic, now update render systems
 
         PCTRL_step(framecounter); // evaluate palettes for next frame
-
         if (DEBUG_CPU_LOAD)
             SYS_showFrameLoad(FALSE);
-
         PLF_update_scroll(FALSE); // update playfield scroll (no force redraw)
-
         SPR_update(); // step sprite system
 
         /*
@@ -81,12 +85,20 @@ int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
         SYS_doVBlankProcess();
 
         // other things to update during vblank must go hereafter (assuming we still have vblank time)
+        HUD_update_with_gfx(); // plane update, do in vblank
+        if(epf_redraw_plane_a)
+        {
+            epf_redraw_plane_a = FALSE;
+            PLF_plane_a_refresh();
 
-        framecounter++;
+        }
+
+        if(!epf_paused)
+            framecounter++;
 
     }  // end main for
 
-    // TODO deinit stuff
+    // TODO deinit everything here
     if(epf_item_preview)
     {
         SPR_releaseSprite(epf_item_preview);
@@ -114,6 +126,14 @@ void exec_playfield_input(u32 framecounter)
     if(meth == INPUT_METHOD_PAD)
     {
         INPUT_set_cursor_visible(TRUE);
+
+
+        if(BUTTON_START & changed & state)
+        {
+            HUD_menu_toggle();
+            epf_paused = (HUD_state_curr() == HUD_ST_MENU);
+            exec_playfield_pause_toggled();
+        }
 
         // special joypad handling (mouse emulation and immediate movement)
         if(BUTTON_Z & changed & state)
@@ -145,7 +165,7 @@ void exec_playfield_input(u32 framecounter)
         curr_tool = HUD_inventory_curr();
     }
 
-    if(mouse_in_field)
+    if(mouse_in_field && !epf_paused)
     {
         s16 mouse_pf_x = mouse_x / 16;
         s16 mouse_pf_y = mouse_y / 16;
@@ -211,10 +231,28 @@ void exec_playfield_input(u32 framecounter)
         {
             HUD_on_click(mouse_x, mouse_y);
             curr_tool = HUD_inventory_curr();
+            bool paused_now = (HUD_state_curr() == HUD_ST_MENU);
+            if(paused_now != epf_paused)
+            {
+                epf_paused = paused_now;
+                exec_playfield_pause_toggled();
+            }
         }
     }
 }
 
+void exec_playfield_pause_toggled()
+{
+    if(epf_paused)
+        XGM_pausePlay();
+    else
+    {
+        XGM_resumePlay();
+        epf_redraw_plane_a = TRUE;
+    }
+
+    SFX_play(SFX_ding);
+}
 
 
 int main(bool hard) {
