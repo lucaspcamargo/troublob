@@ -153,7 +153,7 @@ void PobjHandler_Bomb(PobjData *data, enum PobjEventType evt, void* evt_arg)
         if(args->tool_id == TOOL_TORCH && extraData->fuse_timer == BOMB_TIMER_NONE)
         {
             args->out_can_use = TRUE;
-            args->out_cursor = INPUT_CURSOR_DEATH; // TODO flame cursor
+            args->out_cursor = INPUT_CURSOR_FIRE;
         }
         else if(args->tool_id == TOOL_BUCKET && extraData->fuse_timer != BOMB_TIMER_NONE)
         {

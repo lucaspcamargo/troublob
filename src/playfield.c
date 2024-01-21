@@ -861,8 +861,6 @@ void _PLF_laser_gfx_update(u16 x, u16 y, bool force_sprite)
                                                 0,
                                                 final_frame_idx);
         PLF_plane_draw(FALSE, x, y, tile_attr);
-        PlfTile * const tile = PLF_get_tile(x, y);
-        tile->attrs |= PLF_ATTR_PLANE_A_REUSED;
     }
     else if(attrs & PLF_ATTR_PLANE_A_REUSED)
     {

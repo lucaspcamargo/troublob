@@ -16,24 +16,24 @@ SPRITE title_prompt "../art/title/title-prompt.png"                     16 1 FAS
 #  SPRITES: CORE
 #
 
-# rem: id         source                                    w h  compr  anim    coll    opt.strategy
-SPRITE spr_cursor ../art/spr/mouse.png                      2 2  NONE   0       NONE    SPRITE
-SPRITE spr_input_dev ../art/spr/input-dev.png               8 6  BEST   0       NONE    SPRITE
+# rem: id         source                                    w  h  compr  anim    coll    opt.strategy
+SPRITE spr_cursor ../art/spr/mouse.png                      2  2  NONE   0       NONE    SPRITE
+SPRITE spr_input_dev ../art/spr/input-dev.png               8  6  BEST   0       NONE    SPRITE
 
-SPRITE spr_dweep ../art/spr/dweep.png                       3 3  FAST   0       NONE    SPRITE
-SPRITE spr_dweep_eyes ../art/spr/dweep-eyes.png             2 1  NONE   0       NONE    SPRITE
-SPRITE spr_shadow ../art/spr/shadow.png                     2 1  NONE   0       NONE    SPRITE
-SPRITE spr_tools  ../art/spr/tools.png                      2 2  FAST   0       NONE    NONE
-SPRITE spr_laser  ../art/spr/laser.png                      2 2  FAST   0       NONE    NONE
-SPRITE spr_laser_cannon  ../art/spr/laser-cannon.png        2 3  FAST   3       NONE    SPRITE
-SPRITE spr_laser_cannon_d  ../art/spr/laser-cannon-die.png  2 3  FAST   5       NONE    SPRITE
-SPRITE spr_goal_plate ../art/spr/goal-plate.png             2 2  FAST   0       NONE    NONE
-SPRITE spr_goal_babies ../art/spr/goal-babies.png           1 1  FAST   0       NONE    SPRITE
-SPRITE spr_bomb ../art/spr/bomb.png                         2 2  FAST   0       NONE    NONE
-SPRITE spr_mirror ../art/spr/mirror.png                     2 3  FAST   0       NONE    NONE
-SPRITE spr_plate_hot ../art/spr/plate-hot.png               2 2  FAST   0       NONE    NONE
-SPRITE spr_plate_cold ../art/spr/plate-cold.png             2 2  FAST   0       NONE    NONE
-SPRITE spr_explosion ../art/spr/explosion.png               4 4  FAST   2       NONE    NONE
+SPRITE spr_dweep ../art/spr/dweep.png                       3  3  FAST   0       NONE    SPRITE
+SPRITE spr_dweep_eyes ../art/spr/dweep-eyes.png             2  1  NONE   0       NONE    SPRITE
+SPRITE spr_shadow ../art/spr/shadow.png                     2  1  NONE   0       NONE    SPRITE
+SPRITE spr_tools  ../art/spr/tools.png                      2  2  FAST   0       NONE    NONE
+SPRITE spr_laser  ../art/spr/laser.png                      2  2  FAST   0       NONE    NONE
+SPRITE spr_laser_cannon  ../art/spr/laser-cannon.png        2  3  FAST   3       NONE    SPRITE
+SPRITE spr_laser_cannon_d  ../art/spr/laser-cannon-die.png  2  3  FAST   5       NONE    SPRITE
+SPRITE spr_goal_plate ../art/spr/goal-plate.png             2  2  FAST   0       NONE    NONE
+SPRITE spr_goal_babies ../art/spr/goal-babies.png           1  1  FAST   0       NONE    SPRITE
+SPRITE spr_bomb ../art/spr/bomb.png                         2  2  FAST   0       NONE    NONE
+SPRITE spr_mirror ../art/spr/mirror.png                     2  3  FAST   0       NONE    NONE
+SPRITE spr_plate_hot ../art/spr/plate-hot.png               2  2  FAST   0       NONE    NONE
+SPRITE spr_plate_cold ../art/spr/plate-cold.png             2  2  FAST   0       NONE    NONE
+SPRITE spr_explosion ../art/spr/explosion.png               4  4  FAST   2       NONE    NONE
 
 
 

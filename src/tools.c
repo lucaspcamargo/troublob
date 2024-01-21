@@ -142,7 +142,7 @@ void TOOL_query(enum ToolId tool, u16 plf_x, u16 plf_y, ToolQuery *ret)
             if(is_player)
             {
                 ret->can_use = TRUE;
-                ret->cursor = tool == TOOL_BUCKET? INPUT_CURSOR_DEATH : INPUT_CURSOR_WATER; // TODO fire cursor
+                ret->cursor = tool == TOOL_BUCKET? INPUT_CURSOR_WATER : INPUT_CURSOR_FIRE;
                 return;
             }
         case TOOL_ROTATE_CCW:
