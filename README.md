@@ -25,6 +25,18 @@ The original Dweep was created and programmed by Steve Pavlina, with music by Mi
 <!--ENGBR_SECTION
 ## Try it Out
 
+You can try the latest build, with debug enabled, running in an emulator in your browser.
+
+Mouse support is enabled, and mouse will be captured on first init. Click to start.
+
+**Controls:**
+ + Arrow keys: move cursor
+ + A: click with cursor (A button)
+ + Z: previous tool (B button)
+ + X: next tool (C button)
+ + F1: open RetroArch menu
+
+
 ```{nostalgistjs}
     :rom_url: "https://jenkins.camargo.eng.br/job/dweep-gen/lastSuccessfulBuild/artifact/ci-build/out/Dweep_Genesis_(latest).bin"
     :core_id: genesis_plus_gx
