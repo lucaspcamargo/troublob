@@ -34,6 +34,7 @@ Mouse support is enabled, and mouse will be captured on first init. Click to sta
  + A: click with cursor (A button)
  + Z: previous tool (B button)
  + X: next tool (C button)
+ + Enter: pause (Start button)
  + F1: open RetroArch menu
 
 
