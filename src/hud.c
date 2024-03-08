@@ -39,7 +39,7 @@ void _HUD_draw_marker();
 void HUD_preinit()
 {
     // set hud palette on its line
-    PCTRL_set_source(PAL_LINE_HUD, pal_tset_hud.data);
+    PCTRL_set_line(PAL_LINE_HUD, pal_tset_hud.data);
 
     // load HUD tiles
     VDP_loadTileSet(&tset_hud, TILE_HUD_INDEX, DMA);

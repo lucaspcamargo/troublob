@@ -33,7 +33,7 @@ void _TITLE_disclaimer()
     VDP_drawTextBG(BG_B, "Original game by Steve Pavlina", 4, txt_y+6);
     VDP_drawTextBG(BG_B, "Original music by Michael Huang", 4, txt_y+7);
 
-    PCTRL_set_source(PAL_LINE_BG_0, sgdk_logo.palette->data);
+    PCTRL_set_line(PAL_LINE_BG_0, sgdk_logo.palette->data);
     u16 orig_gray = PCTRL_sample_color(PAL_LINE_HUD, 6);
     PCTRL_force_color(PAL_LINE_HUD, 6, 0x0000);
     VDP_drawBitmapEx(BG_A, &sgdk_logo, TILE_ATTR_FULL(PAL_LINE_BG_0, 0, 0, 0, TILE_USER_INDEX), 16, 4, FALSE);
@@ -50,6 +50,44 @@ void _TITLE_disclaimer()
 }
 
 
+void _TITLE_logo()
+{
+    VDP_clearPlane(BG_A, TRUE);
+    SPR_clear();
+    u16 zeroes[64];
+    memset(zeroes, 0x0000, 64*2);
+    PAL_setColors(0, zeroes, 64, DMA);
+    SYS_doVBlankProcess();
+
+    VDP_clearPlane(BG_B, TRUE);
+    SYS_doVBlankProcess();
+
+    VDP_drawImageEx(BG_A, &title_cachacella, TILE_ATTR_FULL(PAL0, 0, 0, 0, TILE_USER_INDEX), 0, 0, 0, DMA);
+    SYS_doVBlankProcess();
+
+    PCTRL_set_all(title_cachacella.palette->data);
+    PCTRL_fade_in(PAL_STD_FADE_DURATION);
+    static const u32 logo_frames = 240;
+    u32 framecounter = 0;
+    while(framecounter < logo_frames + PAL_STD_FADE_DURATION*2)
+    {
+        if(framecounter == PAL_STD_FADE_DURATION + 10)
+            SFX_play(SFX_cachacella);
+
+        if(framecounter == PAL_STD_FADE_DURATION + logo_frames)
+            PCTRL_fade_out(PAL_STD_FADE_DURATION);
+
+        SPR_update();
+        PCTRL_step(framecounter);
+        SYS_doVBlankProcess();
+
+        framecounter++;
+    }
+
+    // reset system palette
+    PCTRL_set_line(0, pal_tset_hud.data);
+}
+
 void TITLE_main(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd)
 {
     (void) curr_cmd; // ignore
@@ -57,6 +95,7 @@ void TITLE_main(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd)
     INPUT_set_cursor_visible(FALSE);
 
     _TITLE_disclaimer();
+    _TITLE_logo();
 
     // force palette to black
     u16 zeroes[64];
@@ -72,7 +111,7 @@ void TITLE_main(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd)
     VDP_drawImageEx(BG_A, &title_dweep, TILE_ATTR_FULL(PAL1, 0, 0, 0, tilecnt), 12, -1, 0, DMA);
     tilecnt += title_dweep.tileset->numTile;
     VDP_loadTileSet(title_bg.tileset, tilecnt, DMA);
-    PCTRL_set_source(PAL1, title_dweep.palette->data);
+    PCTRL_set_line(PAL1, title_dweep.palette->data);
 
     static const s16 DELTA = 200;
     static const s16 DWEEP_Y = 128;
@@ -85,8 +124,8 @@ void TITLE_main(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd)
     Sprite * spr_ltr_dweep = SPR_addSprite(&title_letters_dweep, DWEEP_INITIAL_X, DWEEP_Y, TILE_ATTR(PAL2, 1, 0, 0));
     Sprite * spr_ltr_genesis = SPR_addSprite(&title_letters_genesis, GENESIS_INITIAL_X, GENESIS_Y, TILE_ATTR(PAL3, 1, 0, 0));
     Sprite * spr_ltr_prompt = SPR_addSprite(&title_prompt, 96, 210, TILE_ATTR(PAL_LINE_HUD, 1, 0, 0));
-    PCTRL_set_source(PAL2, title_letters_dweep.palette->data);
-    PCTRL_set_source(PAL3, title_letters_genesis.palette->data);
+    PCTRL_set_line(PAL2, title_letters_dweep.palette->data);
+    PCTRL_set_line(PAL3, title_letters_genesis.palette->data);
 
     for(u8 x = 0; x <= 20; x++)
         for(u8 y = 0; y <= 16; y++)

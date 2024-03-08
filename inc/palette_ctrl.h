@@ -23,7 +23,8 @@ typedef struct {
 
 void PCTRL_op_clear_all();
 void PCTRL_init();
-void PCTRL_set_source(u8 line, const u16* data);
+void PCTRL_set_line(u8 line, const u16* data);
+void PCTRL_set_all(const u16* data);
 void PCTRL_force_color(u8 line, u8 index, u16 data);
 u16 PCTRL_sample_color(u8 line, u8 index);
 void PCTRL_step(u16 framecounter);

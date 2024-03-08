@@ -21,7 +21,8 @@ static const u8 * SFX_REF[] = {
     sfx_short,
     sfx_thaw,
     sfx_water,
-    sfx_wrench
+    sfx_wrench,
+    sfx_cachacella
 };
 
 static const uint32_t SFX_SZ[] = {
@@ -43,7 +44,8 @@ static const uint32_t SFX_SZ[] = {
     sizeof(sfx_short),
     sizeof(sfx_thaw),
     sizeof(sfx_water),
-    sizeof(sfx_wrench)
+    sizeof(sfx_wrench),
+    sizeof(sfx_cachacella)
 };
 
 // reserve channel 1 for music PCM
@@ -66,7 +68,8 @@ static const u16 SFX_CH[] = {
     SOUND_PCM_CH3, //sfx_short),
     SOUND_PCM_CH2, //sfx_thaw),
     SOUND_PCM_CH2, //sfx_water),
-    SOUND_PCM_CH2  //sfx_wrench)
+    SOUND_PCM_CH2,  //sfx_wrench)
+    SOUND_PCM_CH2  //sfx_cachacella)
 };
 #endif
 

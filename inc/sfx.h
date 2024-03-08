@@ -23,6 +23,7 @@ enum SfxId {
     SFX_thaw,
     SFX_water,
     SFX_wrench,
+    SFX_cachacella,
     SFX_END
 };
 

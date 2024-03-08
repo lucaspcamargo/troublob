@@ -49,7 +49,7 @@ FORCE_INLINE s16 _fix16ToRoundedInt(fix16 value)
 void PLR_init()
 {
     // player
-    PCTRL_set_source(PAL_LINE_SPR_A, spr_dweep.palette->data);
+    PCTRL_set_line(PAL_LINE_SPR_A, spr_dweep.palette->data);
     spr_player = SPR_addSprite(&spr_dweep, 0, 0, PAL_LINE_SPR_A<<TILE_ATTR_PALETTE_SFT);
     spr_player_shadow = SPR_addSprite(&spr_shadow, 0, 0, PAL_LINE_SPR_A<<TILE_ATTR_PALETTE_SFT);
     spr_player_eyes = SPR_addSprite(&spr_dweep_eyes, 0, 0, PAL_LINE_SPR_A<<TILE_ATTR_PALETTE_SFT);

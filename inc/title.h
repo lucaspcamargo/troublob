@@ -12,8 +12,8 @@ void TITLE_main()
     VDP_drawText(GAME_NAME, 1, 26);
     VDP_drawText(GAME_VERSION, 2+strlen(GAME_NAME), 26);
 
-    PCTRL_set_source(1, title.palette->data, FALSE);
-    PCTRL_set_source(2, sgdk_logo.palette->data, FALSE);
+    PCTRL_set_line(1, title.palette->data, FALSE);
+    PCTRL_set_line(2, sgdk_logo.palette->data, FALSE);
 
     PCTRL_fade_in(PAL_STD_FADE_DURATION);
     for(int i = 0; i < 40; i++)

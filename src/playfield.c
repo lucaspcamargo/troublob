@@ -111,8 +111,8 @@ void PLF_init(u16 lvl_id)
     plf_plane_a_alloc_stride = plf_plane_a_alloc? plf_w/8 + (plf_w%8? 1 : 0) : 0xffff;
 
     // setup palettes
-    PCTRL_set_source(PAL_LINE_BG_0, curr_lvl.bg_tileset_pal->data);
-    PCTRL_set_source(PAL_LINE_BG_1, curr_lvl.bg_tileset_pal->data+16);
+    PCTRL_set_line(PAL_LINE_BG_0, curr_lvl.bg_tileset_pal->data);
+    PCTRL_set_line(PAL_LINE_BG_1, curr_lvl.bg_tileset_pal->data+16);
 
     PCTRL_op_clear_all();
     for(int p = 0; p < RGST_PCTRL_OP_MAX; p++)

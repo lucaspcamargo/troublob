@@ -4,6 +4,7 @@
 #  TITLE SCREEN
 #
 
+IMAGE title_cachacella "../art/title/cachacella.bmp"
 IMAGE title_bg "../art/title/title-bg.png"
 IMAGE title_dweep "../art/title/title-dweep.png"
 SPRITE title_letters_dweep "../art/title/title-letters-dweep.png"       25 6 BEST 0 NONE SPRITE
@@ -164,4 +165,5 @@ WAV  sfx_short  sfx/short.wav   XGM 0
 WAV  sfx_thaw   sfx/thaw.wav    XGM 0
 WAV  sfx_water  sfx/water.wav   XGM 0
 WAV  sfx_wrench sfx/wrench.wav  XGM 0
+WAV  sfx_cachacella sfx/cachacella.wav  XGM 0
 

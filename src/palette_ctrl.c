@@ -47,9 +47,14 @@ void PCTRL_init ()
     PCTRL_op_clear_all();
 }
 
-void PCTRL_set_source(u8 line, const u16* data)
+void PCTRL_set_line(u8 line, const u16* data)
 {
     memcpy(PCTRL_src_lines+(line*PCTRL_PAL_LEN), data, PCTRL_PAL_LEN*sizeof(u16));
+}
+
+void PCTRL_set_all(const u16* data)
+{
+    memcpy(PCTRL_src_lines, data, PCTRL_PAL_LEN*4*sizeof(u16));
 }
 
 void PCTRL_force_color(u8 line, u8 index, u16 data)

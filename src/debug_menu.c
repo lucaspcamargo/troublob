@@ -65,8 +65,8 @@ void exec_debug_menu(DirectorCommand *next_cmd)
     memcpy(curr_subopts, subopt_min, sizeof(curr_subopts));
     curr_subopts[0] = 1;
 
-    PCTRL_set_source(0, pal_tset_hud.data);
-    PCTRL_set_source(PAL_LINE_HUD, pal_tset_hud.data);
+    PCTRL_set_line(0, pal_tset_hud.data);
+    PCTRL_set_line(PAL_LINE_HUD, pal_tset_hud.data);
     PCTRL_fade_in(0);
     PCTRL_step(0);
     SYS_doVBlankProcess();
