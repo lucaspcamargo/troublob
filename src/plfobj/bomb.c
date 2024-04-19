@@ -87,7 +87,6 @@ void PobjHandler_Bomb(PobjData *data, enum PobjEventType evt, void* evt_arg)
             }
             else if(extraData->spr)
             {
-                const u32 framecounter = *((u32*)evt_arg);
                 SPR_setVRAMTileIndex(extraData->spr, PLF_theme_data_idx_table(PLF_THEME_BOMB)[0][1 + extraData->fuse_timer/4%2]);
             }
         }
