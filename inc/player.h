@@ -21,6 +21,9 @@ enum PlayerEmote {
 
 
 void PLR_init();
+void PLR_reset();
+void PLR_destroy();
+
 void PLR_reset_position();
 bool PLR_goto(u16 dest_x, u16 dest_y); // in integer tile coords
 u16 PLR_curr_tile_x();

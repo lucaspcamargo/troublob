@@ -91,4 +91,9 @@ void PobjHandler_Mirror(PobjData *data, enum PobjEventType evt, void* evt_arg)
             PLF_laser_recalc(fix16ToInt(data->x), fix16ToInt(data->y));
         }
     }
+    else if(evt == POBJ_EVT_DESTROYED)
+    {
+            if(extraData->spr)
+                SPR_releaseSprite(extraData->spr);
+    }
 }

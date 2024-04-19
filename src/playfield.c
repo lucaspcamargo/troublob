@@ -71,6 +71,7 @@ fix16 plf_cam_cx;
 fix16 plf_cam_cy;
 fix16 plf_player_initial_x;
 fix16 plf_player_initial_y;
+u16 plf_orig_tile_watermark;
 
 static const u8 * plf_plane_a_alloc;
 static u16 plf_plane_a_alloc_stride;
@@ -99,6 +100,7 @@ inline u8 _PLF_laser_behavior_apply(u8 behavior, u8 in_dir);
 void PLF_init(u16 lvl_id)
 {
     plf_curr_lvl_id = lvl_id;
+    plf_orig_tile_watermark = GLOBAL_vdp_tile_watermark;
     const RGST_lvl curr_lvl = RGST_levels[plf_curr_lvl_id];
 
     // init playfield vars
@@ -143,6 +145,27 @@ void PLF_init(u16 lvl_id)
     _PLF_load_objects();
 
 }
+
+
+void PLF_reset(u16 lvl_id)
+{
+    PLF_destroy();
+    PLF_init(lvl_id);
+}
+
+
+void PLF_destroy()
+{
+    // TODO destroy objects
+    GLOBAL_vdp_tile_watermark = plf_orig_tile_watermark;
+    bool reset = TRUE;
+    Pobj_event_to_all(POBJ_EVT_DESTROYED, &reset, 0);
+    Pobj_destroy();
+    free(m_a);
+    free(m_b);
+    m_a = m_b = NULL;
+}
+
 
 void _PLF_load_theme()
 {

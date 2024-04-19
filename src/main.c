@@ -55,14 +55,52 @@ int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
     epf_paused = FALSE;
     epf_redraw_plane_a = FALSE;
 
+    u16 tmr_player_dead = 0;
+    bool reset_flag = FALSE;
+
     for(;;)
     {
+        u32 subfc = 0;
         exec_playfield_input(framecounter);
 
         if(!epf_paused)
         {
             PLR_update(framecounter);
             PLF_update_objects(framecounter);
+
+            if(PLR_curr_state() == PLR_STATE_DEAD)
+            {
+                if(!tmr_player_dead)
+                    tmr_player_dead = 150;
+                else if(!--tmr_player_dead)
+                    reset_flag = TRUE;
+            }
+        }
+
+        if(reset_flag)
+        {
+            u32 subfc = 0;
+            PCTRL_fade_out(PAL_STD_FADE_DURATION);
+            while(subfc <= PAL_STD_FADE_DURATION)
+            {
+                PCTRL_step(framecounter + subfc); // evaluate palettes for next frame
+                SYS_doVBlankProcess();
+                subfc++;
+            }
+            INPUT_center_cursor();
+            INPUT_set_cursor_visible(TRUE);
+            PLF_reset(level_id);
+            PLR_reset();
+            PLR_reset_position();
+            HUD_init(); // TODO maybe too heavy handed
+            { // setup hud inventory
+                enum ToolId all_tools[10];
+                all_tools[0] = TOOL_MOVE;
+                memcpy(all_tools + 1, curr_lvl->tool_inventory, 9);
+                HUD_inventory_set(all_tools);
+            }
+            PCTRL_fade_in(PAL_STD_FADE_DURATION);
+            reset_flag = FALSE;
         }
 
 

@@ -179,4 +179,9 @@ void PobjHandler_Laser(PobjData *data, enum PobjEventType evt, void* evt_arg)
             }
         }
     }
+    else if(evt == POBJ_EVT_DAMAGE)
+    {
+        if(extraData->spr)
+            SPR_releaseSprite(extraData->spr);
+    }
 }

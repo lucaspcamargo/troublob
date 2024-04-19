@@ -72,6 +72,19 @@ void PLR_init()
     _PLR_update_gfx(FALSE, 0);
 }
 
+void PLR_reset()
+{
+    PLR_destroy();
+    PLR_init();
+}
+
+void PLR_destroy()
+{
+    SPR_releaseSprite(spr_player);
+    SPR_releaseSprite(spr_player_shadow);
+    SPR_releaseSprite(spr_player_eyes);
+}
+
 void PLR_reset_position()
 {
     PLF_player_get_initial_pos(&player_pf_x, &player_pf_y);
@@ -388,6 +401,7 @@ void PLR_update(u32 framecounter)
     {
         anim_frame = 2;
         player_emote = PLR_EMOTE_NONE;
+        player_state = PLR_STATE_DEAD;  // TODO implement dying animations
     }
     else if(player_state == PLR_STATE_FROZEN)
     {

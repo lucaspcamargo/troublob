@@ -25,10 +25,13 @@ void PobjHandler_Goal(PobjData *data, enum PobjEventType evt, void* evt_arg)
         extraData->baby = SPR_addSprite(PLF_theme_data_sprite_def(PLF_THEME_GOAL_BABIES),
                                           fix16ToInt(data->x)*16+4, fix16ToInt(data->y)*16+4,
                                           tile_attrs_b);
-        SPR_setAutoTileUpload(extraData->baby, FALSE);
-        SPR_setAnimAndFrame(extraData->baby, 0, baby_color);
-        SPR_setVRAMTileIndex(extraData->baby, PLF_theme_data_idx_table(PLF_THEME_GOAL_BABIES)[0][baby_color]);
-        SPR_setDepth(extraData->baby, PLF_get_sprite_depth(fix16ToInt(data->x), fix16ToInt(data->y)) - 1);
+        if(extraData->baby)
+        {
+            SPR_setAutoTileUpload(extraData->baby, FALSE);
+            SPR_setAnimAndFrame(extraData->baby, 0, baby_color);
+            SPR_setVRAMTileIndex(extraData->baby, PLF_theme_data_idx_table(PLF_THEME_GOAL_BABIES)[0][baby_color]);
+            SPR_setDepth(extraData->baby, PLF_get_sprite_depth(fix16ToInt(data->x), fix16ToInt(data->y)) - 1);
+        }
     }
     else if(evt == POBJ_EVT_STEPPED)
     {
@@ -44,5 +47,10 @@ void PobjHandler_Goal(PobjData *data, enum PobjEventType evt, void* evt_arg)
         while(XGM_isPlaying())
             SYS_doVBlankProcess();
         XGM_setLoopNumber(-1);
+    }
+    else if(evt == POBJ_EVT_STEPPED)
+    {
+        if(extraData->baby)
+            SPR_releaseSprite(extraData->baby);
     }
 }

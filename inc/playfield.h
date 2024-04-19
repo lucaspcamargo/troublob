@@ -88,6 +88,8 @@ typedef struct PlfTile_st {
 
 
 void PLF_init(u16 lvl_id);
+void PLF_reset(u16 lvl_id);
+void PLF_destroy();
 
 void PLF_cam_to(fix16 cx, fix16 cy);
 
