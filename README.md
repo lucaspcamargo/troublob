@@ -10,7 +10,7 @@ A demake of [Dweep](https://en.wikipedia.org/wiki/Dweep) for the Sega MegaDrive.
 
 This is a work-in-progress SGDK port of the old shareware game Dweep.
 The main objective of the project is to be a good C programming exercise,
-as well as a way to realize a long-standing desire to code for the Genesis.
+as well as a way to practice coding for the Genesis.
 
 Most of the game subsystems are in place, and we have a good base for the game.
 Now the focus is on getting the gameplay mechanics and objects working.
