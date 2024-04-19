@@ -194,4 +194,9 @@ void PobjHandler_Bomb(PobjData *data, enum PobjEventType evt, void* evt_arg)
             }
         }
     }
+    else if(evt == POBJ_EVT_DESTROYED)
+    {
+        if(extraData->spr)
+            SPR_releaseSprite(extraData->spr);
+    }
 }

@@ -60,7 +60,6 @@ int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
 
     for(;;)
     {
-        u32 subfc = 0;
         exec_playfield_input(framecounter);
 
         if(!epf_paused)
@@ -87,7 +86,7 @@ int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
                 SYS_doVBlankProcess();
                 subfc++;
             }
-            INPUT_center_cursor();
+            XGM_stopPlay();
             INPUT_set_cursor_visible(TRUE);
             PLF_reset(level_id);
             PLR_reset();
@@ -100,6 +99,7 @@ int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
                 HUD_inventory_set(all_tools);
             }
             PCTRL_fade_in(PAL_STD_FADE_DURATION);
+            XGM_startPlay(curr_lvl->bgm_xgm);
             reset_flag = FALSE;
         }
 
