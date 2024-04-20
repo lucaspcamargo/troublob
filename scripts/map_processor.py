@@ -2,12 +2,16 @@
 # -*- coding:utf-8 -*-
 
 # This script processes Tiled maps before they can be processed by rescomp
-# For now it just makes sure that, in the case of graphics in the objects layer,
+# It just makes sure that, in the case of graphics in the objects layer,
 # the indirect properties from the object's "gid" are explicitly brought in.
 
 # Otherwise, the OBJECTS rescomp directive will simply skip those objects
-# It also ensure that whatever objects have a true "exportDimensions" property,
+# It also ensures that whatever objects have a true "exportDimensions" property,
 # will aso have a true "exportSize" property as well, for compat reasons
+
+# Other than that, the script also generates a bitmap marking all the tiles that
+# use the "A" layer for graphics, because the laser rendering algorithm needs this
+# info for its optimizations.
 
 from lxml import etree
 import sys
