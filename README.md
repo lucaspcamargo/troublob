@@ -12,8 +12,9 @@ This is a work-in-progress SGDK port of the old shareware game Dweep.
 The main objective of the project is to be a good C programming exercise,
 and a way to practice coding for the MegaDrive.
 
-Most of the game subsystems are in place, and we have a good base for the game.
-Now the focus is on getting the gameplay mechanics and objects working.
+Most of the game is working, and all of the 10 starting levels are playable.
+There are missing and incomplete behaviors and objects on the simulation.
+Also, the game as a whole is still missing things such as saves and menus.
 
 Some songs were rearranged using the [Furnace](https://github.com/tildearrow/furnace/) tracker.
 Others were converted using libOPNMIDI (midi2vgm), and still need some manual adjustment or a proper arrangement.
