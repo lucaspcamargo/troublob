@@ -17,8 +17,11 @@ enum PlfAttrBits {
     PLF_ATTR_DANGER = 8,          // dweep is afraid of this tile (laser handled separately)
     PLF_ATTR_LASER_SOLID = 16,    // laser stops here
     PLF_ATTR_HOLE = 32,           // player or objects cannot be placed
-    PLF_ATTR_COVERED = 64,        // a sprite overlaps this tile, don't use plane A
+    PLF_ATTR_COVERED_OBJ = 64,        // an object sprite overlaps this tile, don't use plane A
+    PLF_ATTR_COVERED_PLAYER = 128,        // a player sprite overlaps this tile, don't use plane A
 } ENUM_PACK;
+
+static const u8 PLF_ATTR_COVERED_ANY = (PLF_ATTR_COVERED_OBJ|PLF_ATTR_COVERED_PLAYER);
 
 // laser attributes for every playfield tile
 // for every quadrant direction we can have lasers in and out of the tile
@@ -109,7 +112,9 @@ bool PLF_laser_put(u16 orig_x, u16 orig_y, u8 dir);
 void PLF_laser_block(u16 plf_x, u16 plf_y);  // undoes lasers that go out from the tile
 void PLF_laser_recalc(u16 plf_x, u16 plf_y);  // undoes lasers that goes out from the tile (block), then puts them again
 
-inline s16 PLF_get_sprite_depth(fix16 x, fix16 y) { (void) x; return 0x8000 - y; }
+inline s16 PLF_get_sprite_depth(fix16 x, fix16 y) { (void) x; return 0x8000 - (y<<2); } // multiply y by 4 to give headroom for sprite ordering within tile
+void PLF_cover(u16 plf_x, u16 plf_y, bool player);
+void PLF_uncover(u16 plf_x, u16 plf_y, bool player);
 
 /*
  * Note: forceRedraw will call vblank processing twice for uploading map data to planes

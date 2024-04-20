@@ -22,6 +22,7 @@ const SpriteDefinition * epf_item_preview_def = NULL;
 bool epf_paused;
 bool epf_redraw_plane_a;
 
+void exec_playfield_setup(u16 level_id,const RGST_lvl * curr_lvl, bool initial);
 void exec_playfield_input(u32 framecounter);
 void exec_playfield_pause_toggled();
 
@@ -31,25 +32,7 @@ int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
     const u16 level_id = curr_cmd->arg0;
     const RGST_lvl * curr_lvl = RGST_levels + level_id;
 
-    INPUT_center_cursor();
-    INPUT_set_cursor_visible(TRUE);
-
-    // init playfield and hud
-    PLR_init();
-    PLF_init(level_id);
-    HUD_init();
-
-    PLR_reset_position();
-
-    { // setup hud inventory
-        enum ToolId all_tools[10];
-        all_tools[0] = TOOL_MOVE;
-        memcpy(all_tools + 1, curr_lvl->tool_inventory, 9);
-        HUD_inventory_set(all_tools);
-    }
-
-    XGM_startPlay(curr_lvl->bgm_xgm);
-    PCTRL_fade_in(PAL_STD_FADE_DURATION);
+    exec_playfield_setup(level_id, curr_lvl, TRUE);
 
     u32 framecounter = 0;
     epf_paused = FALSE;
@@ -86,20 +69,7 @@ int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
                 SYS_doVBlankProcess();
                 subfc++;
             }
-            XGM_stopPlay();
-            INPUT_set_cursor_visible(TRUE);
-            PLF_reset(level_id);
-            PLR_reset();
-            PLR_reset_position();
-            HUD_init(); // TODO maybe too heavy handed
-            { // setup hud inventory
-                enum ToolId all_tools[10];
-                all_tools[0] = TOOL_MOVE;
-                memcpy(all_tools + 1, curr_lvl->tool_inventory, 9);
-                HUD_inventory_set(all_tools);
-            }
-            PCTRL_fade_in(PAL_STD_FADE_DURATION);
-            XGM_startPlay(curr_lvl->bgm_xgm);
+            exec_playfield_setup(level_id, curr_lvl, FALSE);
             reset_flag = FALSE;
         }
 
@@ -142,6 +112,36 @@ int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
         SPR_releaseSprite(epf_item_preview);
         epf_item_preview = NULL;
     }
+}
+
+void exec_playfield_setup(u16 level_id, const RGST_lvl * curr_lvl, bool initial)
+{
+    XGM_stopPlay();
+    if(initial)
+        INPUT_center_cursor();
+    INPUT_set_cursor_visible(TRUE);
+    if(initial)
+    {
+        PLR_init();
+        PLF_init(level_id);
+        HUD_init();
+    }
+    else{
+        PLF_reset(level_id);
+        PLR_reset();
+        HUD_init(); // TODO maybe too heavy handed for reset
+    }
+    PLR_reset_position();
+    { // setup hud inventory
+        enum ToolId all_tools[10];
+        all_tools[0] = TOOL_MOVE;
+        memcpy(all_tools + 1, curr_lvl->tool_inventory, 9);
+        HUD_inventory_set(all_tools);
+    }
+
+    INPUT_set_cursor_visible(TRUE);
+    XGM_startPlay(curr_lvl->bgm_xgm);
+    PCTRL_fade_in(PAL_STD_FADE_DURATION);
 }
 
 void exec_playfield_input(u32 framecounter)

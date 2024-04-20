@@ -9,7 +9,7 @@ const ROMHeader rom_header = {
 #else
     "SEGA MEGA DRIVE ",
 #endif
-    "(C) CAMARGO 2023",
+    "(C) CAMARGO 2024",
     "DWEEP GENESIS                                   ",
     "DWEEP GENESIS                                   ",
     "GM 00000000-00",
@@ -28,6 +28,6 @@ const ROMHeader rom_header = {
     0x00200000,
     0x0020FFFF,
     "            ",
-    "DEMONSTRATION PROGRAM                   ",
+    "DEMAKE OF DWEEP BY LUCAS P CAMARGO, DEMO",
     "JUE             "
 };

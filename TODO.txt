@@ -13,9 +13,9 @@
     [ ] stage completion time
     [ ] save game options
  [ ] victory and defeat in main loop
-    [ ] playfield reset
+    [~] playfield reset
  [ ] main menu
- [ ] in-game menu
+ [~] in-game menu
  [ ] debug mode in-game
  [ ] Titlecards and hints
  [ ] multiple languages

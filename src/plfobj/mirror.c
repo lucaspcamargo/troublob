@@ -22,6 +22,11 @@ void PobjHandler_Mirror(PobjData *data, enum PobjEventType evt, void* evt_arg)
         ((PlfTile*)args->plftile)->attrs |= TILE_BITS;
         extraData->var = args->subtype;
 
+        const u16 xint = fix16ToInt(data->x);
+        const u16 yint = fix16ToInt(data->y);
+        if(yint)
+            PLF_cover(xint, yint-1, FALSE);
+
         extraData->spr = SPR_addSprite(PLF_theme_data_sprite_def(PLF_THEME_MIRROR),
                                        fix16ToInt(data->x)*16, fix16ToInt(data->y)*16 - 8, 0);
         if(extraData->spr)
@@ -93,7 +98,12 @@ void PobjHandler_Mirror(PobjData *data, enum PobjEventType evt, void* evt_arg)
     }
     else if(evt == POBJ_EVT_DESTROYED)
     {
-            if(extraData->spr)
-                SPR_releaseSprite(extraData->spr);
+        const u16 xint = fix16ToInt(data->x);
+        const u16 yint = fix16ToInt(data->y);
+        if(yint)
+            PLF_uncover(xint, yint-1, FALSE);
+
+        if(extraData->spr)
+            SPR_releaseSprite(extraData->spr);
     }
 }

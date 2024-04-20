@@ -294,30 +294,29 @@ void PLR_update(u32 framecounter)
 
     if(player_state == PLR_STATE_MOVING_PATH)
     {
-        bool changed = FALSE;
+        u8 axii_changed = 0;
         if(player_pf_x != dest_pf_x)
         {
             fix16 delta = ((player_pf_x < dest_pf_x)?PLAYER_SPEED:-PLAYER_SPEED);
             player_pf_x += delta;
-            changed = TRUE;
+            axii_changed++;
             //SPR_setHFlip(spr_player, delta<0);
         }
         if(player_pf_y != dest_pf_y)
         {
             player_pf_y += ((player_pf_y < dest_pf_y)?PLAYER_SPEED:-PLAYER_SPEED);
-            changed = TRUE;
+            axii_changed++;
         }
 
         bool int_changed = FALSE;
         u16 prev_int_x = player_int_x;
         u16 prev_int_y = player_int_y;
-        if(changed)
+        if(axii_changed)
         {
-            // FIXME sometimes when moving diagonally,
-            // we change only x or only y on a single frame?
             const s16 rx = _fix16ToRoundedInt(player_pf_x);
             const s16 ry = _fix16ToRoundedInt(player_pf_y);
-            if(rx != player_int_x || ry != player_int_y)
+            if((axii_changed == 2 && rx != player_int_x && ry != player_int_y) ||   // moving diagonally and changed both axii
+                ((rx != player_int_x || ry != player_int_y) && axii_changed != 2))  // not moving diagonally, and any axis has changed
             {
                 player_int_x = rx;
                 player_int_y = ry;
@@ -358,7 +357,7 @@ void PLR_update(u32 framecounter)
 
         // TODO instead of doing this, keep track of which tile dweep is actually in, and then act on that
         // use int_changed above
-        if(player_state == PLR_STATE_MOVING_PATH && changed && fix16Frac(player_pf_x)==0 && fix16Frac(player_pf_y)==0)
+        if(player_state == PLR_STATE_MOVING_PATH && axii_changed && fix16Frac(player_pf_x)==0 && fix16Frac(player_pf_y)==0)
         {
 
             if(player_pf_x == dest_pf_x && player_pf_y == dest_pf_y)

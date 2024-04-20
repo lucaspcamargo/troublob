@@ -26,11 +26,15 @@ void PobjHandler_Laser(PobjData *data, enum PobjEventType evt, void* evt_arg)
         tile->attrs |= TILE_BITS;
         extraData->dir = args->subtype;
 
+        const u16 xint = fix16ToInt(data->x);
+        const u16 yint = fix16ToInt(data->y);
+        if(yint)
+            PLF_cover(xint, yint-1, FALSE);
 
         if(!tile->laser)
         {
             extraData->spr = SPR_addSprite(PLF_theme_data_sprite_def(PLF_THEME_LASER_CANNON),
-                                fix16ToInt(data->x)*16, fix16ToInt(data->y)*16 - 8, 0);
+                                xint*16, yint*16 - 8, 0);
             if(extraData->spr)
             {
                 SPR_setAutoTileUpload(extraData->spr, FALSE);
@@ -44,7 +48,7 @@ void PobjHandler_Laser(PobjData *data, enum PobjEventType evt, void* evt_arg)
         {
             SFX_play(SFX_short);
             extraData->timer_destroy = LASER_DESTROY_FRAMES;
-            PLF_laser_recalc(fix16ToInt(data->x), fix16ToInt(data->y));
+            PLF_laser_recalc(xint, yint);
             if(extraData->spr)
             {
                 SPR_releaseSprite(extraData->spr);
@@ -181,6 +185,11 @@ void PobjHandler_Laser(PobjData *data, enum PobjEventType evt, void* evt_arg)
     }
     else if(evt == POBJ_EVT_DESTROYED)
     {
+        const u16 xint = fix16ToInt(data->x);
+        const u16 yint = fix16ToInt(data->y);
+        if(yint)
+            PLF_uncover(xint, yint-1, FALSE);
+
         if(extraData->spr)
             SPR_releaseSprite(extraData->spr);
     }
