@@ -54,8 +54,46 @@ void debug_menu_draw_opts()
         VDP_drawText(RGST_levels[curr_subopts[0]].name, POS_X_EXTRA, POS_Y_TXT);
 }
 
+bool debug_menu_option_inc(u8 opt_idx, bool dec)
+{
+    u16 delta = dec? -1 : 1;
+    u16 new = curr_subopts[opt_idx] + delta;
+    new = ((s16)new) < ((s16)subopt_min[opt_idx])? subopt_max[opt_idx] : new;
+    new = ((s16)new) > ((s16)subopt_max[opt_idx])? subopt_min[opt_idx] : new;
+    if( new != curr_subopts[opt_idx] )
+    {
+        curr_subopts[opt_idx] = new;
+        SFX_play(opt_idx == 2? new : SFX_ding);
+        return TRUE;
+    }
+    return FALSE;
+}
+
+enum DirectorCommandType debug_menu_option_exec(u8 opt_idx, enum DirectorCommandFlags *outflags)
+{
+    switch(opt_idx)
+    {
+        case 0:
+            (*outflags) = DIREC_CMD_F_NONE;
+            return DIREC_CMD_LEVEL;
+        case 1:
+            XGM_stopPlay();
+            XGM_startPlay(bgms[curr_subopts[1]]);
+            break;
+        case 2:
+            SFX_play(curr_subopts[2]);
+            break;
+        case 3:
+            (*outflags) = DIREC_CMD_F_NONE;
+            return DIREC_CMD_TITLE;
+    }
+    return DIREC_CMD_INVAL;
+}
+
 void exec_debug_menu(DirectorCommand *next_cmd)
 {
+    memset(next_cmd, 0, sizeof(DirectorCommand));
+
     // init params
     memset(subopt_min, 0x00, sizeof(subopt_min));
     subopt_max[0] = RGST_lvl_count - 1;
@@ -66,6 +104,13 @@ void exec_debug_menu(DirectorCommand *next_cmd)
     curr_subopts[0] = 1;
 
     PCTRL_set_line(0, pal_tset_hud.data);
+    u16 dangerPal[16];
+    memcpy(dangerPal, pal_tset_hud.data, 32);
+    for(int i = 0; i < 16; i++)
+        if(i != 6)
+            dangerPal[i] = dangerPal[i] & RGB3_3_3_TO_VDPCOLOR(0b111, 0, 0);
+    PCTRL_set_line(1, dangerPal);
+
     PCTRL_set_line(PAL_LINE_HUD, pal_tset_hud.data);
     PCTRL_fade_in(0);
     PCTRL_step(0);
@@ -76,6 +121,9 @@ void exec_debug_menu(DirectorCommand *next_cmd)
     VDP_drawText("BGM   <    >", POS_X_TXT, POS_Y_TXT + 1);
     VDP_drawText("SFX   <    >", POS_X_TXT, POS_Y_TXT + 2);
     VDP_drawText("TITLE", POS_X_TXT, POS_Y_TXT + 3);
+
+    if(!INPUT_is_mouse_present())
+        VDP_drawTextEx(BG_A, "USING A MOUSE IS RECOMMENDED", TILE_ATTR(1,0,0,0), 6, 18, DMA);
 
     VDP_drawText("PORT 1", 12, 20);
     VDP_drawText("PORT 2", 21, 20);
@@ -121,39 +169,21 @@ void exec_debug_menu(DirectorCommand *next_cmd)
 
             if( curr_idx < NUM_SUBOPTS && (BUTTON_LEFT|BUTTON_RIGHT) & changed & state )
             {
-                u16 inc = BUTTON_LEFT & changed & state? -1 : 1;
-                u16 new = curr_subopts[curr_idx] + inc;
-                new = ((s16)new) < ((s16)subopt_min[curr_idx])? subopt_max[curr_idx] : new;
-                new = ((s16)new) > ((s16)subopt_max[curr_idx])? subopt_min[curr_idx] : new;
-                if( new != curr_subopts[curr_idx] )
-                {
-                    curr_subopts[curr_idx] = new;
+
+                if(debug_menu_option_inc(curr_idx, BUTTON_LEFT & changed & state))
                     redraw_opts = TRUE;
-                    SFX_play(curr_idx == 2? new : SFX_ding);
-                }
             }
 
             if( BUTTON_A & changed & state )
             {
-                bool quit = FALSE;
-                switch(curr_idx)
+                enum DirectorCommandType type;
+                enum DirectorCommandFlags flags;
+                if((type = debug_menu_option_exec(curr_idx, &flags)) != DIREC_CMD_INVAL)
                 {
-                    case 0:
-                        quit = TRUE;
-                        break;
-                    case 1:
-                        XGM_startPlay(bgms[curr_subopts[1]]);
-                        break;
-                    case 2:
-                        SFX_play(curr_subopts[2]);
-                        break;
-                    case 3:
-                        next_cmd->cmd = DIREC_CMD_TITLE;
-                        quit = TRUE;
-                        break;
-                }
-                if(quit)
+                    next_cmd->type = type;
+                    next_cmd->flags = flags;
                     break;
+                }
             }
 
             if( BUTTON_START & changed & state )
@@ -164,8 +194,43 @@ void exec_debug_menu(DirectorCommand *next_cmd)
             bool l_click = meth == INPUT_METHOD_MOUSE && BUTTON_LMB & changed & state;
             if(l_click)
             {
-                // TODO interact
-                break;
+                s16 tx, ty;
+                INPUT_get_cursor_position(&tx, &ty);
+                tx /= 8;
+                ty /= 8;
+
+                if(tx >= POS_X_TXT && tx < (320/8)-POS_X_TXT && ty >= POS_Y_TXT && ty < (POS_Y_TXT+NUM_ENTRIES) )
+                {
+                    tx -= POS_X_TXT;
+                    ty -= POS_Y_TXT;
+
+                    if(tx >=5 && tx <= 7 && ty < NUM_SUBOPTS)
+                    {
+                        if(debug_menu_option_inc(ty, TRUE))
+                            redraw_opts = TRUE;
+                    }
+                    else if(tx >=10 && tx <= 12 && ty < NUM_SUBOPTS)
+                    {
+                        if(debug_menu_option_inc(ty, FALSE))
+                            redraw_opts = TRUE;
+                    }
+                    else
+                    {
+                        enum DirectorCommandType type;
+                        enum DirectorCommandFlags flags;
+                        if((type = debug_menu_option_exec(ty, &flags)) != DIREC_CMD_INVAL)
+                        {
+                            next_cmd->type = type;
+                            next_cmd->flags = flags;
+                            break;
+                        }
+                    }
+                }
+                else
+                {
+                    // clicked outside the menu
+                    next_cmd->type = DIREC_CMD_LEVEL;
+                };
             }
         }
 
@@ -190,10 +255,8 @@ void exec_debug_menu(DirectorCommand *next_cmd)
     SPR_update();
     SYS_doVBlankProcess();
 
-    if(next_cmd->cmd != DIREC_CMD_TITLE)
+    if(next_cmd->type == DIREC_CMD_LEVEL)
     {
-        next_cmd->cmd = DIREC_CMD_LEVEL;
-        next_cmd->flags = DIREC_CMD_F_NONE;
         next_cmd->arg0 = curr_subopts[0];
         next_cmd->arg1 = 0;
         next_cmd->arg_p = NULL;

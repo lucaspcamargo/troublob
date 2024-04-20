@@ -2,10 +2,10 @@
 # -*- coding:utf-8 -*-
 
 # This script processes Tiled maps before they can be processed by rescomp
-# It just makes sure that, in the case of graphics in the objects layer,
+# It just makes sure that, in the case of tile graphics in the objects layer,
 # the indirect properties from the object's "gid" are explicitly brought in.
 
-# Otherwise, the OBJECTS rescomp directive will simply skip those objects
+# Otherwise, the OBJECTS rescomp directive will simply skip those objects.
 # It also ensures that whatever objects have a true "exportDimensions" property,
 # will aso have a true "exportSize" property as well, for compat reasons
 
@@ -22,7 +22,7 @@ from copy import deepcopy
 inp = sys.argv[1]
 out = sys.argv[2]
 basepath = os.path.dirname(inp)
-tilesets:list[tuple[str, int]] = []     # tileset relatove filename, and first gid
+tilesets:list[tuple[str, int]] = []     # tileset relative filename, and first gid
 tileprops:dict[int, Any] = {}           # for every gid, all properties that were found
 
 width = -1
@@ -106,14 +106,14 @@ for layerA in root.findall("layer[@name = 'A']"):
     else:
         print("Found layer A, but no usable data!")
 
-#print(repr(plane_a_allocation))
 
-# save final file
+# save processed map file
 f = open(out, 'wb')
 f.write(etree.tostring(root, pretty_print=True))
 f.close()
 print(f"\tWrote to '{out}'")
 
+# save plane a allocation bitmap
 if plane_a_allocation:
     out_a_bin = f'{out}.A.bin'
     with open(out_a_bin, 'wb') as fA:

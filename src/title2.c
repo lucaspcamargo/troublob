@@ -187,7 +187,7 @@ void TITLE_main(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd)
     SPR_releaseSprite(spr_ltr_prompt);
 
     memset(next_cmd, 0x00, sizeof(DirectorCommand));
-    next_cmd->cmd = DIREC_CMD_LEVEL;
+    next_cmd->type = DIREC_CMD_LEVEL;
     next_cmd->arg0 = 1; // lvl 1
 }
 

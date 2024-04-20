@@ -320,13 +320,14 @@ int main(bool hard) {
     DirectorCommand curr_cmd;
 
     memset(&next_cmd, 0x00, sizeof(DirectorCommand));
-    next_cmd.cmd = DEBUG_MENU? DIREC_CMD_DEBUG_MENU : DIREC_CMD_TITLE;
+    next_cmd.type = DEBUG_MENU? DIREC_CMD_DEBUG_MENU : DIREC_CMD_TITLE;
 
     for(;;)
     {
         curr_cmd = next_cmd;
-        switch(curr_cmd.cmd)
+        switch(curr_cmd.type)
         {
+            case DIREC_CMD_INVAL:
             case DIREC_CMD_DEBUG_MENU:
                 exec_debug_menu(&next_cmd);
                 break;

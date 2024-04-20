@@ -130,6 +130,8 @@ void PLF_plane_draw(bool planeB, u16 x, u16 y, u16 tile_attr);
 // undo a PLF_plane_draw at the specified position
 void PLF_plane_clear(bool planeB, u16 x, u16 y);
 
+// tell if
+
 // plane a was garbled (usually by in-game menu)
 // all in it needs to be redrawn
 void PLF_plane_a_refresh();

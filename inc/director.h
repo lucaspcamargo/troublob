@@ -3,11 +3,12 @@
 #include "dweep_config.h"
 #include <genesis.h>
 
-enum DirectorComamnd
+enum DirectorCommandType
 {
     DIREC_CMD_DEBUG_MENU,
     DIREC_CMD_TITLE,
     DIREC_CMD_LEVEL,
+    DIREC_CMD_INVAL
 } ENUM_PACK;
 
 enum DirectorCommandFlags
@@ -18,7 +19,7 @@ enum DirectorCommandFlags
 
 typedef struct DirectorCommand_st
 {
-    enum DirectorComamnd cmd;
+    enum DirectorCommandType type;
     enum DirectorCommandFlags flags;
     u16 arg0;
     u16 arg1;
