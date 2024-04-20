@@ -1,10 +1,11 @@
+FIRST RELEASE GOALS:
  [~] joypad control
-    [~] basic cursor emulation
+    [X] basic cursor emulation
     [ ] control Dweep directly, debouncing diagonals
- [ ] plane A keepout flag (for usage by tall objects)
- [ ] finalize laser drawing
+ [X] plane A keepout flag (for usage by tall objects)
+ [X] finalize laser drawing
  [ ] reinstate danger check and emotes
- [ ] fix diagonal movement
+ [~] fix diagonal movement
     [ ] make it work in pathfinding too
  [ ] sync walking to Dweep jumping
  [ ] basic options
@@ -16,6 +17,7 @@
     [~] playfield reset
  [ ] main menu
  [~] in-game menu
+ [ ] mouse in debug menu
  [ ] debug mode in-game
  [ ] Titlecards and hints
  [ ] multiple languages
@@ -24,9 +26,10 @@
  [ ] Fans
  [ ] Levels 11-20
  [ ] Levels 21-30
-
+ [ ] Review music gain
+ [ ] Final readme and docs update
  
- Some more ambitious goals:
+Some more ambitious goals:
  [ ] save/restore during gameplay (to diminish repetition)
  [ ] level file importer
  [ ] MegaWiFi version with leaderboards

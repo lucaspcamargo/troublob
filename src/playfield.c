@@ -1118,7 +1118,7 @@ PlfLaserSprEntry *_PLF_laser_spr_find_free(u8 *start)
     {
         if(!plf_laser_sprites[i].spr)
         {
-            (*start) = i+1;
+            (*start) = (i+1)%PLF_LASER_SPRITE_MAX;
             return plf_laser_sprites + i;
         }
     }
@@ -1131,7 +1131,7 @@ PlfLaserSprEntry *_PLF_laser_spr_find_first(u8 x, u8 y, u8 *start)
     {
         if(plf_laser_sprites[i].spr && plf_laser_sprites[i].px == x && plf_laser_sprites[i].py == y)
         {
-            (*start) = i+1;
+            (*start) = (i+1)%PLF_LASER_SPRITE_MAX;
             return plf_laser_sprites + i;
         }
     }
