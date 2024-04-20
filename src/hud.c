@@ -381,7 +381,7 @@ enum HUDState HUD_on_click(s16 x, s16 y)
     }
     else if(x >= 272 && x < 288 && hud_state == HUD_ST_NORMAL)
     {
-        // reset button
+        return (hud_state = HUD_ST_RESET_REQUEST);
     }
     else if(x >= 296 && x < 312 && (hud_state == HUD_ST_NORMAL || hud_state == HUD_ST_MENU))
     {

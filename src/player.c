@@ -220,7 +220,7 @@ bool _PLR_check_danger(u8 dist)
 {
     // see if there are dangerous things within "radius" (square centered around the player)
     // TODO move this to playfield code, optimize, reenable
-    return FALSE;
+    //return FALSE;
 
     u16 curr_x = player_int_x - dist;
     u16 curr_y = player_int_y - dist;
@@ -386,7 +386,7 @@ void PLR_update(u32 framecounter)
     if (_PLR_check_danger(1))
         player_emote = PLR_EMOTE_FEAR;
     else
-        player_emote = _PLR_check_danger(3)? PLR_EMOTE_NEUTRAL : PLR_EMOTE_HAPPY;
+        player_emote = _PLR_check_danger(2)? PLR_EMOTE_NEUTRAL : PLR_EMOTE_HAPPY;   // radius was 3, made less aggressive
 
     bool upward = ((framecounter*8) % 512) >= 200? 0 : 1;
     u16 anim_frame = upward;

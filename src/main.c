@@ -23,7 +23,7 @@ bool epf_paused;
 bool epf_redraw_plane_a;
 
 void exec_playfield_setup(u16 level_id,const RGST_lvl * curr_lvl, bool initial);
-void exec_playfield_input(u32 framecounter);
+void exec_playfield_input(u32 framecounter, bool *reset_flag);
 void exec_playfield_pause_toggled();
 
 int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
@@ -43,7 +43,7 @@ int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
 
     for(;;)
     {
-        exec_playfield_input(framecounter);
+        exec_playfield_input(framecounter, &reset_flag);
 
         if(!epf_paused)
         {
@@ -144,7 +144,7 @@ void exec_playfield_setup(u16 level_id, const RGST_lvl * curr_lvl, bool initial)
     PCTRL_fade_in(PAL_STD_FADE_DURATION);
 }
 
-void exec_playfield_input(u32 framecounter)
+void exec_playfield_input(u32 framecounter, bool *reset_flag)
 {
 
     INPUT_step();
@@ -269,12 +269,16 @@ void exec_playfield_input(u32 framecounter)
         {
             HUD_on_click(mouse_x, mouse_y);
             curr_tool = HUD_inventory_curr();
-            bool paused_now = (HUD_state_curr() == HUD_ST_MENU);
+            enum HUDState new_st = HUD_state_curr();
+            bool paused_now = new_st == HUD_ST_MENU;
             if(paused_now != epf_paused)
             {
                 epf_paused = paused_now;
                 exec_playfield_pause_toggled();
             }
+            if(new_st == HUD_ST_RESET_REQUEST)
+                (*reset_flag) = TRUE;
+
         }
     }
 }

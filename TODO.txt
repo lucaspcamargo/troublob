@@ -4,11 +4,10 @@ FIRST RELEASE GOALS:
     [ ] control Dweep directly, debouncing diagonals
  [X] plane A keepout flag (for usage by tall objects)
  [X] finalize laser drawing
- [ ] reinstate danger check and emotes
+ [X] reinstate danger check and emotes
  [~] fix diagonal movement
     [ ] make it work in pathfinding too
  [ ] sync walking to Dweep jumping
- [ ] basic options
  [ ] SRAM
     [ ] stage completion state
     [ ] stage completion time
@@ -16,6 +15,7 @@ FIRST RELEASE GOALS:
  [ ] victory and defeat in main loop
     [~] playfield reset
  [ ] main menu
+    [ ] basic options
  [~] in-game menu
  [ ] mouse in debug menu
  [ ] debug mode in-game

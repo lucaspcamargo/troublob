@@ -10,6 +10,7 @@ enum HUDState
 {
     HUD_ST_NORMAL,              // normal gameplay state
     HUD_ST_MENU,
+    HUD_ST_RESET_REQUEST,
     HUD_ST_DIALOG_STARTING,     // drawing the dialog background and portrait
     HUD_ST_DIALOG_TYPING,       // drawing the works animatedly
     HUD_ST_DIALOG_IDLE,         // dialog written
