@@ -30,7 +30,18 @@ void PobjHandler_Goal(PobjData *data, enum PobjEventType evt, void* evt_arg)
             SPR_setAutoTileUpload(extraData->baby, FALSE);
             SPR_setAnimAndFrame(extraData->baby, 0, baby_color);
             SPR_setVRAMTileIndex(extraData->baby, PLF_theme_data_idx_table(PLF_THEME_GOAL_BABIES)[0][baby_color]);
-            SPR_setDepth(extraData->baby, PLF_get_sprite_depth(fix16ToInt(data->x), fix16ToInt(data->y)) - 1);
+            SPR_setDepth(extraData->baby, PLF_get_sprite_depth(data->x, data->y) - 3);
+        }
+    }
+    else if(evt == POBJ_EVT_FRAME)
+    {
+        if(extraData->baby)
+        {
+            const u32 framecounter = *((u32*) evt_arg);
+            fix16 delta = sinFix16((framecounter*16)%1024);
+            if(delta > 0)
+                delta = fix16Neg(delta);
+            SPR_setPosition(extraData->baby, fix16ToInt(data->x)*16+4, fix16ToInt(data->y)*16+3+(delta>>3));
         }
     }
     else if(evt == POBJ_EVT_STEPPED)
@@ -48,7 +59,7 @@ void PobjHandler_Goal(PobjData *data, enum PobjEventType evt, void* evt_arg)
             SYS_doVBlankProcess();
         XGM_setLoopNumber(-1);
     }
-    else if(evt == POBJ_EVT_STEPPED)
+    else if(evt == POBJ_EVT_DESTROYED)
     {
         if(extraData->baby)
             SPR_releaseSprite(extraData->baby);

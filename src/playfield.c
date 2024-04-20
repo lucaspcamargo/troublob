@@ -171,11 +171,13 @@ void PLF_reset(u16 lvl_id)
 
 void PLF_destroy()
 {
-    // TODO destroy objects
     GLOBAL_vdp_tile_watermark = plf_orig_tile_watermark;
     bool reset = TRUE;
     Pobj_event_to_all(POBJ_EVT_DESTROYED, &reset, 0);
     Pobj_destroy();
+    for(u8 i = 0; i < PLF_LASER_SPRITE_MAX; i++)
+        if(plf_laser_sprites[i].spr)
+            SPR_releaseSprite(plf_laser_sprites[i].spr);
     free(m_a);
     free(m_b);
     m_a = m_b = NULL;
