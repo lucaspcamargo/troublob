@@ -1,4 +1,7 @@
+#pragma once
+
 #include <genesis.h>
+
 
 inline void GFX_draw_sprite_in_plane_2x2_inline(VDPPlane plane, u16 x, u16 y, u16 tile_attr)
 {
