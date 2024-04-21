@@ -1346,6 +1346,7 @@ void PLF_plane_clear(bool planeB, u16 x, u16 y)
 
     if(planeB)
     {
+        // TODO find a way to enqueue this
         u16 orig_tiles[4];
         MAP_getTilemapRect(m_b, x, y, 1, 1, FALSE, orig_tiles);
         VDP_setTileMapXY(BG_B, orig_tiles[0], x*2, y*2);
@@ -1356,7 +1357,7 @@ void PLF_plane_clear(bool planeB, u16 x, u16 y)
     }
     else
     {
-        VDP_clearTileMapRect(BG_A, x*2, y*2, 2, 2);
+        GFX_clear_2x2(BG_A, x*2, y*2);
     }
 }
 

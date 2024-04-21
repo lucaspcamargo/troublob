@@ -16,7 +16,8 @@ You should have received a copy of the GNU General Public License along with Foo
 
 enum GFXQueueOp
 {
-    GFX_OP_SPRITE_PLANE_2x2
+    GFX_OP_SPRITE_PLANE_2x2,
+    GFX_OP_CLEAR_2x2
 } ENUM_PACK;
 
 typedef struct GFXQueueEntry_st
@@ -120,6 +121,31 @@ void GFX_draw_sprite_in_plane_2x2(VDPPlane plane, u16 x, u16 y, u16 tile_attr)
         GFX_draw_sprite_in_plane_2x2_immediate(plane, x, y, tile_attr);
 }
 
+
+void GFX_clear_2x2_immediate(VDPPlane plane, u16 x, u16 y)
+{
+    VDP_setTileMapXY(plane, 0, x,   y);
+    VDP_setTileMapXY(plane, 0, x,   y+1);
+    VDP_setTileMapXY(plane, 0, x+1, y);
+    VDP_setTileMapXY(plane, 0, x+1, y+1);
+}
+
+void GFX_clear_2x2(VDPPlane plane, u16 x, u16 y)
+{
+    if(gfx_queue_on)
+    {
+        gfx_queue[gfx_queue_sz].op = GFX_OP_CLEAR_2x2;
+        gfx_queue[gfx_queue_sz].plane = plane;
+        gfx_queue[gfx_queue_sz].tile_x = x;
+        gfx_queue[gfx_queue_sz].tile_y = y;
+        gfx_queue[gfx_queue_sz].tile_attr = 0;
+        gfx_queue_sz++;
+    }
+    else
+        GFX_clear_2x2_immediate(plane, x, y);
+}
+
+
 void _GFX_vsync_cb()
 {
     for(u8 i = 0; i < gfx_queue_sz; i++)
@@ -129,6 +155,9 @@ void _GFX_vsync_cb()
         {
             case GFX_OP_SPRITE_PLANE_2x2:
                 GFX_draw_sprite_in_plane_2x2_immediate(entry.plane, entry.tile_x, entry.tile_y, entry.tile_attr);
+                break;
+            case GFX_OP_CLEAR_2x2:
+                GFX_clear_2x2_immediate(entry.plane, entry.tile_x, entry.tile_y);
                 break;
         }
     }

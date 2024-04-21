@@ -122,7 +122,7 @@ int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
 
     }  // end main for
 
-    // TODO deinit everything here
+
     if(epf_item_preview)
     {
         SPR_releaseSprite(epf_item_preview);
@@ -130,6 +130,10 @@ int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
     }
 
     GFX_stop_queue();
+
+    PLF_destroy();
+    PLR_destroy();
+    // HUD_destroy(); TODO this
 }
 
 void exec_playfield_setup(u16 level_id, const RGST_lvl * curr_lvl, bool initial)
