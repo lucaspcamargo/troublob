@@ -6,11 +6,13 @@ FIRST RELEASE GOALS:
  [X] finalize laser drawing
  [X] reinstate danger check and emotes
  [X] objects in plane A (bombs)
- [X] fix flickering due to tile updates mid-frame (wait for next vsync)
+ [~] fix flickering due to tile updates mid-frame (wait for next vsync)
     [X] create update queue in gfx utility
     [X] gfx utility registers a vsync callback for flushing
     [X] all tile updates must go through it (sprite system is fine because it also updates on vsync)
         [~] plane B restore not going through this but not a huge issue to be honest
+    [ ]  seems like there are bugs because gfx callback can be called mid-frame on slowdown
+         needs some sort of signal for "ready to execute" or something
  [~] fix diagonal movement
     [X] fix accidental single axis step
     [ ] make it work in pathfinding too

@@ -62,6 +62,7 @@ void PobjHandler_Goal(PobjData *data, enum PobjEventType evt, void* evt_arg)
         VDP_drawText("              ",13, 11);
         VDP_drawText("  VICTORY!!!  ",13, 12);
         VDP_drawText("              ",13, 13);
+        XGM_stopPlay();
         XGM_setLoopNumber(0);
         XGM_startPlay(bgm_victory);
         SYS_doVBlankProcess();
