@@ -15,7 +15,7 @@ PathfindingNode PATH_nodes[PATHFIND_MAX] __attribute__ ((aligned (4)));
 PATH_IDX_TYPE PATH_nodes_len = 0;
 u8 PATH_bitmap[PATH_BITMAP_LEN];
 
-#define PATH_POS_IS_WALL(x, y, attrs, stride_x, stride_y, wall_bit) ( *((attrs)+((stride_x)*(x)+(stride_y)*(y))) & (wall_bit) )
+#define PATH_POS_IS_WALL(x, y, attrs, stride_x, stride_y, wall_bit) ( (*(u16*)((attrs)+((stride_x)*(x)+(stride_y)*(y)))) & (wall_bit) )
 
 
 bool PATH_find( const u8 pfw, const u8 pfh, // playfield dims
@@ -23,7 +23,7 @@ bool PATH_find( const u8 pfw, const u8 pfh, // playfield dims
                 u8 ex, const u8 ey, // goal position
                 const u8 * const attrs, // playfield attribute addr
                 const u16 stride_x, const u16 stride_y, // how to address playfield attributes (row-major or col-major)
-                const u8 wall_bit // bits that mean position is blocked
+                const u16 wall_bits // bits that mean position is blocked
                 )
 {
     PATH_nodes_len = 0; // globally, the node list is now empty
@@ -62,7 +62,7 @@ bool PATH_find( const u8 pfw, const u8 pfh, // playfield dims
                 if(BITMAP_IS_SET(PATH_bitmap, tx, ty))
                     continue; // we already have a node at this position
 
-                if(PATH_POS_IS_WALL(tx, ty, attrs, stride_x, stride_y, wall_bit))
+                if(PATH_POS_IS_WALL(tx, ty, attrs, stride_x, stride_y, wall_bits))
                 {
                     if(DEBUG_PATHFINDING && DEBUG_PATHFINDING_FIELD)
                     {

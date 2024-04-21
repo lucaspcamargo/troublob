@@ -927,7 +927,7 @@ void _PLF_laser_gfx_update(u16 x, u16 y, bool force_sprite)
                                                 final_frame_idx);
         PLF_plane_draw(FALSE, x, y, tile_attr);
     }
-    else if(attrs & PLF_ATTR_PLANE_A_REUSED)
+    else if(attrs & PLF_ATTR_PLANE_A_LASER)
     {
         // clear plane a
         PLF_plane_clear(FALSE, x, y);
@@ -1188,7 +1188,7 @@ void PLF_cover(u16 plf_x, u16 plf_y, bool player)
     if(!tile)
         return;
 
-    const enum PlfAttrBits bit = player? PLF_ATTR_COVERED_PLAYER : PLF_ATTR_COVERED_OBJ;
+    const enum PlfAttrBits bit = player? PLF_ATTR_PLANE_A_PLAYER : PLF_ATTR_PLANE_A_KEEPOUT;
     u8 prev = tile->attrs & bit;
     tile->attrs |= bit;
     if(prev != (tile->attrs & bit))
@@ -1201,7 +1201,7 @@ void PLF_uncover(u16 plf_x, u16 plf_y, bool player)
     if(!tile)
         return;
 
-    const enum PlfAttrBits bit = player? PLF_ATTR_COVERED_PLAYER : PLF_ATTR_COVERED_OBJ;
+    const enum PlfAttrBits bit = player? PLF_ATTR_PLANE_A_PLAYER : PLF_ATTR_PLANE_A_KEEPOUT;
     u8 prev = tile->attrs & bit;
     tile->attrs &= ~bit;
     if(prev != (tile->attrs & bit))
@@ -1216,7 +1216,7 @@ void PLF_plane_draw(bool planeB, u16 x, u16 y, u16 tile_attr)
 
     GFX_draw_sprite_in_plane_2x2_inline(planeB? BG_B : BG_A, x*2, y*2, tile_attr);
 
-    tile->attrs |= (planeB? PLF_ATTR_PLANE_B_REUSED : PLF_ATTR_PLANE_A_REUSED);
+    tile->attrs |= (planeB? PLF_ATTR_PLANE_B_OBJ : PLF_ATTR_PLANE_A_LASER);
 }
 
 
@@ -1234,16 +1234,44 @@ void PLF_plane_clear(bool planeB, u16 x, u16 y)
         VDP_setTileMapXY(BG_B, orig_tiles[1], x*2+1, y*2);
         VDP_setTileMapXY(BG_B, orig_tiles[2], x*2, y*2+1);
         VDP_setTileMapXY(BG_B, orig_tiles[3], x*2+1, y*2+1);
+        tile->attrs &= ~PLF_ATTR_PLANE_B_OBJ;
     }
     else
     {
         VDP_clearTileMapRect(BG_A, x*2, y*2, 2, 2);
-        tile->attrs &= ~PLF_ATTR_PLANE_A_REUSED;
+        tile->attrs &= ~PLF_ATTR_PLANE_A_LASER;
     }
 }
 
+
+bool PLF_plane_a_map_usage(u16 x, u16 y)
+{
+    return PLANE_A_ALLOCATION_AT(x, y);
+}
+
+
+bool PLF_plane_a_avail_obj(u16 x, u16 y)
+{
+    PlfTile * const tile = PLF_get_tile_safe(x, y);
+    if(!tile)
+        return FALSE;
+
+    if(PLANE_A_ALLOCATION_AT(x, y))
+        return FALSE;
+
+    if(tile->attrs & PLF_ATTR_COVERED_ANY)
+        return FALSE;
+}
+
+
+bool PLF_plane_a_cover(u16 x, u16 y, bool player);
+
+
+bool PLF_plane_a_uncover(u16 x, u16 y, bool player);
+
 void PLF_plane_a_refresh()
 {
+    // redraw the whole of plane A
     s16 plf_scroll_x = fix16ToRoundedInt(fix16Sub(plf_cam_cx, FIX16(160)));
     s16 plf_scroll_y = fix16ToRoundedInt(fix16Sub(plf_cam_cy, FIX16(96)));
     MAP_scrollToEx(m_a, plf_scroll_x, plf_scroll_y, TRUE);
@@ -1254,7 +1282,7 @@ void PLF_plane_a_refresh()
         for(int y = 0; y < plf_h; y++)
         {
             PlfTile * const tile = PLF_get_tile(x, y);
-            if(tile->attrs & PLF_ATTR_PLANE_A_REUSED)
+            if(tile->attrs & PLF_ATTR_PLANE_A_LASER)
             {
                 // TODO can objects also reuse plane a? for now only laser
                 _PLF_laser_gfx_update(x, y, FALSE);

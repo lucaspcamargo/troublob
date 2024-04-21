@@ -18,21 +18,49 @@ You should have received a copy of the GNU General Public License along with Foo
 #include "pathfind.h"
 #include "tools.h"
 
+/*
+ * NOTE on Plane reusage optimization:
+ *
+ * Some levels contain a lot of object and laser graphics. It would be impossible, or at least quite hard, to render everything using sprites alone.
+ * An optimization is to let lasers and objects reuse plane A to render themselves without sprites.
+ * There are quite a few corner cases, so the logic for this is a bit involved.
+ * The player and tall objects can also reserve a tile's plane A so that they don't get covered and the illusion of depth is broken.
+ *
+ * The player gets the highest priority. Whenever it reserves a tile, if there are any objects using plane A they are notified to remove themselves (they should try allocating a sprite),
+ * and if a laser is using plane A, a laser gfx update is requested there.
+ *
+ * Tall objects requesting the upper tile to remain clear have the second-highest priority. They will prevent any lasers or other objects to render
+ * as plane A tiles on the requested tile. This can coexist with the player's blockage of the tile.
+ *
+ * Lasers get the middle priority. When being drawn to a tile reserved by a tall object, or the player, they need to render as sprites in any case.
+ * But if the tile is being used by the object as the object graphics themselves, they can override that and ask the object to remove itself.
+ * It will then be able to draw itself normally.
+ *
+ * Objects get the lowest priority. If plane A is available to them they can request it. But because of the player, lasers, and the placement of tall objects,
+ * they can receive an event requesting the removal at any time. Any tile being freed afterwards and made available for plane A object graphics should
+ * fire an event to let the object know the tile is available for that again.
+ *
+ * Some objects (mostly panels on the floor) can replace the tiles in Layer B. This is a much simpler system, plane B is either reused by an object or not.
+ * Since a tile can only contain one object, there is no conflict resolution for this.
+ */
+
 // TYPE DFINITIONS
 
 // uniform attributes for every playfield tile
 enum PlfAttrBits {
-    PLF_ATTR_PLAYER_SOLID = 1,    // cannot walk or put objects
-    PLF_ATTR_PLANE_A_REUSED = 2,  // in this position, plane A is being used by a laser
-    PLF_ATTR_PLANE_B_REUSED = 4,  // in this position, plane B is being used by object
-    PLF_ATTR_DANGER = 8,          // dweep is afraid of this tile (laser handled separately)
-    PLF_ATTR_LASER_SOLID = 16,    // laser stops here
-    PLF_ATTR_HOLE = 32,           // player or objects cannot be placed
-    PLF_ATTR_COVERED_OBJ = 64,        // an object sprite overlaps this tile, don't use plane A
-    PLF_ATTR_COVERED_PLAYER = 128,        // a player sprite overlaps this tile, don't use plane A
+    PLF_ATTR_PLAYER_SOLID       = 1,    // cannot walk or put objects
+    PLF_ATTR_LASER_SOLID        = 2,    // laser stops here
+    PLF_ATTR_HOLE               = 4,    // player or objects cannot be placed
+    PLF_ATTR_DANGER             = 8,    // dweep is afraid of this tile (laser handled separately)
+    PLF_ATTR_PLANE_A_PLAYER     = 16,   // the player sprite overlaps this tile
+    PLF_ATTR_PLANE_A_KEEPOUT    = 32,   // an object sprite overlaps this tile
+    PLF_ATTR_PLANE_A_LASER      = 64,   // laser graphics exist on this tile in plane A
+    PLF_ATTR_PLANE_A_OBJ_GFX    = 128,  // an object renders graphics using this tile in plane A
+    PLF_ATTR_PLANE_B_OBJ        = 256,  // in this position, plane B is being used by object
+    PLF_ATTR_USER_0
 } ENUM_PACK;
 
-static const u8 PLF_ATTR_COVERED_ANY = (PLF_ATTR_COVERED_OBJ|PLF_ATTR_COVERED_PLAYER);
+static const u8 PLF_ATTR_COVERED_ANY = (PLF_ATTR_PLANE_A_KEEPOUT|PLF_ATTR_PLANE_A_PLAYER|PLF_ATTR_PLANE_A_LASER|PLF_ATTR_PLANE_A_OBJ_GFX);
 
 // laser attributes for every playfield tile
 // for every quadrant direction we can have lasers in and out of the tile
@@ -93,9 +121,10 @@ enum PlfThemeData{
     PLF_THEME_COUNT
 } ENUM_PACK;
 
-typedef struct PlfTile_st {
-    u8 attrs;
+typedef struct __attribute__((packed, aligned(4))) PlfTile_st {
+    u16 attrs;
     u8 laser;
+    u8 user;
     void* pobj;
 } PlfTile;
 
@@ -141,7 +170,19 @@ void PLF_plane_draw(bool planeB, u16 x, u16 y, u16 tile_attr);
 // undo a PLF_plane_draw at the specified position
 void PLF_plane_clear(bool planeB, u16 x, u16 y);
 
-// tell if
+// tell if tilemap uses the A plane on that tile
+// if this is the case, nothing else can use plane A in this position (neither player, lasers or objects can use it)
+bool PLF_plane_a_map_usage(u16 x, u16 y);
+
+// tell if plane a is available for object usage on that tile
+// player can always cover a tile in case tilemap does not use it (makes no sense)
+bool PLF_plane_a_avail_obj(u16 x, u16 y);
+
+// cover plane a at this position
+// player can always cover and uncover a tile
+// objects will receive appropriate events to
+bool PLF_plane_a_cover(u16 x, u16 y, bool player);
+bool PLF_plane_a_uncover(u16 x, u16 y, bool player);
 
 // plane a was garbled (usually by in-game menu)
 // all in it needs to be redrawn
