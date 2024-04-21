@@ -41,14 +41,16 @@ typedef struct PobjData_st {
 
 
 enum PobjEventType {
-    POBJ_EVT_CREATED,     // object is first instantiated
-    POBJ_EVT_DESTROYED,   // object data will be deallocated
-    POBJ_EVT_STEPPED,     // player is on top of object
-    POBJ_EVT_DAMAGE,      // the object suffers damage of some kind (laser hit it, explosion, hammer...)
-    POBJ_EVT_LASER_QUERY, // ask about what object does to a laser beam
-    POBJ_EVT_TOOL_QUERY,  // get to know which tools can be used on the object
-    POBJ_EVT_TOOL,        // tool was used on the object
-    POBJ_EVT_FRAME        // invoked on the object every frame (TODO? use bit in handle to not call every obj every frame?)'
+    POBJ_EVT_CREATED,         // object is first instantiated
+    POBJ_EVT_DESTROYED,       // object data will be deallocated
+    POBJ_EVT_STEPPED,         // player is on top of object
+    POBJ_EVT_DAMAGE,          // the object suffers damage of some kind (laser hit it, explosion, hammer...)
+    POBJ_EVT_LASER_QUERY,     // ask about what object does to a laser beam
+    POBJ_EVT_TOOL_QUERY,      // get to know which tools can be used on the object
+    POBJ_EVT_TOOL,            // tool was used on the object
+    POBJ_EVT_FRAME,           // invoked on the object every frame (TODO? use bit in handle or separate bitmap to not call every obj every frame?)'
+    POBJ_EVT_PLANE_A_EVICT,   // something else (player, laser, keepout) needs plane A cleared, now scram, revert to sprite
+    POBJ_EVT_PLANE_A_INVITE   // all blockages for plane A usage have been lifted, you may want to claim it and free a sprite
 } ENUM_PACK;
 
 enum PobjLaserBehavior

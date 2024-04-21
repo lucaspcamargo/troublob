@@ -35,7 +35,7 @@ void PobjHandler_Mirror(PobjData *data, enum PobjEventType evt, void* evt_arg)
         const u16 xint = fix16ToInt(data->x);
         const u16 yint = fix16ToInt(data->y);
         if(yint)
-            PLF_cover(xint, yint-1, FALSE);
+            PLF_plane_a_cover(xint, yint-1, PLF_ATTR_PLANE_A_KEEPOUT);
 
         extraData->spr = SPR_addSprite(PLF_theme_data_sprite_def(PLF_THEME_MIRROR),
                                        fix16ToInt(data->x)*16, fix16ToInt(data->y)*16 - 8, 0);
@@ -111,7 +111,7 @@ void PobjHandler_Mirror(PobjData *data, enum PobjEventType evt, void* evt_arg)
         const u16 xint = fix16ToInt(data->x);
         const u16 yint = fix16ToInt(data->y);
         if(yint)
-            PLF_uncover(xint, yint-1, FALSE);
+            PLF_plane_a_uncover(xint, yint-1, PLF_ATTR_PLANE_A_KEEPOUT);
 
         if(extraData->spr)
             SPR_releaseSprite(extraData->spr);

@@ -111,7 +111,7 @@ static u8 plf_laser_put_tickets_mark;
 void _PLF_load_theme();
 void _PLF_load_objects();
 void _PLF_init_create_object(const MapObject * obj, u16 x, u16 y);
-void _PLF_laser_gfx_update(u16 x, u16 y, bool force_sprite);
+void _PLF_laser_gfx_update(u16 x, u16 y);
 inline enum PlfLaserGfx _PLF_laser_in_out_to_gfx(u8 in_dir, u8 out_dir);
 inline enum PlfLaserFrame _PLF_laser_gfx_to_frame(enum PlfLaserGfx gfx);
 inline u8 _PLF_laser_behavior_apply(u8 behavior, u8 in_dir);
@@ -656,7 +656,7 @@ bool PLF_laser_put(u16 orig_x, u16 orig_y, u8 dir)
         if(!terminated)
             tile->laser |= (PLF_LASER_OUT_R << out_dir);
 
-        _PLF_laser_gfx_update(curr_x, curr_y, FALSE);
+        _PLF_laser_gfx_update(curr_x, curr_y);
 
         dir = out_dir;
         if(++counter == 0xfff)
@@ -667,7 +667,7 @@ bool PLF_laser_put(u16 orig_x, u16 orig_y, u8 dir)
         }
     }
 
-    _PLF_laser_gfx_update(orig_x, orig_y, FALSE);
+    _PLF_laser_gfx_update(orig_x, orig_y);
 
     return TRUE;
 }
@@ -734,12 +734,12 @@ void PLF_laser_block(u16 plf_x, u16 plf_y)
                     // remove laser out bit
                     tile->laser &= ~(PLF_LASER_OUT_R << out_dir);
                     in_dir = out_dir; // in direction for next tile
-                    _PLF_laser_gfx_update(curr_x, curr_y, FALSE);
+                    _PLF_laser_gfx_update(curr_x, curr_y);
                 }
                 else
                 {
                     // laser was terminated (no out)
-                    _PLF_laser_gfx_update(curr_x, curr_y, FALSE);
+                    _PLF_laser_gfx_update(curr_x, curr_y);
                     break;
                 }
 
@@ -756,7 +756,7 @@ void PLF_laser_block(u16 plf_x, u16 plf_y)
     // no lasers coming out of recalc point anymore
     orig_tile->laser &= 0xf;
 
-    _PLF_laser_gfx_update(plf_x, plf_y, FALSE);
+    _PLF_laser_gfx_update(plf_x, plf_y);
 }
 
 
@@ -798,12 +798,12 @@ void PLF_laser_recalc(u16 plf_x, u16 plf_y)
         }
     }
 
-    _PLF_laser_gfx_update(plf_x, plf_y, FALSE);
+    _PLF_laser_gfx_update(plf_x, plf_y);
 }
 
 
 
-void _PLF_laser_gfx_update(u16 x, u16 y, bool force_sprite)
+void _PLF_laser_gfx_update(u16 x, u16 y)
 {
     PlfTile * const t = &plf_tiles[x + plf_w * y];
     const u8 attrs = t->attrs;
@@ -822,7 +822,6 @@ void _PLF_laser_gfx_update(u16 x, u16 y, bool force_sprite)
         if(laser == PLF_LASER_OUT_D)
         {
             // laser going out the bottom and nothing else (bottom cannon)
-            force_sprite = TRUE;
             final_gfx = PLF_LASER_GFX_TERM_D;
         }
         else if (laser == PLF_LASER_IN_U)
@@ -886,7 +885,7 @@ void _PLF_laser_gfx_update(u16 x, u16 y, bool force_sprite)
     }
 
 
-    bool plane_a_use = plane_a_usable && !(t->attrs & PLF_ATTR_COVERED_ANY);
+    bool plane_a_use = plane_a_usable && !(t->attrs & (PLF_ATTR_COVERED_ANY & ~(PLF_ATTR_PLANE_A_OBJ_GFX|PLF_ATTR_PLANE_A_LASER))); // can only override obj gfx or existing laser
     u8 plane_a_frame = PLF_LASER_FRAME_NONE;
     u8 front_sprite_tile = PLF_LASER_FRAME_NONE;
     u8 back_sprite_tile = PLF_LASER_FRAME_NONE;
@@ -901,7 +900,7 @@ void _PLF_laser_gfx_update(u16 x, u16 y, bool force_sprite)
         {
             back_sprite_tile = _PLF_laser_gfx_to_frame(curr_gfx);
         }
-        else if(plane_a_frame == PLF_LASER_FRAME_NONE && plane_a_use && !force_sprite)
+        else if(plane_a_frame == PLF_LASER_FRAME_NONE && plane_a_use)
             plane_a_frame = _PLF_laser_gfx_to_frame(curr_gfx);
         else if(front_sprite_tile == PLF_LASER_FRAME_NONE)
         {
@@ -925,12 +924,18 @@ void _PLF_laser_gfx_update(u16 x, u16 y, bool force_sprite)
                                                 0,
                                                 0,
                                                 final_frame_idx);
-        PLF_plane_draw(FALSE, x, y, tile_attr);
+        if(PLF_plane_a_cover(x, y, PLF_ATTR_PLANE_A_LASER))
+            PLF_plane_draw(FALSE, x, y, tile_attr);
+        else
+        {
+            // this is not supposed to happen, we made the check with plane_a_use
+        }
     }
     else if(attrs & PLF_ATTR_PLANE_A_LASER)
     {
         // clear plane a
         PLF_plane_clear(FALSE, x, y);
+        PLF_plane_a_uncover(x, y, PLF_ATTR_PLANE_A_LASER);
     }
 
     // deal with sprites
@@ -1182,30 +1187,139 @@ void _PLF_laser_spr_free(PlfLaserSprEntry * entry)
     entry->px = entry->py = -1;
 }
 
-void PLF_cover(u16 plf_x, u16 plf_y, bool player)
+bool PLF_plane_a_cover(u16 plf_x, u16 plf_y, enum PlfAttrBits type)
 {
     PlfTile * const tile = PLF_get_tile_safe(plf_x, plf_y);
     if(!tile)
-        return;
+        return FALSE;
 
-    const enum PlfAttrBits bit = player? PLF_ATTR_PLANE_A_PLAYER : PLF_ATTR_PLANE_A_KEEPOUT;
-    u8 prev = tile->attrs & bit;
-    tile->attrs |= bit;
-    if(prev != (tile->attrs & bit))
-        _PLF_laser_gfx_update(plf_x, plf_y, FALSE);
+    switch (type)
+    {
+        case PLF_ATTR_PLANE_A_PLAYER:
+        {
+            u8 prev = tile->attrs & PLF_ATTR_PLANE_A_PLAYER;
+            tile->attrs |= PLF_ATTR_PLANE_A_PLAYER;
+            if(prev != (tile->attrs & PLF_ATTR_PLANE_A_PLAYER) && !(tile->attrs & PLF_ATTR_PLANE_A_KEEPOUT))
+            {
+                // overall effect changed
+                if(tile->laser)
+                    _PLF_laser_gfx_update(plf_x, plf_y);
+
+                if(tile->pobj && tile->attrs&PLF_ATTR_PLANE_A_OBJ_GFX)
+                    Pobj_event(tile->pobj, POBJ_EVT_PLANE_A_EVICT, NULL);
+            }
+        }
+        return TRUE;
+
+        case PLF_ATTR_PLANE_A_KEEPOUT:
+        {
+            u8 prev = tile->attrs & PLF_ATTR_PLANE_A_KEEPOUT;
+            tile->attrs |= PLF_ATTR_PLANE_A_KEEPOUT;
+            if(prev != (tile->attrs & PLF_ATTR_PLANE_A_KEEPOUT) && !(tile->attrs & PLF_ATTR_PLANE_A_PLAYER))
+            {
+                // overall effect changed
+                if(tile->laser)
+                    _PLF_laser_gfx_update(plf_x, plf_y);
+
+                if(tile->pobj && tile->attrs&PLF_ATTR_PLANE_A_OBJ_GFX)
+                    Pobj_event(tile->pobj, POBJ_EVT_PLANE_A_EVICT, NULL);
+            }
+        }
+        return TRUE;
+
+        case PLF_ATTR_PLANE_A_LASER:
+        {
+            if(tile->attrs & (PLF_ATTR_PLANE_A_KEEPOUT|PLF_ATTR_PLANE_A_PLAYER))
+                return FALSE;   // cannot cover
+
+            u8 prev = tile->attrs & PLF_ATTR_PLANE_A_LASER;
+            tile->attrs |= PLF_ATTR_PLANE_A_LASER;
+            if(prev != (tile->attrs & PLF_ATTR_PLANE_A_LASER))
+            {
+                if(tile->pobj && tile->attrs&PLF_ATTR_PLANE_A_OBJ_GFX)
+                    Pobj_event(tile->pobj, POBJ_EVT_PLANE_A_EVICT, NULL);
+            }
+        }
+        return TRUE;
+
+        case PLF_ATTR_PLANE_A_OBJ_GFX:
+        {
+            if(tile->attrs & (PLF_ATTR_PLANE_A_KEEPOUT|PLF_ATTR_PLANE_A_PLAYER|PLF_ATTR_PLANE_A_LASER))
+                return FALSE;   // almost everything can block this
+
+            tile->attrs |= PLF_ATTR_PLANE_A_OBJ_GFX;
+        }
+        return TRUE;
+
+        default:
+            return FALSE;
+    }
 }
 
-void PLF_uncover(u16 plf_x, u16 plf_y, bool player)
+bool PLF_plane_a_uncover(u16 plf_x, u16 plf_y, enum PlfAttrBits type)
 {
     PlfTile * const tile = PLF_get_tile_safe(plf_x, plf_y);
     if(!tile)
-        return;
+        return FALSE;
 
-    const enum PlfAttrBits bit = player? PLF_ATTR_PLANE_A_PLAYER : PLF_ATTR_PLANE_A_KEEPOUT;
-    u8 prev = tile->attrs & bit;
-    tile->attrs &= ~bit;
-    if(prev != (tile->attrs & bit))
-        _PLF_laser_gfx_update(plf_x, plf_y, FALSE);
+    switch (type)
+    {
+        case PLF_ATTR_PLANE_A_PLAYER:
+        {
+            u8 prev = tile->attrs & PLF_ATTR_PLANE_A_PLAYER;
+            tile->attrs &= ~PLF_ATTR_PLANE_A_PLAYER;
+            if(prev != (tile->attrs & PLF_ATTR_PLANE_A_PLAYER) && !(tile->attrs & PLF_ATTR_PLANE_A_KEEPOUT))
+            {
+                // overall effect changed
+                if(tile->laser)
+                    _PLF_laser_gfx_update(plf_x, plf_y);
+
+                if(tile->pobj && !(tile->attrs & PLF_ATTR_COVERED_ANY))
+                    Pobj_event(tile->pobj, POBJ_EVT_PLANE_A_INVITE, NULL);
+            }
+        }
+        return TRUE;
+
+        case PLF_ATTR_PLANE_A_KEEPOUT:
+        {
+            u8 prev = tile->attrs & PLF_ATTR_PLANE_A_KEEPOUT;
+            tile->attrs &= ~PLF_ATTR_PLANE_A_KEEPOUT;
+            if(prev != (tile->attrs & PLF_ATTR_PLANE_A_KEEPOUT) && !(tile->attrs & PLF_ATTR_PLANE_A_PLAYER))
+            {
+                // overall effect changed
+                if(tile->laser)
+                    _PLF_laser_gfx_update(plf_x, plf_y);
+
+                if(tile->pobj && !(tile->attrs & PLF_ATTR_COVERED_ANY))
+                    Pobj_event(tile->pobj, POBJ_EVT_PLANE_A_INVITE, NULL);
+            }
+        }
+        return TRUE;
+
+        case PLF_ATTR_PLANE_A_LASER:
+        {
+            u8 prev = tile->attrs & PLF_ATTR_PLANE_A_LASER;
+            tile->attrs &= ~PLF_ATTR_PLANE_A_LASER;
+            if(prev != (tile->attrs & PLF_ATTR_PLANE_A_LASER))
+            {
+                if(tile->pobj && !(tile->attrs & PLF_ATTR_COVERED_ANY))
+                    Pobj_event(tile->pobj, POBJ_EVT_PLANE_A_INVITE, NULL);
+            }
+        }
+        return TRUE;
+
+        case PLF_ATTR_PLANE_A_OBJ_GFX:
+        {
+            tile->attrs &= ~PLF_ATTR_PLANE_A_OBJ_GFX;
+            // in this case, do nothing else
+            // obj gfx should not override anything
+            // if something wanted to cover this it can
+        }
+        return TRUE;
+
+        default:
+            return FALSE;
+    }
 }
 
 void PLF_plane_draw(bool planeB, u16 x, u16 y, u16 tile_attr)
@@ -1216,7 +1330,8 @@ void PLF_plane_draw(bool planeB, u16 x, u16 y, u16 tile_attr)
 
     GFX_draw_sprite_in_plane_2x2_inline(planeB? BG_B : BG_A, x*2, y*2, tile_attr);
 
-    tile->attrs |= (planeB? PLF_ATTR_PLANE_B_OBJ : PLF_ATTR_PLANE_A_LASER);
+    if(planeB)
+        tile->attrs |= PLF_ATTR_PLANE_B_OBJ;
 }
 
 
@@ -1239,7 +1354,6 @@ void PLF_plane_clear(bool planeB, u16 x, u16 y)
     else
     {
         VDP_clearTileMapRect(BG_A, x*2, y*2, 2, 2);
-        tile->attrs &= ~PLF_ATTR_PLANE_A_LASER;
     }
 }
 
@@ -1261,13 +1375,9 @@ bool PLF_plane_a_avail_obj(u16 x, u16 y)
 
     if(tile->attrs & PLF_ATTR_COVERED_ANY)
         return FALSE;
+
+    return TRUE;
 }
-
-
-bool PLF_plane_a_cover(u16 x, u16 y, bool player);
-
-
-bool PLF_plane_a_uncover(u16 x, u16 y, bool player);
 
 void PLF_plane_a_refresh()
 {
@@ -1285,7 +1395,7 @@ void PLF_plane_a_refresh()
             if(tile->attrs & PLF_ATTR_PLANE_A_LASER)
             {
                 // TODO can objects also reuse plane a? for now only laser
-                _PLF_laser_gfx_update(x, y, FALSE);
+                _PLF_laser_gfx_update(x, y);
             }
         }
     }

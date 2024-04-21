@@ -32,7 +32,6 @@ static u8 hud_state = HUD_ST_UNINITIALIZED;
 static u8 hud_state_timer = 0;
 static bool hud_dirty = FALSE;
 
-static const u16 HUD_DIALOG_ERROR_STR = 0;
 static const u8 HUD_DIALOG_DELAY = 4;
 
 static u16 hud_dialog_charid;

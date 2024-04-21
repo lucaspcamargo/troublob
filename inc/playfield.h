@@ -60,7 +60,7 @@ enum PlfAttrBits {
     PLF_ATTR_USER_0
 } ENUM_PACK;
 
-static const u8 PLF_ATTR_COVERED_ANY = (PLF_ATTR_PLANE_A_KEEPOUT|PLF_ATTR_PLANE_A_PLAYER|PLF_ATTR_PLANE_A_LASER|PLF_ATTR_PLANE_A_OBJ_GFX);
+static const u16 PLF_ATTR_COVERED_ANY = (PLF_ATTR_PLANE_A_KEEPOUT|PLF_ATTR_PLANE_A_PLAYER|PLF_ATTR_PLANE_A_LASER|PLF_ATTR_PLANE_A_OBJ_GFX);
 
 // laser attributes for every playfield tile
 // for every quadrant direction we can have lasers in and out of the tile
@@ -153,8 +153,8 @@ void PLF_laser_block(u16 plf_x, u16 plf_y);  // undoes lasers that go out from t
 void PLF_laser_recalc(u16 plf_x, u16 plf_y);  // undoes lasers that goes out from the tile (block), then puts them again
 
 inline s16 PLF_get_sprite_depth(fix16 x, fix16 y) { (void) x; return 0x8000 - (y<<2); } // multiply y by 4 to give headroom for sprite ordering within tile
-void PLF_cover(u16 plf_x, u16 plf_y, bool player);
-void PLF_uncover(u16 plf_x, u16 plf_y, bool player);
+bool PLF_plane_a_cover(u16 plf_x, u16 plf_y, enum PlfAttrBits type);
+bool PLF_plane_a_uncover(u16 plf_x, u16 plf_y, enum PlfAttrBits type);
 
 /*
  * Note: forceRedraw will call vblank processing twice for uploading map data to planes
@@ -164,25 +164,30 @@ void PLF_update_objects(u32 framecounter);
 
 // reuse plane A (for laser) or plane B (for objects) to display 4 column-major tiles at position
 // column major because we can use this with unoptimized sprite data
-// tiles are marked as such via PLF_ATTR_PLANE_X_REUSED
+// in case of plane B, sets appropriate flag
 void PLF_plane_draw(bool planeB, u16 x, u16 y, u16 tile_attr);
 
 // undo a PLF_plane_draw at the specified position
+// in case of plane B, clears appropriate flag
 void PLF_plane_clear(bool planeB, u16 x, u16 y);
 
 // tell if tilemap uses the A plane on that tile
 // if this is the case, nothing else can use plane A in this position (neither player, lasers or objects can use it)
+// player and keepout flags can always be set in this case, but should have no effect
 bool PLF_plane_a_map_usage(u16 x, u16 y);
 
-// tell if plane a is available for object usage on that tile
-// player can always cover a tile in case tilemap does not use it (makes no sense)
+// tell if plane A is available for object graphics on that tile
+// player can always cover a tile, objects can always mark a tile as keepout
 bool PLF_plane_a_avail_obj(u16 x, u16 y);
 
-// cover plane a at this position
+// cover or uncover plane A at this position
 // player can always cover and uncover a tile
-// objects will receive appropriate events to
-bool PLF_plane_a_cover(u16 x, u16 y, bool player);
-bool PLF_plane_a_uncover(u16 x, u16 y, bool player);
+// object can always mark a tile as keepout
+// both can coexist
+// objects will receive appropriate events when being hindered
+// laser gfx will be redrawn when needed
+bool PLF_plane_a_cover(u16 x, u16 y, enum PlfAttrBits type);
+bool PLF_plane_a_uncover(u16 x, u16 y, enum PlfAttrBits type);
 
 // plane a was garbled (usually by in-game menu)
 // all in it needs to be redrawn

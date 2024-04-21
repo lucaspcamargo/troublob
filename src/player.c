@@ -44,6 +44,8 @@ enum PlayerFlags {
 void _PLR_update_gfx(bool blink, u8 anim_frame);
 void _PLR_update_bounce(u32 framecounter);
 bool _PLR_check_danger(u8 dist);
+void _PLR_uncover_now();
+void _PLR_cover_now();
 
 // TODO remove these after fix in SGDK
 FORCE_INLINE fix16 _fix16Round(fix16 value)
@@ -79,6 +81,7 @@ void PLR_init()
     player_state = PLR_STATE_IDLE;
     player_emote = PLR_EMOTE_NEUTRAL;
     player_flags = PLAYER_FLAG_NONE;
+    _PLR_cover_now();
     _PLR_update_gfx(FALSE, 0);
 }
 
@@ -97,6 +100,7 @@ void PLR_destroy()
 
 void PLR_reset_position()
 {
+    _PLR_uncover_now();
     PLF_player_get_initial_pos(&player_pf_x, &player_pf_y);
     player_pf_z = FIX16(0);
     dest_pf_x = player_pf_x;
@@ -105,6 +109,7 @@ void PLR_reset_position()
     final_dest_pf_y = player_pf_y;
     player_int_x = fix16ToInt(player_pf_x);
     player_int_y = fix16ToInt(player_pf_y);
+    _PLR_cover_now();
 }
 
 
@@ -230,7 +235,6 @@ bool _PLR_check_danger(u8 dist)
 {
     // see if there are dangerous things within "radius" (square centered around the player)
     // TODO move this to playfield code, optimize, reenable
-    //return FALSE;
 
     u16 curr_x = player_int_x - dist;
     u16 curr_y = player_int_y - dist;
@@ -299,6 +303,21 @@ void _PLR_update_gfx(bool blink_frame, u8 anim_frame)
 }
 
 
+void _PLR_uncover_now()
+{
+    PLF_plane_a_uncover(player_int_x-1, player_int_y-1, PLF_ATTR_PLANE_A_PLAYER);
+    PLF_plane_a_uncover(player_int_x, player_int_y-1, PLF_ATTR_PLANE_A_PLAYER);
+    PLF_plane_a_uncover(player_int_x+1, player_int_y-1, PLF_ATTR_PLANE_A_PLAYER);
+}
+
+void _PLR_cover_now()
+{
+    PLF_plane_a_cover(player_int_x-1, player_int_y-1, PLF_ATTR_PLANE_A_PLAYER);
+    PLF_plane_a_cover(player_int_x, player_int_y-1, PLF_ATTR_PLANE_A_PLAYER);
+    PLF_plane_a_cover(player_int_x+1, player_int_y-1, PLF_ATTR_PLANE_A_PLAYER);
+}
+
+
 void PLR_update(u32 framecounter)
 {
 
@@ -336,6 +355,32 @@ void PLR_update(u32 framecounter)
 
         if (int_changed)
         {
+            // update plane a coverage
+            if(prev_int_y == player_int_y && (prev_int_x-player_int_x == 1 || player_int_x-prev_int_x == 1))
+            {
+                if(prev_int_x > player_int_x)
+                {
+                    // moved left
+                    PLF_plane_a_uncover(prev_int_x+1, player_int_y-1, PLF_ATTR_PLANE_A_PLAYER);
+                    PLF_plane_a_cover(player_int_x-1, player_int_y-1, PLF_ATTR_PLANE_A_PLAYER);
+                }
+                else
+                {
+                    // moved right
+                    PLF_plane_a_uncover(prev_int_x-1, player_int_y-1, PLF_ATTR_PLANE_A_PLAYER);
+                    PLF_plane_a_cover(player_int_x+1, player_int_y-1, PLF_ATTR_PLANE_A_PLAYER);
+                }
+            }
+            else
+            {
+                // moved in y direction OR moved in x direction more than one square
+                // redo cover to be safe
+                PLF_plane_a_uncover(prev_int_x-1, prev_int_y-1, PLF_ATTR_PLANE_A_PLAYER);
+                PLF_plane_a_uncover(prev_int_x, prev_int_y-1, PLF_ATTR_PLANE_A_PLAYER);
+                PLF_plane_a_uncover(prev_int_x+1, prev_int_y-1, PLF_ATTR_PLANE_A_PLAYER);
+                _PLR_cover_now();
+            }
+
             // arrived on a tile
             const PlfTile *tile = PLF_get_tile_safe(player_int_x, player_int_y);
             const PlfTile *prev_tile = PLF_get_tile_safe(prev_int_x, prev_int_y);

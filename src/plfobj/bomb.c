@@ -21,6 +21,7 @@ You should have received a copy of the GNU General Public License along with Foo
 #define BOMB_FUSE_FRAMES 180
 #define BOMB_FUSE_FRAMES_SHORT 30 // damage from another bomb
 #define BOMB_TIMER_NONE 0xff
+#define BOMB_TIMER_NONE_PLANE_A 0xfd // use this as sentinel for plane A, for now this means only unlit bombs can go there
 #define BOMB_TIMER_EXPLODING 0xfe
 typedef struct {
     Sprite * spr;
@@ -28,9 +29,59 @@ typedef struct {
     u8 explode_timer;
 } PobjBombExtraData;
 
+void _Pobj_Bomb_revert_to_sprite(PobjData *data, PobjBombExtraData *extraData)
+{
+    if(extraData->spr || extraData->fuse_timer != BOMB_TIMER_NONE_PLANE_A)
+        return; // we have to ensure we dont have a sprite and are really in plane a
+
+    const u16 int_x = fix16ToInt(data->x);
+    const u16 int_y = fix16ToInt(data->y);
+
+    PLF_plane_a_uncover(int_x, int_y, PLF_ATTR_PLANE_A_OBJ_GFX);
+    PLF_plane_clear(FALSE, int_x, int_y);
+
+    extraData->spr = SPR_addSprite(PLF_theme_data_sprite_def(PLF_THEME_BOMB),
+                int_x*16, int_y*16, 0);
+    if(extraData->spr)
+    {
+        SPR_setAutoTileUpload(extraData->spr, FALSE);
+        SPR_setPalette(extraData->spr, PLF_theme_data_pal_line(PLF_THEME_BOMB));
+        SPR_setAnim(extraData->spr, 0);
+        SPR_setVRAMTileIndex(extraData->spr, PLF_theme_data_idx_table(PLF_THEME_BOMB)[0][0]);
+        SPR_setDepth(extraData->spr, PLF_get_sprite_depth(data->x, data->y));
+    }
+    extraData->fuse_timer = BOMB_TIMER_NONE;
+}
+
+bool _Pobj_Bomb_try_move_to_plane_a(PobjData *data, PobjBombExtraData *extraData)
+{
+    const u16 int_x = fix16ToInt(data->x);
+    const u16 int_y = fix16ToInt(data->y);
+
+    if(extraData->fuse_timer != BOMB_TIMER_NONE || !PLF_plane_a_cover(int_x, int_y, PLF_ATTR_PLANE_A_OBJ_GFX))
+    return FALSE;
+
+    if(extraData->spr)
+    {
+        SPR_releaseSprite(extraData->spr);
+        extraData->spr = NULL;
+    }
+
+    extraData->fuse_timer = BOMB_TIMER_NONE_PLANE_A;
+    const u16 tile_attrs = TILE_ATTR_FULL(PLF_theme_data_pal_line(PLF_THEME_BOMB),
+                                    0, 0, 0,
+                                    PLF_theme_data_idx_table(PLF_THEME_BOMB)[0][0]);
+    PLF_plane_draw(FALSE, int_x, int_y, tile_attrs);
+
+    return TRUE;
+
+}
+
 void PobjHandler_Bomb(PobjData *data, enum PobjEventType evt, void* evt_arg)
 {
     PobjBombExtraData * const extraData  = (PobjBombExtraData*) &data->extra;
+    const u16 int_x = fix16ToInt(data->x);
+    const u16 int_y = fix16ToInt(data->y);
 
     if(evt == POBJ_EVT_CREATED)
     {
@@ -38,35 +89,27 @@ void PobjHandler_Bomb(PobjData *data, enum PobjEventType evt, void* evt_arg)
         PlfTile* tile = args->plftile;
         tile->attrs |= TILE_BITS;
 
-        if (tile->laser)
+        const bool lit = tile->laser? TRUE : FALSE;
+
+        extraData->fuse_timer = lit? BOMB_FUSE_FRAMES : BOMB_TIMER_NONE;
+        if((!lit) && PLF_plane_a_cover(int_x, int_y, PLF_ATTR_PLANE_A_OBJ_GFX))
         {
-            // lit
-            extraData->fuse_timer = BOMB_FUSE_FRAMES;
-            extraData->spr = SPR_addSprite(PLF_theme_data_sprite_def(PLF_THEME_BOMB),
-                                        fix16ToInt(data->x)*16, fix16ToInt(data->y)*16, 0);
-            if(extraData->spr)
-            {
-                SPR_setAutoTileUpload(extraData->spr, FALSE);
-                SPR_setPalette(extraData->spr, PAL_LINE_SPR_A);
-                SPR_setAnim(extraData->spr, 0);
-                SPR_setVRAMTileIndex(extraData->spr, PLF_theme_data_idx_table(PLF_THEME_BOMB)[0][1]);
-                SPR_setDepth(extraData->spr, PLF_get_sprite_depth(data->x, data->y));
-            }
+            extraData->spr = NULL;
+            extraData->fuse_timer = BOMB_TIMER_NONE_PLANE_A;
+            const u16 tile_attrs = TILE_ATTR_FULL(PLF_theme_data_pal_line(PLF_THEME_BOMB),
+                                            0, 0, 0,
+                                            PLF_theme_data_idx_table(PLF_THEME_BOMB)[0][0]);
+            PLF_plane_draw(FALSE, int_x, int_y, tile_attrs);
         }
-        else
+        else extraData->spr = SPR_addSprite(PLF_theme_data_sprite_def(PLF_THEME_BOMB),
+                                    int_x*16, int_y*16, 0);
+        if(extraData->spr)
         {
-            // not lit
-            extraData->fuse_timer = BOMB_TIMER_NONE;
-            extraData->spr = SPR_addSprite(PLF_theme_data_sprite_def(PLF_THEME_BOMB),
-                                        fix16ToInt(data->x)*16, fix16ToInt(data->y)*16, 0);
-            if(extraData->spr)
-            {
-                SPR_setAutoTileUpload(extraData->spr, FALSE);
-                SPR_setPalette(extraData->spr, PAL_LINE_SPR_A);
-                SPR_setAnim(extraData->spr, 0);
-                SPR_setVRAMTileIndex(extraData->spr, PLF_theme_data_idx_table(PLF_THEME_BOMB)[0][0]);
-                SPR_setDepth(extraData->spr, PLF_get_sprite_depth(data->x, data->y));
-            }
+            SPR_setAutoTileUpload(extraData->spr, FALSE);
+            SPR_setPalette(extraData->spr, PLF_theme_data_pal_line(PLF_THEME_BOMB));
+            SPR_setAnim(extraData->spr, 0);
+            SPR_setVRAMTileIndex(extraData->spr, PLF_theme_data_idx_table(PLF_THEME_BOMB)[0][lit? 1 : 0]);
+            SPR_setDepth(extraData->spr, PLF_get_sprite_depth(data->x, data->y));
         }
     }
     else if(evt == POBJ_EVT_FRAME)
@@ -82,6 +125,7 @@ void PobjHandler_Bomb(PobjData *data, enum PobjEventType evt, void* evt_arg)
                 {
                     SPR_setHFlip(extraData->spr, random()%2);
                     SPR_setVFlip(extraData->spr, random()%2);
+                    SPR_setPalette(extraData->spr, PLF_theme_data_pal_line(PLF_THEME_EXPLOSION));
                     SPR_setDefinition(extraData->spr, PLF_theme_data_sprite_def(PLF_THEME_EXPLOSION));
                     SPR_setPosition(extraData->spr, fix16ToInt(data->x)*16-8, fix16ToInt(data->y)*16-8);
                     SPR_setVRAMTileIndex(extraData->spr, PLF_theme_data_idx_table(PLF_THEME_EXPLOSION)[0][0]);
@@ -100,7 +144,7 @@ void PobjHandler_Bomb(PobjData *data, enum PobjEventType evt, void* evt_arg)
                 SPR_setVRAMTileIndex(extraData->spr, PLF_theme_data_idx_table(PLF_THEME_BOMB)[0][1 + extraData->fuse_timer/4%2]);
             }
         }
-        else if(extraData->fuse_timer != BOMB_TIMER_NONE)
+        else if(extraData->fuse_timer != BOMB_TIMER_NONE && extraData->fuse_timer != BOMB_TIMER_NONE_PLANE_A)
         {
             // exploding
             extraData->explode_timer ++;
@@ -126,9 +170,11 @@ void PobjHandler_Bomb(PobjData *data, enum PobjEventType evt, void* evt_arg)
     {
         if(extraData->fuse_timer == BOMB_TIMER_EXPLODING)
             return;
-        if(*((enum PobjDamageType*) evt_arg) == POBJ_DAMAGE_LASER && extraData->fuse_timer == BOMB_TIMER_NONE)
+        const bool unlit = (extraData->fuse_timer == BOMB_TIMER_NONE || extraData->fuse_timer == BOMB_TIMER_NONE_PLANE_A);
+        if(*((enum PobjDamageType*) evt_arg) == POBJ_DAMAGE_LASER && unlit)
         {
             SFX_play(SFX_fuse);
+            _Pobj_Bomb_revert_to_sprite(data, extraData);
             extraData->fuse_timer = BOMB_FUSE_FRAMES;
             if(extraData->spr)
             {
@@ -138,9 +184,10 @@ void PobjHandler_Bomb(PobjData *data, enum PobjEventType evt, void* evt_arg)
         }
         else if(*((enum PobjDamageType*) evt_arg) == POBJ_DAMAGE_BOMB)
         {
-            if (extraData->fuse_timer == BOMB_TIMER_NONE)
+            if (unlit)
             {
                 SFX_play(SFX_fuse);
+                _Pobj_Bomb_revert_to_sprite(data, extraData);
                 extraData->fuse_timer = BOMB_FUSE_FRAMES_SHORT;
                 if(extraData->spr)
                 {
@@ -203,8 +250,22 @@ void PobjHandler_Bomb(PobjData *data, enum PobjEventType evt, void* evt_arg)
             }
         }
     }
+    else if(evt == POBJ_EVT_PLANE_A_INVITE)
+    {
+        _Pobj_Bomb_try_move_to_plane_a(data, extraData);
+    }
+    else if(evt == POBJ_EVT_PLANE_A_EVICT)
+    {
+        _Pobj_Bomb_revert_to_sprite(data, extraData);
+    }
     else if(evt == POBJ_EVT_DESTROYED)
     {
+        if(extraData->fuse_timer == BOMB_TIMER_NONE_PLANE_A)
+        {
+            PLF_plane_a_uncover(int_x, int_y, PLF_ATTR_PLANE_A_OBJ_GFX);
+            PLF_plane_clear(FALSE, int_x, int_y);
+        }
+
         if(extraData->spr)
             SPR_releaseSprite(extraData->spr);
     }
