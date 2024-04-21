@@ -26,21 +26,27 @@ You should have received a copy of the GNU General Public License along with Foo
 #include "input.h"
 #include "registry.h"
 #include "sfx.h"
+#include "gfx_utils.h"
+
 
 Sprite * epf_item_preview = NULL;
 const SpriteDefinition * epf_item_preview_def = NULL;
 bool epf_paused;
 bool epf_redraw_plane_a;
 
+
 void exec_playfield_setup(u16 level_id,const RGST_lvl * curr_lvl, bool initial);
 void exec_playfield_input(u32 framecounter, bool *reset_flag);
 void exec_playfield_pause_toggled();
+
 
 int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
 
     (void) next_cmd; // future usage
     const u16 level_id = curr_cmd->arg0;
     const RGST_lvl * curr_lvl = RGST_levels + level_id;
+
+    GFX_init_queue();
 
     exec_playfield_setup(level_id, curr_lvl, TRUE);
 
@@ -103,7 +109,7 @@ int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
         SYS_doVBlankProcess();
 
         // other things to update during vblank must go hereafter (assuming we still have vblank time)
-        HUD_update_with_gfx(); // plane update, do in vblank
+        HUD_update_with_gfx(); // plane update, do right after vblank
         if(epf_redraw_plane_a)
         {
             epf_redraw_plane_a = FALSE;
@@ -122,6 +128,8 @@ int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
         SPR_releaseSprite(epf_item_preview);
         epf_item_preview = NULL;
     }
+
+    GFX_stop_queue();
 }
 
 void exec_playfield_setup(u16 level_id, const RGST_lvl * curr_lvl, bool initial)

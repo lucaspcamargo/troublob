@@ -5,6 +5,11 @@ FIRST RELEASE GOALS:
  [X] plane A keepout flag (for usage by tall objects)
  [X] finalize laser drawing
  [X] reinstate danger check and emotes
+ [X] objects in plane A (bombs)
+ [ ] fix flickering due to tile updates mid-frame (wait for next vsync)
+    [ ] create update queue in gfx utility
+    [ ] gfx utility registers a vsync callback for flushing
+    [ ] all tile updates must go through it (sprite system is fine because it also updates on vsync)
  [~] fix diagonal movement
     [ ] make it work in pathfinding too
  [ ] sync walking to Dweep jumping
@@ -17,17 +22,17 @@ FIRST RELEASE GOALS:
  [ ] main menu
     [ ] basic options
  [~] in-game menu
- [ ] mouse in debug menu
+ [X] mouse in debug menu
  [ ] debug mode in-game
  [ ] Titlecards and hints
- [ ] multiple languages
+ [X] multiple languages
  [ ] credits
  [ ] Heat plates and floating
  [ ] Fans
  [ ] Levels 11-20
  [ ] Levels 21-30
  [ ] Review music gain
- [ ] Final readme and docs update
+ [ ] readme and docs update
  
 Some more ambitious goals:
  [ ] save/restore during gameplay (to diminish repetition)

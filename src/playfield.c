@@ -188,8 +188,8 @@ void PLF_destroy()
     for(u8 i = 0; i < PLF_LASER_SPRITE_MAX; i++)
         if(plf_laser_sprites[i].spr)
             SPR_releaseSprite(plf_laser_sprites[i].spr);
-    free(m_a);
-    free(m_b);
+    MEM_free(m_a);
+    MEM_free(m_b);
     m_a = m_b = NULL;
 }
 
@@ -1193,6 +1193,9 @@ bool PLF_plane_a_cover(u16 plf_x, u16 plf_y, enum PlfAttrBits type)
     if(!tile)
         return FALSE;
 
+    if(PLANE_A_ALLOCATION_AT(plf_x, plf_y))
+        return FALSE;
+
     switch (type)
     {
         case PLF_ATTR_PLANE_A_PLAYER:
@@ -1328,7 +1331,7 @@ void PLF_plane_draw(bool planeB, u16 x, u16 y, u16 tile_attr)
     if(!tile)
         return;
 
-    GFX_draw_sprite_in_plane_2x2_inline(planeB? BG_B : BG_A, x*2, y*2, tile_attr);
+    GFX_draw_sprite_in_plane_2x2(planeB? BG_B : BG_A, x*2, y*2, tile_attr);
 
     if(planeB)
         tile->attrs |= PLF_ATTR_PLANE_B_OBJ;

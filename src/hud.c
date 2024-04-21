@@ -86,7 +86,7 @@ void _HUD_draw()
         bool flipH = FALSE, flipV = FALSE;
         if(!TOOL_get_gfx(hud_inventory[i], &frame_idx, &flipH, &flipV))
             continue;
-        GFX_draw_sprite_in_plane_2x2(WINDOW, 2+3*i, HUD_Y_TILE+1,
+        GFX_draw_sprite_in_plane_2x2_immediate(WINDOW, 2+3*i, HUD_Y_TILE+1,
                                      TILE_ATTR_FULL(PAL_LINE_SPR_A, 1, flipV?1:0, flipH?1:0, PLF_theme_data_idx_table(PLF_THEME_TOOLS)[0][frame_idx]));
     }
     if (hud_inventory_marker)
