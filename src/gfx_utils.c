@@ -62,6 +62,12 @@ bool GFX_is_queued()
     return gfx_queue_on;
 }
 
+void GFX_queue_clear()
+{
+    gfx_queue_sz = 0;
+}
+
+
 void GFX_draw_sprite_in_plane_2x2_immediate(VDPPlane plane, u16 x, u16 y, u16 tile_attr)
 {
     if(tile_attr & TILE_ATTR_VFLIP_MASK)

@@ -191,6 +191,7 @@ void PLF_destroy()
     MEM_free(m_a);
     MEM_free(m_b);
     m_a = m_b = NULL;
+    GFX_queue_clear();  // remove any pending graphics ops created during destruction process
 }
 
 
@@ -1412,6 +1413,11 @@ void PLF_plane_a_refresh()
  * */
 void PLF_update_scroll(bool forceRedraw)
 {
+    if(forceRedraw)
+    {
+        VDP_clearPlane(BG_A, TRUE);
+    }
+
     s16 plf_scroll_x = fix16ToRoundedInt(fix16Sub(plf_cam_cx, FIX16(160)));
     s16 plf_scroll_y = fix16ToRoundedInt(fix16Sub(plf_cam_cy, FIX16(96)));
 

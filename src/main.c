@@ -69,9 +69,17 @@ int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
             if(PLR_curr_state() == PLR_STATE_DEAD)
             {
                 if(!tmr_player_dead)
-                    tmr_player_dead = 150;
+                {
+                    tmr_player_dead = 170;
+                    XGM_stopPlay();
+                }
                 else if(!--tmr_player_dead)
                     reset_flag = TRUE;
+                else if(tmr_player_dead == 150)
+                {
+                    XGM_setLoopNumber(0);
+                    XGM_startPlay(bgm_defeat);
+                }
             }
         }
 
@@ -162,6 +170,7 @@ void exec_playfield_setup(u16 level_id, const RGST_lvl * curr_lvl, bool initial)
     }
 
     INPUT_set_cursor_visible(TRUE);
+    XGM_setLoopNumber(-1);
     XGM_startPlay(curr_lvl->bgm_xgm);
     PCTRL_fade_in(PAL_STD_FADE_DURATION);
 }
