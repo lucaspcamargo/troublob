@@ -14,6 +14,7 @@ You should have received a copy of the GNU General Public License along with Foo
 #include "sfx.h"
 #include "input.h"
 #include "resources.h"
+#include "i18n.h"
 
 
 #define POS_X_TXT 4
@@ -22,8 +23,8 @@ You should have received a copy of the GNU General Public License along with Foo
 #define POS_X_EXTRA (POS_X_TXT + 13)
 #define POS_X_ARROW (POS_X_TXT - 2)
 
-#define NUM_ENTRIES 4
-#define NUM_SUBOPTS 3
+#define NUM_ENTRIES 5
+#define NUM_SUBOPTS 4
 static int curr_idx = 0;
 static int curr_subopts[NUM_SUBOPTS];
 static int subopt_min[NUM_SUBOPTS];
@@ -37,7 +38,8 @@ static const u8 * bgms[] = {
     bgm_stage_5,
     bgm_victory,
     bgm_defeat,
-    bgm_stage_1};
+    bgm_title
+};
 
 // quick and dirty
 #define VDP_drawText(text, x, y) VDP_drawTextEx(BG_A, text, TILE_ATTR(PAL_LINE_HUD, 0, 0, 0), x, y, DMA)
@@ -61,7 +63,10 @@ void debug_menu_draw_opts()
     // special
     VDP_fillTileMapRect(BG_A, TILE_FONT_INDEX, POS_X_EXTRA, POS_Y_TXT, (320/8)-POS_X_EXTRA, 1);
     if(curr_subopts[0] < RGST_lvl_count)
-        VDP_drawText(RGST_levels[curr_subopts[0]].name, POS_X_EXTRA, POS_Y_TXT);
+        VDP_drawText(i18n_str(STR_BLK_LVLNAME_BEGIN+curr_subopts[0]), POS_X_EXTRA, POS_Y_TXT);
+
+    VDP_fillTileMapRect(BG_A, TILE_FONT_INDEX, POS_X_EXTRA, POS_Y_TXT+3, (320/8)-POS_X_EXTRA, 1);
+    VDP_drawText(i18n_str(STR_LANG_NAME), POS_X_EXTRA, POS_Y_TXT+3);
 }
 
 bool debug_menu_option_inc(u8 opt_idx, bool dec)
@@ -74,6 +79,8 @@ bool debug_menu_option_inc(u8 opt_idx, bool dec)
     {
         curr_subopts[opt_idx] = new;
         SFX_play(opt_idx == 2? new : SFX_ding);
+        if(opt_idx == 3)
+            i18n_lang_set(new);
         return TRUE;
     }
     return FALSE;
@@ -93,7 +100,7 @@ enum DirectorCommandType debug_menu_option_exec(u8 opt_idx, enum DirectorCommand
         case 2:
             SFX_play(curr_subopts[2]);
             break;
-        case 3:
+        case 4:
             (*outflags) = DIREC_CMD_F_NONE;
             return DIREC_CMD_TITLE;
     }
@@ -110,8 +117,10 @@ void exec_debug_menu(DirectorCommand *next_cmd)
     subopt_max[1] = sizeof(bgms)/sizeof(u8*) - 1;
     subopt_min[2] = SFX_USER_OFFSET;
     subopt_max[2] = SFX_END - 1;
+    subopt_max[3] = LANG_COUNT - 1;
     memcpy(curr_subopts, subopt_min, sizeof(curr_subopts));
     curr_subopts[0] = 1;
+    curr_subopts[3] = i18n_lang_curr();
 
     PCTRL_set_line(0, pal_tset_hud.data);
     u16 dangerPal[16];
@@ -130,7 +139,8 @@ void exec_debug_menu(DirectorCommand *next_cmd)
     VDP_drawText("LEVEL <    >", POS_X_TXT, POS_Y_TXT);
     VDP_drawText("BGM   <    >", POS_X_TXT, POS_Y_TXT + 1);
     VDP_drawText("SFX   <    >", POS_X_TXT, POS_Y_TXT + 2);
-    VDP_drawText("TITLE", POS_X_TXT, POS_Y_TXT + 3);
+    VDP_drawText("LANG  <    >", POS_X_TXT, POS_Y_TXT + 3);
+    VDP_drawText("TITLE", POS_X_TXT, POS_Y_TXT + 4);
 
     if(!INPUT_is_mouse_present())
         VDP_drawTextEx(BG_A, "USING A MOUSE IS RECOMMENDED", TILE_ATTR(1,0,0,0), 6, 18, DMA);
@@ -184,7 +194,7 @@ void exec_debug_menu(DirectorCommand *next_cmd)
                     redraw_opts = TRUE;
             }
 
-            if( BUTTON_A & changed & state )
+            if( (BUTTON_START|BUTTON_A) & changed & state )
             {
                 enum DirectorCommandType type;
                 enum DirectorCommandFlags flags;
@@ -196,8 +206,6 @@ void exec_debug_menu(DirectorCommand *next_cmd)
                 }
             }
 
-            if( BUTTON_START & changed & state )
-                break;
         }
         else if(meth == INPUT_METHOD_MOUSE && changed)
         {

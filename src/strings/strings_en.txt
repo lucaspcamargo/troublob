@@ -1,5 +1,21 @@
-# strings_en.txt -- demo string list
+# strings_en.txt
 __IDENTIFIER str_en
 
 STRING ZERO
 What a cool demo!!!
+English
+
+#BLOCK LVLNAME
+Test Map
+Deflection
+Spin Doctor
+House of Mirrors
+Bombing Alley
+Dexterity
+Lasermania
+Phoenix
+Squish Time
+Dweeps on Ice
+Badda Bing Badda Boom
+
+#BLOCK LVLHINT

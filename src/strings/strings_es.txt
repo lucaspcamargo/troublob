@@ -1,0 +1,21 @@
+# strings_es.txt
+__IDENTIFIER str_es
+
+STRING ZERO
+¡¡¡Qué demostración tan genial!!!
+Español
+
+#BLOCK LVLNAME
+Mapa de Prueba
+Desviación
+Spin Doctor
+Casa de los Espejos
+Callejón de Bombas
+Destreza
+Lasermanía
+Fénix
+Tiempo de Chapotear
+Dweeps sobre Hielo
+Badda Bing Badda Boom
+
+#BLOCK LVLHINT

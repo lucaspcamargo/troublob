@@ -11,11 +11,12 @@ You should have received a copy of the GNU General Public License along with Foo
 #include "hud.h"
 
 #include "palette_ctrl.h"
-#include "./strings/strings_en.h"
 #include "sfx.h"
 #include "gfx_utils.h"
 #include "playfield.h"
 #include "tools.h"
+#include "i18n.h"
+
 
 #define TILE_HUD_INDEX (1728) // for hud, we use spare space in window tile mappings
 #define TILE_HUD_FONT_INDEX (TILE_FONT_INDEX)
@@ -25,6 +26,7 @@ You should have received a copy of the GNU General Public License along with Foo
 #define DIALOG_BG_BORDER_H  (DIALOG_BG_CORNER+1)
 #define DIALOG_BG_BORDER_V  (DIALOG_BG_CORNER+2)
 #define DIALOG_BG_BLANK     (DIALOG_BG_CORNER+3)
+
 
 static u8 hud_state = HUD_ST_UNINITIALIZED;
 static u8 hud_state_timer = 0;
@@ -43,8 +45,10 @@ static enum ToolId hud_inventory[HUD_INVENTORY_COUNT];
 static u16 hud_inventory_curr;
 static bool hud_inventory_marker;
 
+
 void _HUD_draw();
 void _HUD_draw_marker();
+
 
 void HUD_preinit()
 {
@@ -245,12 +249,10 @@ void HUD_menu_toggle()
 
 void HUD_dialog_start(u8 character_id, u16 string_id)
 {
-    if(string_id >= STR_EN_COUNT)
-        string_id = HUD_DIALOG_ERROR_STR;
     hud_state = HUD_ST_DIALOG_STARTING;
     hud_state_timer = 0;
     hud_dialog_charid = character_id;
-    hud_dialog_str = STR_EN_GET(string_id);
+    hud_dialog_str = i18n_str(string_id);
     hud_dialog_len = strlen(hud_dialog_str);
 }
 

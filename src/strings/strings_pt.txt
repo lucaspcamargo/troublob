@@ -1,0 +1,21 @@
+# strings_pt.txt
+__IDENTIFIER str_pt
+
+TEXTO ZERO
+Que demo legal!!!
+Português
+
+#BLOCK LVLNAME
+Mapa de Teste
+Deflexão
+Gira, Gira
+Casa de Espelhos
+Beco da Bomba
+Agilidade
+Laser-mania
+Fênix
+Um Mop Roxo
+Dweep no Gelo
+Boom, Boom, Boom, Boom!
+
+#BLOCK LVLHINT

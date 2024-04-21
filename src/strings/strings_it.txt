@@ -1,0 +1,21 @@
+# strings_it.txt
+__IDENTIFIER str_it
+
+TESTO ZERO
+Che bella demo!!!
+Italiano
+
+#BLOCK LVLNAME
+Mappa di Prova
+Deflessione
+Spin Doctor
+Casa degli Specchi
+Vicolo delle Bombe
+Destrezza
+Lasermania
+Fenice
+Tempo di Squish
+Dweep sul Ghiaccio
+Badda Bing Badda Boom!
+
+#BLOCK LVLHINT
