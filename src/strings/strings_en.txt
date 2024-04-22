@@ -19,3 +19,15 @@ Dweeps on Ice
 Badda Bing Badda Boom
 
 #BLOCK LVLHINT
+No hints for this development. Good luck.
+To deflect a laser beam, place a mirror in its path. Mirrors can face one of two directions.
+Use a wrench to rotate a mirror or a laser. There are two types of wrenches: clockwise and counterclockwise.
+Dweep can pick up items in tool squares to add to the inventory. Pick up lasers, and use them to destroy other lasers.
+A torch or a laser can light a bomb's fuse. An exploding bomb will cause adjacent bombs to explode as well.
+An exploding bomb will destroy all adjacent objects, including lasers, mirrors, and other bombs.
+If Dweep steps on a freeze plate, Dweep will freeze and will be unable to move. Avoid the freeze plates here.
+Use a water bucket to make Dweep wet.  A wet Dweep can pass through a single laser beam unharmed.  Do not stop in the beam.
+Use a torch to thaw a frozen Dweep.
+You can do this. I believe in you.
+A water bucket can defuse an ignited bomb before it explodes. But if a laser beam is still passing through the bomb's fuse, the bomb will re-ignite.
+

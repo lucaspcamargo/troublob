@@ -15,6 +15,7 @@ You should have received a copy of the GNU General Public License along with Foo
 #include "input.h"
 #include "resources.h"
 #include "i18n.h"
+#include "save.h"
 
 
 #define POS_X_TXT 4
@@ -156,6 +157,22 @@ void exec_debug_menu(DirectorCommand *next_cmd)
     debug_menu_draw_opts();
 
     INPUT_set_cursor_visible(INPUT_is_mouse_present());
+
+    // save report
+    if(!SAVE_is_initialized())
+        SAVE_init();
+    VDP_drawText("Save Data Status: ", POS_X_TXT, POS_Y_TXT + 8);
+    VDP_drawText(SAVE_enum_init_status_str(SAVE_init_status()), POS_X_TXT + 18, POS_Y_TXT + 8);
+    for(u8 slot = 0; slot < SAVE_NUM_SLOTS; slot++)
+    {
+        char buf[2];
+        VDP_drawText("- Slot X: ", POS_X_TXT, POS_Y_TXT + 9 + slot);
+        intToStr(slot, buf, 1);
+        VDP_drawText(buf, POS_X_TXT + 7, POS_Y_TXT + 9 + slot);
+        VDP_drawText(SAVE_enum_slot_state_str(SAVE_slot_state(slot)), POS_X_TXT + 10, POS_Y_TXT + 9 + slot);
+        if(SAVE_curr_slot() == slot)
+            VDP_drawText(">", POS_X_TXT, POS_Y_TXT + 9 + slot);
+    }
 
     for(;;)
     {

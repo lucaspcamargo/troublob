@@ -49,6 +49,11 @@ You should have received a copy of the GNU General Public License along with Foo
 #define MOUSE_Y_MAX 222
 #define MOUSE_SPEED 2
 
+// Save
+#define SAVE_NUM_SLOTS 4
+#define SAVE_COMPLETION_ENTRIES_COUNT 32
+#define SAVE_CHECKSUM_POLY 0x8005
+
 // Audio
 #define SFX_USER_OFFSET 64
 

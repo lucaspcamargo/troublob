@@ -11,11 +11,15 @@ FIRST RELEASE GOALS:
     [X] gfx utility registers a vsync callback for flushing
     [X] all tile updates must go through it (sprite system is fine because it also updates on vsync)
         [~] plane B restore not going through this but not a huge issue to be honest
-    [ ]  seems like there are bugs because gfx callback can be called mid-frame on slowdown
-         needs some sort of signal for "ready to execute" or something
+    [X]  seems like there are bugs because gfx callback can be called mid-frame on slowdown
+         needs some sort of signal for "ready to execute" or something (nevermind it was stray gfx ops after level playfield teardown)
  [~] fix diagonal movement
     [X] fix accidental single axis step
     [ ] make it work in pathfinding too
+ [ ] playfield needs to know where player is
+    [ ] for laser paths
+    [ ] for damage notification
+        [ ] damage from explosions
  [ ] sync walking to Dweep jumping
  [ ] SRAM
     [ ] stage completion state
@@ -36,7 +40,9 @@ FIRST RELEASE GOALS:
  [ ] Levels 11-20
  [ ] Levels 21-30
  [ ] Review music gain
+ [ ] Review all string
  [ ] readme and docs update
+ [ ] first release
  
 Some more ambitious goals:
  [ ] save/restore during gameplay (to diminish repetition)
