@@ -24,7 +24,7 @@ You should have received a copy of the GNU General Public License along with Foo
 #define POS_X_EXTRA (POS_X_TXT + 13)
 #define POS_X_ARROW (POS_X_TXT - 2)
 
-#define NUM_ENTRIES 5
+#define NUM_ENTRIES 6
 #define NUM_SUBOPTS 4
 static int curr_idx = 0;
 static int curr_subopts[NUM_SUBOPTS];
@@ -104,6 +104,9 @@ enum DirectorCommandType debug_menu_option_exec(u8 opt_idx, enum DirectorCommand
         case 4:
             (*outflags) = DIREC_CMD_F_NONE;
             return DIREC_CMD_TITLE;
+        case 5:
+            (*outflags) = DIREC_CMD_F_MENU;
+            return DIREC_CMD_TITLE;
     }
     return DIREC_CMD_INVAL;
 }
@@ -141,7 +144,8 @@ void exec_debug_menu(DirectorCommand *next_cmd)
     VDP_drawText("BGM   <    >", POS_X_TXT, POS_Y_TXT + 1);
     VDP_drawText("SFX   <    >", POS_X_TXT, POS_Y_TXT + 2);
     VDP_drawText("LANG  <    >", POS_X_TXT, POS_Y_TXT + 3);
-    VDP_drawText("TITLE", POS_X_TXT, POS_Y_TXT + 4);
+    VDP_drawText("TITLE",       POS_X_TXT, POS_Y_TXT + 4);
+    VDP_drawText("MENU",        POS_X_TXT, POS_Y_TXT + 5);
 
     if(!INPUT_is_mouse_present())
         VDP_drawTextEx(BG_A, "USING A MOUSE IS RECOMMENDED", TILE_ATTR(1,0,0,0), 6, 18, DMA);

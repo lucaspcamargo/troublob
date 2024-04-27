@@ -5,7 +5,8 @@ FIRST RELEASE GOALS:
  [X] plane A keepout flag (for usage by tall objects)
  [X] finalize laser drawing
  [X] reinstate danger check and emotes
- [X] objects in plane A (bombs)
+ [~] objects in plane A (bombs)
+    [ ] fix bomb light up and water down
  [~] fix flickering due to tile updates mid-frame (wait for next vsync)
     [X] create update queue in gfx utility
     [X] gfx utility registers a vsync callback for flushing
@@ -21,7 +22,7 @@ FIRST RELEASE GOALS:
     [ ] for damage notification
         [ ] damage from explosions
  [ ] sync walking to Dweep jumping
- [ ] SRAM
+ [~] SRAM
     [ ] stage completion state
     [ ] stage completion time
     [ ] save game options

@@ -17,12 +17,18 @@ You should have received a copy of the GNU General Public License along with Foo
 #include "sfx.h"
 #include "input.h"
 #include "hud.h"
+#include "director.h"
+#include "registry.h"
+#include "i18n.h"
+#include "save.h"
 
 
 #define TITLE_FRAMES (300 + 2 * PAL_STD_FADE_DURATION)
 #define TITLE_DISCLAIMER_FRAMES 200
 
+
 extern const Bitmap sgdk_logo;
+
 
 void _TITLE_disclaimer()
 {
@@ -98,14 +104,102 @@ void _TITLE_logo()
     PCTRL_set_line(0, pal_tset_hud.data);
 }
 
+// DRAFT
+static const u8 P_X = 5;
+static const u8 P_Y = 3;
+static u8 menu_id = 0;
+static u8 menu_curr = 0;
+static u8 menu_total = 4;
+static bool menu_redraw = FALSE;
+
+void _TITLE_menu_init(const DirectorCommand *curr_cmd)
+{
+    menu_id = curr_cmd->arg0;
+    menu_curr = 0;
+    menu_redraw = TRUE;
+}
+
+void _TITLE_menu_step(DirectorCommand *next)
+{
+    if(menu_redraw)
+    {
+        VDP_clearPlane(BG_A, TRUE);
+        switch (menu_id)
+        {
+            case 0: // main
+            {
+                VDP_drawText( "PLAY", P_X, P_Y );
+                VDP_drawText( "BONUS", P_X, P_Y+1 );
+                VDP_drawText( "OPTIONS", P_X, P_Y+2 );
+                VDP_drawText( "ABOUT", P_X, P_Y+3 );
+            }
+            break;
+            case 1: // play
+            {
+                for(u8 i = 1; i < RGST_lvl_count; i++)
+                {
+                    char buf[4];
+                    intToStr(i, buf, 0);
+                    VDP_drawText( buf, P_X, P_Y+i-1);
+                    VDP_drawText( i18n_str(STR_BLK_LVLNAME_BEGIN+i), P_X+3, P_Y+i-1 );
+                    if(SAVE_curr_data()->completion[i].completed)
+                        VDP_drawText( " OK ", 37, P_Y+i-1 );
+                }
+            }
+            break;
+        }
+        const char arrow[2] = {'z'+5, '\0'};
+        VDP_drawText(arrow, P_X-2, P_Y + menu_curr);
+        menu_redraw = FALSE;
+    }
+
+    bool im_change;
+    u16 changed, state;
+    INPUT_get_last_state(&im_change, &changed, &state);
+
+    if( (changed & state & (BUTTON_A|BUTTON_START)))
+    {
+        if(menu_id == 0)
+        {
+            menu_id = menu_curr + 1;
+            menu_curr = 0;
+            menu_total = menu_id? RGST_lvl_count : 4;   // todo put in func
+            menu_redraw = TRUE;
+        }
+        else if(menu_id == 1)
+        {
+            next->type = DIREC_CMD_LEVEL;
+            next->arg0 = menu_curr + 1;
+            next->arg1 = 0;
+            next->arg_p = NULL;
+        }
+    } else if( (changed & state & BUTTON_B))
+    {
+        menu_redraw = TRUE;
+        menu_id = 0;
+        menu_curr = 0;
+    } else if(changed & state & BUTTON_UP)
+    {
+        menu_curr = menu_curr? menu_curr - 1 : menu_curr;
+        menu_redraw = TRUE;
+    } else if( (changed & state & BUTTON_DOWN))
+    {
+        menu_curr = menu_curr < (menu_total-1)? menu_curr + 1 : menu_curr;
+        menu_redraw = TRUE;
+    }
+}
+
 void TITLE_main(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd)
 {
     (void) curr_cmd; // ignore
 
     INPUT_set_cursor_visible(FALSE);
 
-    _TITLE_disclaimer();
-    _TITLE_logo();
+    if(!(curr_cmd->flags & DIREC_CMD_F_MENU))
+    {
+        _TITLE_disclaimer();
+        _TITLE_logo();
+    }
 
     // force palette to black
     u16 zeroes[64];
@@ -123,60 +217,95 @@ void TITLE_main(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd)
     VDP_loadTileSet(title_bg.tileset, tilecnt, DMA);
     PCTRL_set_line(PAL1, title_dweep.palette->data);
 
-    static const s16 DELTA = 200;
-    static const s16 DWEEP_Y = 128;
-    static const s16 GENESIS_Y = 180;
-    static const s16 DWEEP_FINAL_X = 60;
-    static const s16 GENESIS_FINAL_X = 72;
-    static const s16 DWEEP_INITIAL_X = DWEEP_FINAL_X + DELTA;
-    static const s16 GENESIS_INITIAL_X = GENESIS_FINAL_X - DELTA;
-
-    Sprite * spr_ltr_dweep = SPR_addSprite(&title_letters_dweep, DWEEP_INITIAL_X, DWEEP_Y, TILE_ATTR(PAL2, 1, 0, 0));
-    Sprite * spr_ltr_genesis = SPR_addSprite(&title_letters_genesis, GENESIS_INITIAL_X, GENESIS_Y, TILE_ATTR(PAL3, 1, 0, 0));
-    Sprite * spr_ltr_prompt = SPR_addSprite(&title_prompt, 96, 210, TILE_ATTR(PAL_LINE_HUD, 1, 0, 0));
-    PCTRL_set_line(PAL2, title_letters_dweep.palette->data);
-    PCTRL_set_line(PAL3, title_letters_genesis.palette->data);
-
     for(u8 x = 0; x <= 20; x++)
         for(u8 y = 0; y <= 16; y++)
             VDP_setTileMapEx(BG_B, title_bg.tilemap, TILE_ATTR_FULL(PAL_LINE_HUD, 0, 0, 0, tilecnt), x*2, y*2, 0, 0, 2, 2, CPU);
 
-
-    XGM_startPlay(bgm_title);
-
-    PCTRL_fade_in(PAL_STD_FADE_DURATION*3);
     u32 framecounter = 0;
-    u32 press_frame = 0;
-    s16 scroll_a = -DELTA;
+
+    if(!(curr_cmd->flags & DIREC_CMD_F_MENU))
+    {
+        static const s16 DELTA = 200;
+        static const s16 DWEEP_Y = 128;
+        static const s16 GENESIS_Y = 180;
+        static const s16 DWEEP_FINAL_X = 60;
+        static const s16 GENESIS_FINAL_X = 72;
+        static const s16 DWEEP_INITIAL_X = DWEEP_FINAL_X + DELTA;
+        static const s16 GENESIS_INITIAL_X = GENESIS_FINAL_X - DELTA;
+
+        Sprite * spr_ltr_dweep = SPR_addSprite(&title_letters_dweep, DWEEP_INITIAL_X, DWEEP_Y, TILE_ATTR(PAL2, 1, 0, 0));
+        Sprite * spr_ltr_genesis = SPR_addSprite(&title_letters_genesis, GENESIS_INITIAL_X, GENESIS_Y, TILE_ATTR(PAL3, 1, 0, 0));
+        Sprite * spr_ltr_prompt = SPR_addSprite(&title_prompt, 96, 210, TILE_ATTR(PAL_LINE_HUD, 1, 0, 0));
+        PCTRL_set_line(PAL2, title_letters_dweep.palette->data);
+        PCTRL_set_line(PAL3, title_letters_genesis.palette->data);
+
+
+        XGM_startPlay(bgm_title);
+        PCTRL_fade_in(PAL_STD_FADE_DURATION*3);
+
+        u32 press_frame = 0;
+        s16 scroll_a = -DELTA;
+        for(;;)
+        {
+            VDP_setHorizontalScroll(BG_B, -((framecounter/2)&0xf));
+            VDP_setVerticalScroll(BG_B, (framecounter/2)&0xf);
+            SPR_setVisibility(spr_ltr_prompt, framecounter >= 192? (framecounter%64 >= 32? HIDDEN : VISIBLE) : HIDDEN);
+
+            s16 dx = SPR_getPositionX(spr_ltr_dweep);
+            s16 gx = SPR_getPositionX(spr_ltr_genesis);
+            if(dx != DWEEP_FINAL_X)
+                dx -= 2;
+            if(gx != GENESIS_FINAL_X)
+                gx += 2;
+            SPR_setPosition(spr_ltr_dweep, dx, DWEEP_Y);
+            SPR_setPosition(spr_ltr_genesis, gx, GENESIS_Y);
+
+            if(scroll_a)
+                scroll_a += 2;
+            VDP_setVerticalScroll(BG_A, scroll_a);
+
+            bool im_change;
+            u16 changed, state;
+            INPUT_get_last_state(&im_change, &changed, &state);
+
+            if((!press_frame) && (changed & state & (JOY_ALL & ~(BUTTON_DIR))))
+            {
+                press_frame = framecounter;
+                //PCTRL_fade_out(PAL_STD_FADE_DURATION);
+            }
+
+
+            SPR_update();
+            PCTRL_step(framecounter);
+            SYS_doVBlankProcess();
+
+            framecounter++;
+
+            if(press_frame && framecounter >= (press_frame + PAL_STD_FADE_DURATION + 1))
+                break;
+        }
+
+        SPR_releaseSprite(spr_ltr_dweep);
+        SPR_releaseSprite(spr_ltr_genesis);
+        SPR_releaseSprite(spr_ltr_prompt);
+    }
+    else
+    {
+        // we go straight to menu
+        XGM_startPlay(bgm_title);
+        PCTRL_fade_in(PAL_STD_FADE_DURATION*3);
+    }
+
+    // menu
+    memset(next_cmd, 0x00, sizeof(DirectorCommand));
+    next_cmd->type = DIREC_CMD_INVAL;
+    _TITLE_menu_init(curr_cmd);
     for(;;)
     {
         VDP_setHorizontalScroll(BG_B, -((framecounter/2)&0xf));
         VDP_setVerticalScroll(BG_B, (framecounter/2)&0xf);
-        SPR_setVisibility(spr_ltr_prompt, framecounter >= 192? (framecounter%64 >= 32? HIDDEN : VISIBLE) : HIDDEN);
 
-        s16 dx = SPR_getPositionX(spr_ltr_dweep);
-        s16 gx = SPR_getPositionX(spr_ltr_genesis);
-        if(dx != DWEEP_FINAL_X)
-            dx -= 2;
-        if(gx != GENESIS_FINAL_X)
-            gx += 2;
-        SPR_setPosition(spr_ltr_dweep, dx, DWEEP_Y);
-        SPR_setPosition(spr_ltr_genesis, gx, GENESIS_Y);
-
-        if(scroll_a)
-            scroll_a += 2;
-        VDP_setVerticalScroll(BG_A, scroll_a);
-
-        bool im_change;
-        u16 changed, state;
-        INPUT_get_last_state(&im_change, &changed, &state);
-
-        if((!press_frame) && (changed & state & (JOY_ALL & ~(BUTTON_DIR))))
-        {
-            press_frame = framecounter;
-            PCTRL_fade_out(PAL_STD_FADE_DURATION);
-        }
-
+        _TITLE_menu_step(next_cmd);
 
         SPR_update();
         PCTRL_step(framecounter);
@@ -184,20 +313,12 @@ void TITLE_main(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd)
 
         framecounter++;
 
-        if(press_frame && framecounter >= (press_frame + PAL_STD_FADE_DURATION + 1))
+        if(next_cmd->type != DIREC_CMD_INVAL)
             break;
     }
-
     VDP_setPlaneSize(64, 32, TRUE);
     HUD_preinit(); // reload lost data packed around planes
 
     XGM_stopPlay();
-    SPR_releaseSprite(spr_ltr_dweep);
-    SPR_releaseSprite(spr_ltr_genesis);
-    SPR_releaseSprite(spr_ltr_prompt);
-
-    memset(next_cmd, 0x00, sizeof(DirectorCommand));
-    next_cmd->type = DIREC_CMD_LEVEL;
-    next_cmd->arg0 = 1; // lvl 1
 }
 

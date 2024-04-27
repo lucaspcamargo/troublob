@@ -24,7 +24,8 @@ enum DirectorCommandType
 
 enum DirectorCommandFlags
 {
-    DIREC_CMD_F_NONE = 0x00
+    DIREC_CMD_F_NONE = 0x00,
+    DIREC_CMD_F_MENU = 0x01,
 } ENUM_PACK;
 
 

@@ -206,12 +206,12 @@ void PobjHandler_Bomb(PobjData *data, enum PobjEventType evt, void* evt_arg)
         if(extraData->fuse_timer == BOMB_TIMER_EXPLODING)
             return;
         PobjEvtToolQueryArgs * const args = (PobjEvtToolQueryArgs *) evt_arg;
-        if(args->tool_id == TOOL_TORCH && extraData->fuse_timer == BOMB_TIMER_NONE)
+        if(args->tool_id == TOOL_TORCH && (extraData->fuse_timer == BOMB_TIMER_NONE || extraData->fuse_timer == BOMB_TIMER_NONE_PLANE_A))
         {
             args->out_can_use = TRUE;
             args->out_cursor = INPUT_CURSOR_FIRE;
         }
-        else if(args->tool_id == TOOL_BUCKET && extraData->fuse_timer != BOMB_TIMER_NONE)
+        else if(args->tool_id == TOOL_BUCKET && (extraData->fuse_timer == BOMB_TIMER_NONE || extraData->fuse_timer == BOMB_TIMER_NONE_PLANE_A))
         {
             args->out_can_use = TRUE;
             args->out_cursor = INPUT_CURSOR_WATER;
@@ -235,6 +235,7 @@ void PobjHandler_Bomb(PobjData *data, enum PobjEventType evt, void* evt_arg)
             }
             else
             {
+                // TODO handle reset and plane a here
                 extraData->fuse_timer = BOMB_TIMER_NONE;
                 SPR_setVRAMTileIndex(extraData->spr, PLF_theme_data_idx_table(PLF_THEME_BOMB)[0][0]);
             }
@@ -242,6 +243,7 @@ void PobjHandler_Bomb(PobjData *data, enum PobjEventType evt, void* evt_arg)
         else if(tool == TOOL_TORCH && extraData->fuse_timer == BOMB_TIMER_NONE)
         {
             // light up normally
+            // TODO ahndle reset and plane a here
             SFX_play(SFX_fuse);
             extraData->fuse_timer = BOMB_FUSE_FRAMES;
             if(extraData->spr)
