@@ -1,12 +1,13 @@
 FIRST RELEASE GOALS:
  [~] joypad control
     [X] basic cursor emulation
-    [ ] control Dweep directly, debouncing diagonals
+    [ ] control player directly, debouncing diagonals
  [X] plane A keepout flag (for usage by tall objects)
  [X] finalize laser drawing
  [X] reinstate danger check and emotes
  [~] objects in plane A (bombs)
-    [ ] fix bomb light up and water down
+    [x] fix bomb light up and water down
+    [ ] redraw plane a objects after menu (plane_a_refresh)
  [~] fix flickering due to tile updates mid-frame (wait for next vsync)
     [X] create update queue in gfx utility
     [X] gfx utility registers a vsync callback for flushing
@@ -21,7 +22,7 @@ FIRST RELEASE GOALS:
     [ ] for laser paths
     [ ] for damage notification
         [ ] damage from explosions
- [ ] sync walking to Dweep jumping
+ [ ] fix player movement, make more distinct. speed him up
  [~] SRAM
     [ ] stage completion state
     [ ] stage completion time

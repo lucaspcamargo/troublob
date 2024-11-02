@@ -1,9 +1,9 @@
 /*
-This file is part of Dweep Genesis.
+This file is part of Blob Genesis.
 
-Dweep Genesis is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+Blob Genesis is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-Dweep Genesis is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Blob Genesis is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 */
@@ -120,9 +120,9 @@ void PCTRL_step(u16 framecounter)
         // prepare destination buffer
         u16 track = (PCTRL_fade_state == PCTRL_FADE_IN)? PCTRL_fade_timer : (PCTRL_fade_duration - PCTRL_fade_timer);
         u16 lum = ((u32) track) * ((u32) PCTRL_FADE_RESOLUTION) / ((u32)PCTRL_fade_duration);
-        u16 lumR = min(lum + (lum >> 2), PCTRL_FADE_MASK);
-        u16 lumG = lum;
-        u16 lumB = min(lum << 1, PCTRL_FADE_MASK);
+        u16 lumR = lum;
+        u16 lumG = min(lum + (lum >> 1), PCTRL_FADE_MASK);
+        u16 lumB = lum;
         // char buf[5]; -- lefover debug code
         // sprintf(buf, "%d", lum);
         // VDP_drawTextBG(WINDOW, buf, 0, 25);

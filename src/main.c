@@ -1,32 +1,34 @@
 /*
-This file is part of Dweep Genesis.
+This file is part of Blob Genesis.
 
-Dweep Genesis is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+Blob Genesis is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-Dweep Genesis is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Blob Genesis is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "dweep_config.h"
-#include "dweep_globals.h"
+#include "game_config.h"
+#include "game_globals.h"
 
 #include <genesis.h>
 #include "resources.h"
 #include "string.h"
 
-#include "palette_ctrl.h"
+#include "bgm.h"
 #include "director.h"
 #include "debug_menu.h"
-#include "title2.h"
-#include "playfield.h"
+#include "gfx_utils.h"
 #include "hud.h"
-#include "player.h"
-#include "raster.h"
 #include "input.h"
+#include "palette_ctrl.h"
+#include "player.h"
+#include "playfield.h"
+#include "raster.h"
 #include "registry.h"
 #include "sfx.h"
-#include "gfx_utils.h"
+#include "save.h"
+#include "title2.h"
 
 
 Sprite * epf_item_preview = NULL;
@@ -71,14 +73,13 @@ int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
                 if(!tmr_player_dead)
                 {
                     tmr_player_dead = 170;
-                    XGM_stopPlay();
+                    BGM_stop_all();
                 }
                 else if(!--tmr_player_dead)
                     reset_flag = TRUE;
                 else if(tmr_player_dead == 150)
                 {
-                    XGM_setLoopNumber(0);
-                    XGM_startPlay(bgm_defeat);
+                    BGM_play_loops(bgm_defeat, 0);
                 }
             }
         }
@@ -146,7 +147,7 @@ int exec_playfield(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd){
 
 void exec_playfield_setup(u16 level_id, const RGST_lvl * curr_lvl, bool initial)
 {
-    XGM_stopPlay();
+    BGM_stop_all();
     if(initial)
         INPUT_center_cursor();
     INPUT_set_cursor_visible(TRUE);
@@ -170,8 +171,7 @@ void exec_playfield_setup(u16 level_id, const RGST_lvl * curr_lvl, bool initial)
     }
 
     INPUT_set_cursor_visible(TRUE);
-    XGM_setLoopNumber(-1);
-    XGM_startPlay(curr_lvl->bgm_xgm);
+    BGM_play(curr_lvl->bgm_xgm);
     PCTRL_fade_in(PAL_STD_FADE_DURATION);
 }
 
@@ -317,10 +317,10 @@ void exec_playfield_input(u32 framecounter, bool *reset_flag)
 void exec_playfield_pause_toggled()
 {
     if(epf_paused)
-        XGM_pausePlay();
+        BGM_pause();
     else
     {
-        XGM_resumePlay();
+        BGM_resume();
         epf_redraw_plane_a = TRUE;
     }
 

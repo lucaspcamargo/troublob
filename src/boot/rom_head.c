@@ -1,11 +1,11 @@
 #include "genesis.h"
 
 /*
-This file is part of Dweep Genesis.
+This file is part of Blob Genesis.
 
-Dweep Genesis is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+Blob Genesis is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-Dweep Genesis is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Blob Genesis is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 */
@@ -21,8 +21,8 @@ const ROMHeader rom_header = {
     "SEGA MEGA DRIVE ",
 #endif
     "(C) CAMARGO 2024",
-    "DWEEP GENESIS                                   ",
-    "DWEEP GENESIS                                   ",
+    "BLOB GENESIS                                    ",
+    "BLOB GENESIS                                    ",
     "GM 00000000-00",
     0x000,
     "J6M             ",
@@ -39,6 +39,6 @@ const ROMHeader rom_header = {
     0x00200000,
     0x0020FFFF,
     "            ",
-    "DEMAKE OF DWEEP BY LUCAS P CAMARGO, DEMO",
+    "A GAME CREATED BY LUCAS P CAMARGO, DEMO ",
     "JUE             "
 };

@@ -1,9 +1,9 @@
 /*
-This file is part of Dweep Genesis.
+This file is part of Blob Genesis.
 
-Dweep Genesis is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+Blob Genesis is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-Dweep Genesis is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Blob Genesis is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 */
@@ -211,7 +211,7 @@ void PobjHandler_Bomb(PobjData *data, enum PobjEventType evt, void* evt_arg)
             args->out_can_use = TRUE;
             args->out_cursor = INPUT_CURSOR_FIRE;
         }
-        else if(args->tool_id == TOOL_BUCKET && (extraData->fuse_timer == BOMB_TIMER_NONE || extraData->fuse_timer == BOMB_TIMER_NONE_PLANE_A))
+        else if(args->tool_id == TOOL_BUCKET && (extraData->fuse_timer != BOMB_TIMER_NONE && extraData->fuse_timer != BOMB_TIMER_NONE_PLANE_A))
         {
             args->out_can_use = TRUE;
             args->out_cursor = INPUT_CURSOR_WATER;
@@ -235,16 +235,28 @@ void PobjHandler_Bomb(PobjData *data, enum PobjEventType evt, void* evt_arg)
             }
             else
             {
-                // TODO handle reset and plane a here
-                extraData->fuse_timer = BOMB_TIMER_NONE;
-                SPR_setVRAMTileIndex(extraData->spr, PLF_theme_data_idx_table(PLF_THEME_BOMB)[0][0]);
+                if(extraData->spr)
+                {
+                    extraData->fuse_timer = BOMB_TIMER_NONE;
+
+                    if(!_Pobj_Bomb_try_move_to_plane_a(data, extraData))
+                        SPR_setVRAMTileIndex(extraData->spr, PLF_theme_data_idx_table(PLF_THEME_BOMB)[0][0]);
+                    else
+                        extraData->fuse_timer = BOMB_TIMER_NONE_PLANE_A;
+                }
+                else
+                {
+                    extraData->fuse_timer = BOMB_TIMER_NONE_PLANE_A;
+                    _Pobj_Bomb_revert_to_sprite(data, extraData);
+
+                }
             }
         }
-        else if(tool == TOOL_TORCH && extraData->fuse_timer == BOMB_TIMER_NONE)
+        else if(tool == TOOL_TORCH && (extraData->fuse_timer == BOMB_TIMER_NONE || extraData->fuse_timer == BOMB_TIMER_NONE_PLANE_A))
         {
             // light up normally
-            // TODO ahndle reset and plane a here
             SFX_play(SFX_fuse);
+            _Pobj_Bomb_revert_to_sprite(data, extraData);
             extraData->fuse_timer = BOMB_FUSE_FRAMES;
             if(extraData->spr)
             {

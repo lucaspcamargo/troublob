@@ -11,6 +11,11 @@ You should have received a copy of the GNU General Public License along with Foo
 */
 
 
-#include "director.h"
+#include <types.h>
 
-void TITLE_main(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd);
+
+
+
+// GLOBALS
+
+extern u16 GLOBAL_vdp_tile_watermark;

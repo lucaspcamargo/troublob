@@ -1,5 +1,3 @@
-#pragma once
-
 /*
 This file is part of Blob Genesis.
 
@@ -10,7 +8,21 @@ Blob Genesis is distributed in the hope that it will be useful, but WITHOUT ANY 
 You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 */
 
+#include "ui.h"
 
-#include "director.h"
 
-void TITLE_main(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd);
+
+
+typedef struct UIContext_st
+{
+    bool intialized;
+    Pool *widgetPool;
+} UIContext_d;
+
+
+void ui_init(UIContext *ctx)
+{
+    UIContext_d *c = (UIContext_d*) ctx;
+
+}
+void ui_destroy(UIContext *ctx);

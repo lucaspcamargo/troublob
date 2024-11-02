@@ -1,9 +1,9 @@
 /*
-This file is part of Dweep Genesis.
+This file is part of Blob Genesis.
 
-Dweep Genesis is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+Blob Genesis is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-Dweep Genesis is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Blob Genesis is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 */
@@ -11,7 +11,7 @@ You should have received a copy of the GNU General Public License along with Foo
 #include <genesis.h>
 #include "title2.h"
 
-#include "dweep_config.h"
+#include "game_config.h"
 #include "resources.h"
 #include "palette_ctrl.h"
 #include "sfx.h"
@@ -21,6 +21,7 @@ You should have received a copy of the GNU General Public License along with Foo
 #include "registry.h"
 #include "i18n.h"
 #include "save.h"
+#include "bgm.h"
 
 
 #define TITLE_FRAMES (300 + 2 * PAL_STD_FADE_DURATION)
@@ -43,11 +44,11 @@ void _TITLE_disclaimer()
     SYS_doVBlankProcess();
 
     VDP_fillTileMapRect(BG_B, TILE_FONT_INDEX, 0, txt_y-2, 320/8, 12);
-    VDP_drawTextBG(BG_B, "Dweep Genesis ", 10, txt_y);
+    VDP_drawTextBG(BG_B, "Blob Genesis", 10, txt_y);
     VDP_drawTextBG(BG_B, GAME_VERSION, 24, txt_y);
     VDP_drawTextBG(BG_B, "by Lucas Pires Camargo", 8, txt_y+2);
-    VDP_drawTextBG(BG_B, "Original game by Steve Pavlina", 4, txt_y+6);
-    VDP_drawTextBG(BG_B, "Original music by Michael Huang", 4, txt_y+7);
+    VDP_drawTextBG(BG_B, "Inspired by Dweep (1999-2000)", 4, txt_y+6);
+    VDP_drawTextBG(BG_B, "Placeholder BGM by Michael Huang", 4, txt_y+7);
 
     PCTRL_set_line(PAL_LINE_BG_0, sgdk_logo.palette->data);
     u16 orig_gray = PCTRL_sample_color(PAL_LINE_HUD, 6);
@@ -212,10 +213,10 @@ void TITLE_main(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd)
     VDP_setPlaneSize(64, 64, TRUE);
     VDP_clearPlane(BG_A, TRUE);
 
-    VDP_drawImageEx(BG_A, &title_dweep, TILE_ATTR_FULL(PAL1, 0, 0, 0, tilecnt), 12, -1, 0, DMA);
-    tilecnt += title_dweep.tileset->numTile;
+    VDP_drawImageEx(BG_A, &title_blob, TILE_ATTR_FULL(PAL1, 0, 0, 0, tilecnt), 12, -1, 0, DMA);
+    tilecnt += title_blob.tileset->numTile;
     VDP_loadTileSet(title_bg.tileset, tilecnt, DMA);
-    PCTRL_set_line(PAL1, title_dweep.palette->data);
+    PCTRL_set_line(PAL1, title_blob.palette->data);
 
     for(u8 x = 0; x <= 20; x++)
         for(u8 y = 0; y <= 16; y++)
@@ -226,21 +227,21 @@ void TITLE_main(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd)
     if(!(curr_cmd->flags & DIREC_CMD_F_MENU))
     {
         static const s16 DELTA = 200;
-        static const s16 DWEEP_Y = 128;
+        static const s16 BLOB_Y = 128;
         static const s16 GENESIS_Y = 180;
-        static const s16 DWEEP_FINAL_X = 60;
+        static const s16 BLOB_FINAL_X = 60;
         static const s16 GENESIS_FINAL_X = 72;
-        static const s16 DWEEP_INITIAL_X = DWEEP_FINAL_X + DELTA;
+        static const s16 BLOB_INITIAL_X = BLOB_FINAL_X + DELTA;
         static const s16 GENESIS_INITIAL_X = GENESIS_FINAL_X - DELTA;
 
-        Sprite * spr_ltr_dweep = SPR_addSprite(&title_letters_dweep, DWEEP_INITIAL_X, DWEEP_Y, TILE_ATTR(PAL2, 1, 0, 0));
+        Sprite * spr_ltr_blob = SPR_addSprite(&title_letters_blob, BLOB_INITIAL_X, BLOB_Y, TILE_ATTR(PAL2, 1, 0, 0));
         Sprite * spr_ltr_genesis = SPR_addSprite(&title_letters_genesis, GENESIS_INITIAL_X, GENESIS_Y, TILE_ATTR(PAL3, 1, 0, 0));
         Sprite * spr_ltr_prompt = SPR_addSprite(&title_prompt, 96, 210, TILE_ATTR(PAL_LINE_HUD, 1, 0, 0));
-        PCTRL_set_line(PAL2, title_letters_dweep.palette->data);
+        PCTRL_set_line(PAL2, title_letters_blob.palette->data);
         PCTRL_set_line(PAL3, title_letters_genesis.palette->data);
 
 
-        XGM_startPlay(bgm_title);
+        BGM_play(bgm_title);
         PCTRL_fade_in(PAL_STD_FADE_DURATION*3);
 
         u32 press_frame = 0;
@@ -251,13 +252,13 @@ void TITLE_main(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd)
             VDP_setVerticalScroll(BG_B, (framecounter/2)&0xf);
             SPR_setVisibility(spr_ltr_prompt, framecounter >= 192? (framecounter%64 >= 32? HIDDEN : VISIBLE) : HIDDEN);
 
-            s16 dx = SPR_getPositionX(spr_ltr_dweep);
+            s16 dx = SPR_getPositionX(spr_ltr_blob);
             s16 gx = SPR_getPositionX(spr_ltr_genesis);
-            if(dx != DWEEP_FINAL_X)
+            if(dx != BLOB_FINAL_X)
                 dx -= 2;
             if(gx != GENESIS_FINAL_X)
                 gx += 2;
-            SPR_setPosition(spr_ltr_dweep, dx, DWEEP_Y);
+            SPR_setPosition(spr_ltr_blob, dx, BLOB_Y);
             SPR_setPosition(spr_ltr_genesis, gx, GENESIS_Y);
 
             if(scroll_a)
@@ -285,14 +286,14 @@ void TITLE_main(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd)
                 break;
         }
 
-        SPR_releaseSprite(spr_ltr_dweep);
+        SPR_releaseSprite(spr_ltr_blob);
         SPR_releaseSprite(spr_ltr_genesis);
         SPR_releaseSprite(spr_ltr_prompt);
     }
     else
     {
         // we go straight to menu
-        XGM_startPlay(bgm_title);
+        BGM_play(bgm_title);
         PCTRL_fade_in(PAL_STD_FADE_DURATION*3);
     }
 
@@ -319,6 +320,6 @@ void TITLE_main(const DirectorCommand *curr_cmd, DirectorCommand *next_cmd)
     VDP_setPlaneSize(64, 32, TRUE);
     HUD_preinit(); // reload lost data packed around planes
 
-    XGM_stopPlay();
+    BGM_stop_all();
 }
 

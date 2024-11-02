@@ -1,14 +1,14 @@
 /*
-This file is part of Dweep Genesis.
+This file is part of Blob Genesis.
 
-Dweep Genesis is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+Blob Genesis is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-Dweep Genesis is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Blob Genesis is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 */
 
-#include "dweep_config.h"
+#include "game_config.h"
 #include "debug_menu.h"
 #include "registry.h"
 #include "sfx.h"
@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License along with Foo
 #include "resources.h"
 #include "i18n.h"
 #include "save.h"
+#include "bgm.h"
 
 
 #define POS_X_TXT 4
@@ -95,8 +96,8 @@ enum DirectorCommandType debug_menu_option_exec(u8 opt_idx, enum DirectorCommand
             (*outflags) = DIREC_CMD_F_NONE;
             return DIREC_CMD_LEVEL;
         case 1:
-            XGM_stopPlay();
-            XGM_startPlay(bgms[curr_subopts[1]]);
+            BGM_stop_all();
+            BGM_play(bgms[curr_subopts[1]]);
             break;
         case 2:
             SFX_play(curr_subopts[2]);
@@ -283,7 +284,7 @@ void exec_debug_menu(DirectorCommand *next_cmd)
         SYS_doVBlankProcess();
     }
 
-    XGM_stopPlay();
+    BGM_stop_all();
     INPUT_set_cursor_visible(FALSE);
     SPR_setVisibility(port1, HIDDEN);
     SPR_setVisibility(port2, HIDDEN);

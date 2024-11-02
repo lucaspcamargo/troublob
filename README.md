@@ -1,27 +1,15 @@
-# Dweep Genesis
+# Blob Genesis
 
 [![Build Status](https://jenkins.camargo.eng.br/buildStatus/icon?job=dweep-gen)](https://jenkins.camargo.eng.br/job/dweep-gen/)
 
-A demake of [Dweep](https://en.wikipedia.org/wiki/Dweep) for the Sega MegaDrive.
+A puzzle game for the Sega MegaDrive.
+This was started as a demake of [Dweep](https://en.wikipedia.org/wiki/Dweep).
 
 ![Screenshot of the game](./doc/screenshot.png "Game screenshot")
 
 ## About
 
-This is a work-in-progress SGDK port of the old shareware game Dweep.
-The main objective of the project is to be a good C programming exercise,
-and a way to practice coding for the MegaDrive.
-
-Most of the game is working, and all of the 10 starting levels are playable.
-There are missing and incomplete behaviors and objects on the simulation.
-Also, the game as a whole is still missing things such as saves and menus.
-
-Some songs were rearranged using the [Furnace](https://github.com/tildearrow/furnace/) tracker.
-Others were converted using libOPNMIDI (midi2vgm), and still need some manual adjustment or a proper arrangement.
-SFX was imported straight from the original game.
-Art uses [LibreSprite](https://github.com/LibreSprite/LibreSprite) for tilesets and sprites, and [Tiled](https://github.com/mapeditor/tiled) for tilemaps.
-
-The original Dweep was created and programmed by Steve Pavlina, with music by Michael Huang.
+(To be filled-in, project is being restructured as an original game).
 
 <!--ENGBR_SECTION
 ## Try it Out

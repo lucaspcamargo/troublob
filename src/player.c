@@ -1,9 +1,9 @@
 /*
-This file is part of Dweep Genesis.
+This file is part of Blob Genesis.
 
-Dweep Genesis is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
+Blob Genesis is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version.
 
-Dweep Genesis is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
+Blob Genesis is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
 
 You should have received a copy of the GNU General Public License along with Foobar. If not, see <https://www.gnu.org/licenses/>.
 */
@@ -61,10 +61,10 @@ FORCE_INLINE s16 _fix16ToRoundedInt(fix16 value)
 void PLR_init()
 {
     // player
-    PCTRL_set_line(PAL_LINE_SPR_A, spr_dweep.palette->data);
-    spr_player = SPR_addSprite(&spr_dweep, 0, 0, PAL_LINE_SPR_A<<TILE_ATTR_PALETTE_SFT);
+    PCTRL_set_line(PAL_LINE_SPR_A, spr_blob.palette->data);
+    spr_player = SPR_addSprite(&spr_blob, 0, 0, PAL_LINE_SPR_A<<TILE_ATTR_PALETTE_SFT);
     spr_player_shadow = SPR_addSprite(&spr_shadow, 0, 0, PAL_LINE_SPR_A<<TILE_ATTR_PALETTE_SFT);
-    spr_player_eyes = SPR_addSprite(&spr_dweep_eyes, 0, 0, PAL_LINE_SPR_A<<TILE_ATTR_PALETTE_SFT);
+    spr_player_eyes = SPR_addSprite(&spr_blob_eyes, 0, 0, PAL_LINE_SPR_A<<TILE_ATTR_PALETTE_SFT);
     SPR_setPriority(spr_player_shadow, FALSE);
     SPR_setVisibility(spr_player, VISIBLE);
 
@@ -226,9 +226,10 @@ void _PLR_update_bounce(u32 framecounter)
     {
         player_pf_z = FIX16(6)+fix16Mul(sinFix16(angle/2), FIX16(4));
     }*/
-
-    player_pf_z = fix16Mul(sinFix16(angle*2), FIX16(6));
-    player_pf_z = player_pf_z<0?fix16Neg(player_pf_z):player_pf_z;
+    // old bounce code
+    //player_pf_z = fix16Mul(sinFix16(angle*2), FIX16(6));
+    //player_pf_z = player_pf_z<0?fix16Neg(player_pf_z):player_pf_z;
+    player_pf_z = 0;
 }
 
 bool _PLR_check_danger(u8 dist)
@@ -296,7 +297,7 @@ void _PLR_update_gfx(bool blink_frame, u8 anim_frame)
     }else{
         SPR_setVisibility(spr_player_eyes, VISIBLE);
         SPR_setFrame(spr_player_eyes, player_emote == PLR_EMOTE_FEAR? 1 : 0);
-        SPR_setPosition(spr_player_eyes, px+4, py+6);
+        SPR_setPosition(spr_player_eyes, px+4, py+9);
         SPR_setDepth(spr_player_eyes, depth - 1);
     }
 
@@ -444,22 +445,22 @@ void PLR_update(u32 framecounter)
         player_emote = _PLR_check_danger(2)? PLR_EMOTE_NEUTRAL : PLR_EMOTE_HAPPY;   // radius was 3, made less aggressive
 
     bool upward = ((framecounter*8) % 512) >= 200? 0 : 1;
-    u16 anim_frame = upward;
+    u16 anim_frame = 0;
     if(player_flags & PLAYER_FLAG_WET)
     {
-        anim_frame += 4;
+        anim_frame += 0;
         if(!(framecounter%64))
             SFX_play(SFX_mop);
     }
     if(player_state == PLR_STATE_DYING || player_state == PLR_STATE_DEAD)
     {
-        anim_frame = 2;
+        anim_frame = 0;
         player_emote = PLR_EMOTE_NONE;
         player_state = PLR_STATE_DEAD;  // TODO implement dying animations
     }
     else if(player_state == PLR_STATE_FROZEN)
     {
-        anim_frame = 3;
+        anim_frame = 0;
         player_emote = PLR_EMOTE_NONE;
     }
 

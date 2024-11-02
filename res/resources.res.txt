@@ -1,4 +1,4 @@
-# dweep-gen RESCOMP RESOURCES
+# blob-gen RESCOMP RESOURCES
 
 #
 #  TITLE SCREEN
@@ -6,8 +6,8 @@
 
 IMAGE title_cachacella "../art/title/cachacella.bmp"
 IMAGE title_bg "../art/title/title-bg.png"
-IMAGE title_dweep "../art/title/title-dweep.png"
-SPRITE title_letters_dweep "../art/title/title-letters-dweep.png"       25 6 BEST 0 NONE SPRITE
+IMAGE title_blob "../art/title/title-blob.png"
+SPRITE title_letters_blob "../art/title/title-letters-blob.png"         25 6 BEST 0 NONE SPRITE
 SPRITE title_letters_genesis "../art/title/title-letters-genesis.png"   22 3 BEST 0 NONE SPRITE
 SPRITE title_prompt "../art/title/title-prompt.png"                     16 1 FAST 0 NONE SPRITE
 
@@ -21,8 +21,8 @@ SPRITE title_prompt "../art/title/title-prompt.png"                     16 1 FAS
 SPRITE spr_cursor ../art/spr/mouse.png                      2  2  NONE   0       NONE    SPRITE
 SPRITE spr_input_dev ../art/spr/input-dev.png               8  6  BEST   0       NONE    SPRITE
 
-SPRITE spr_dweep ../art/spr/dweep.png                       3  3  FAST   0       NONE    SPRITE
-SPRITE spr_dweep_eyes ../art/spr/dweep-eyes.png             2  1  NONE   0       NONE    SPRITE
+SPRITE spr_blob ../art/spr/blob.png                         3  3  FAST   0       NONE    SPRITE
+SPRITE spr_blob_eyes ../art/spr/blob-eyes.png               2  1  NONE   0       NONE    SPRITE
 SPRITE spr_shadow ../art/spr/shadow.png                     2  1  NONE   0       NONE    SPRITE
 SPRITE spr_tools  ../art/spr/tools.png                      2  2  FAST   0       NONE    NONE
 SPRITE spr_laser  ../art/spr/laser.png                      2  2  FAST   0       NONE    NONE
