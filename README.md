@@ -44,7 +44,7 @@ ENGBR_SECTION-->
 
 ## Download
 
-Download the latest build [here](https://jenkins.camargo.eng.br/job/dweep-gen/lastSuccessfulBuild/artifact/ci-build/out/Dweep_Genesis_(latest).bin).
+Download the latest build [here](https://jenkins.camargo.eng.br/job/troublob/lastSuccessfulBuild/artifact/ci-build/out/Troublob_(latest).bin).
 
 
 ## Building
