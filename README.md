@@ -1,4 +1,4 @@
-# Blob Genesis
+# Troublob
 
 [![Build Status](https://jenkins.camargo.eng.br/buildStatus/icon?job=dweep-gen)](https://jenkins.camargo.eng.br/job/dweep-gen/)
 
@@ -28,7 +28,7 @@ Mouse support is enabled, and mouse will be captured on first init. Click to sta
 
 
 ```{nostalgistjs}
-    :rom_url: "https://jenkins.camargo.eng.br/job/dweep-gen/lastSuccessfulBuild/artifact/ci-build/out/Dweep_Genesis_(latest).bin"
+    :rom_url: "https://jenkins.camargo.eng.br/job/troublob/lastSuccessfulBuild/artifact/ci-build/out/Troublob_(latest).bin"
     :core_id: genesis_plus_gx
     {
         "nostalgist_options": {
