@@ -57,7 +57,7 @@ const RGST_lvl RGST_levels[] = {
             TOOL_PLACE_BOMB,
             TOOL_PLACE_BOMB,
         }
-    },
+    }/*,
     {
         "Deflection\0                    ",
         &map_1_a,
@@ -337,7 +337,7 @@ const RGST_lvl RGST_levels[] = {
             TOOL_NONE,
             TOOL_NONE
         }
-    }
+    }*/
 };
 const uint16_t RGST_lvl_count = sizeof(RGST_levels)/sizeof(RGST_lvl);
 

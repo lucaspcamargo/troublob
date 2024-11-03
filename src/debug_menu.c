@@ -124,7 +124,6 @@ void exec_debug_menu(DirectorCommand *next_cmd)
     subopt_max[2] = SFX_END - 1;
     subopt_max[3] = LANG_COUNT - 1;
     memcpy(curr_subopts, subopt_min, sizeof(curr_subopts));
-    curr_subopts[0] = 1;
     curr_subopts[3] = i18n_lang_curr();
 
     PCTRL_set_line(0, pal_tset_hud.data);

@@ -30,7 +30,7 @@ static enum PlayerState player_state;
 static enum PlayerEmote player_emote;
 static u8 player_flags;
 static Sprite *spr_player;
-static Sprite *spr_player_shadow;
+//static Sprite *spr_player_shadow;
 static Sprite *spr_player_eyes;
 
 enum PlayerFlags {
@@ -63,9 +63,9 @@ void PLR_init()
     // player
     PCTRL_set_line(PAL_LINE_SPR_A, spr_blob.palette->data);
     spr_player = SPR_addSprite(&spr_blob, 0, 0, PAL_LINE_SPR_A<<TILE_ATTR_PALETTE_SFT);
-    spr_player_shadow = SPR_addSprite(&spr_shadow, 0, 0, PAL_LINE_SPR_A<<TILE_ATTR_PALETTE_SFT);
+    //spr_player_shadow = SPR_addSprite(&spr_shadow, 0, 0, PAL_LINE_SPR_A<<TILE_ATTR_PALETTE_SFT);
     spr_player_eyes = SPR_addSprite(&spr_blob_eyes, 0, 0, PAL_LINE_SPR_A<<TILE_ATTR_PALETTE_SFT);
-    SPR_setPriority(spr_player_shadow, FALSE);
+    //SPR_setPriority(spr_player_shadow, FALSE);
     SPR_setVisibility(spr_player, VISIBLE);
 
     player_pf_x = 0;
@@ -94,7 +94,7 @@ void PLR_reset()
 void PLR_destroy()
 {
     SPR_releaseSprite(spr_player);
-    SPR_releaseSprite(spr_player_shadow);
+    //SPR_releaseSprite(spr_player_shadow);
     SPR_releaseSprite(spr_player_eyes);
 }
 
@@ -283,12 +283,12 @@ void _PLR_update_gfx(bool blink_frame, u8 anim_frame)
     SPR_setDepth(spr_player, depth);
     SPR_setAnimAndFrame(spr_player, 0, anim_frame);
 
-    // shadow
+    /* shadow
     SPR_setPosition(spr_player_shadow,
         _fix16ToRoundedInt(fix16Mul(player_pf_x, FIX16(16))),
         _fix16ToRoundedInt(fix16Mul(player_pf_y, FIX16(16)))+4+3);
     SPR_setFrame(spr_player_shadow, max(0,min(3, fix16ToRoundedInt(player_pf_z)/2-1)) );
-
+    */
 
     // eyes
     if(player_emote == PLR_EMOTE_NONE || (player_emote == PLR_EMOTE_NEUTRAL && !blink_frame))

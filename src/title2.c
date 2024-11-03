@@ -137,12 +137,12 @@ void _TITLE_menu_step(DirectorCommand *next)
             break;
             case 1: // play
             {
-                for(u8 i = 1; i < RGST_lvl_count; i++)
+                for(u8 i = /*1*/ 0; i < RGST_lvl_count; i++)
                 {
                     char buf[4];
                     intToStr(i, buf, 0);
-                    VDP_drawText( buf, P_X, P_Y+i-1);
-                    VDP_drawText( i18n_str(STR_BLK_LVLNAME_BEGIN+i), P_X+3, P_Y+i-1 );
+                    VDP_drawText( buf, P_X, P_Y+i/*-1*/);
+                    VDP_drawText( i18n_str(STR_BLK_LVLNAME_BEGIN+i), P_X+3, P_Y+i/*-1*/ );
                     if(SAVE_curr_data()->completion[i].completed)
                         VDP_drawText( " OK ", 37, P_Y+i-1 );
                 }
@@ -170,7 +170,7 @@ void _TITLE_menu_step(DirectorCommand *next)
         else if(menu_id == 1)
         {
             next->type = DIREC_CMD_LEVEL;
-            next->arg0 = menu_curr + 1;
+            next->arg0 = menu_curr;
             next->arg1 = 0;
             next->arg_p = NULL;
         }

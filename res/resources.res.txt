@@ -129,16 +129,16 @@ OBJECTS map_10_o ../art/map/__map_10.tmx OBJ type:u16;x:u16;y:u16;width:u16;heig
 #  MUSIC
 #
 
-XGM bgm_title "vgm/conv_title.vgm" AUTO
-XGM bgm_stage_1 "vgm/stage_1.vgm" AUTO
-XGM bgm_stage_2 "vgm/stage_2.vgm" AUTO
-XGM bgm_stage_3 "vgm/conv_stage_3.vgm" AUTO
-XGM bgm_stage_4 "vgm/conv_stage_4.vgm" AUTO
-XGM bgm_stage_5 "vgm/conv_stage_5.vgm" AUTO
+XGM bgm_title "vgm/placeholder_title.vgm" AUTO
+XGM bgm_stage_1 "vgm/placeholder_stage_1.vgm" AUTO
+XGM bgm_stage_2 "vgm/placeholder_stage_2.vgm" AUTO
+XGM bgm_stage_3 "vgm/placeholder_stage_3.vgm" AUTO
+XGM bgm_stage_4 "vgm/placeholder_stage_4.vgm" AUTO
+XGM bgm_stage_5 "vgm/placeholder_stage_5.vgm" AUTO
 
 #  Huge thanks to libOPNMIDI and its midi2vgm tool!
-XGM bgm_victory "vgm/conv_victory.vgm" AUTO
-XGM bgm_defeat "vgm/conv_defeat.vgm" AUTO
+XGM bgm_victory "vgm/placeholder_victory.vgm" AUTO
+XGM bgm_defeat "vgm/placeholder_defeat.vgm" AUTO
 
 
  
@@ -157,8 +157,6 @@ WAV  sfx_freeze sfx/freeze.wav  XGM 0
 WAV  sfx_fuse   sfx/fuse.wav    XGM 0
 WAV  sfx_glass  sfx/glass.wav   XGM 0
 WAV  sfx_go1    sfx/go1.wav     XGM 0
-WAV  sfx_go3    sfx/go3.wav     XGM 0
-WAV  sfx_go4    sfx/go4.wav     XGM 0
 WAV  sfx_mop    sfx/mop.wav     XGM 0
 WAV  sfx_no     sfx/no.wav      XGM 0
 WAV  sfx_short  sfx/short.wav   XGM 0
