@@ -24,6 +24,8 @@ jobs:
         run: |
           ./scripts/process_all_maps.sh
           ./scripts/process_strings.sh
+          pwd
+          echo ${{ github.workspace }}
       - name: Run the build process with Docker
         uses: addnab/docker-run-action@v3
         with:
