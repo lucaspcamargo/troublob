@@ -8,5 +8,5 @@ set -e
 ./scripts/process_strings.sh
 ./scripts/process_all_maps.sh
 
-docker run --rm -v $PWD:/m68k${VOL_SUFFIX} -t registry.gitlab.com/doragasu/docker-sgdk:v1.90 -d clean
-docker run --rm -v $PWD:/m68k${VOL_SUFFIX} -t registry.gitlab.com/doragasu/docker-sgdk:v1.90 -d
+docker run --rm -v $PWD:/m68k${VOL_SUFFIX} --user ${UID} -t registry.gitlab.com/doragasu/docker-sgdk:v1.90 -d clean
+docker run --rm -v $PWD:/m68k${VOL_SUFFIX} --user ${UID} -t registry.gitlab.com/doragasu/docker-sgdk:v1.90 -d
