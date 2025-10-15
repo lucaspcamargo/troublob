@@ -24,6 +24,8 @@ jobs:
         run: |
           env
           . venv/bin/activate
+          ls 
+          ls src
           ./scripts/ci-build.sh
       - name: Upload install artifact
         uses: https://gitea.com/actions/gitea-upload-artifact@v4
