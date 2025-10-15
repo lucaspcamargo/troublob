@@ -5,9 +5,6 @@ on: [push]
 jobs:
   Main-Build:
     runs-on: ubuntu-latest
-    container:
-      image: docker.gitea.com/runner-images:ubuntu-latest
-      options: --privileged
     steps:
       - name: Check out repository code
         uses: actions/checkout@v4
