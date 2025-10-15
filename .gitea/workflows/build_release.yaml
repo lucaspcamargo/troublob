@@ -30,7 +30,7 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
             image: registry.gitlab.com/doragasu/docker-sgdk:v1.90
-            options: --rm --mount bind,src=${{ github.workspace }},dst=/m68k --user 0
+            options: --rm --mount type=bind,src=${{ github.workspace }},dst=/m68k --user 0
             run: |
               mount
               cd /m68k
