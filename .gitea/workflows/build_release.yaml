@@ -1,0 +1,32 @@
+name: MegaDrive Release Build
+run-name: ${{ gitea.actor }} is building newbase for the Mega (Release) 🎮
+on: [push]
+
+jobs:
+  Main-Build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: "Setup Python and CMake"
+        run: |
+          python3 -m venv venv
+          source venv/bin/activate
+          which pip && which python
+          pip install --upgrade pip
+          echo "Installing script deps..."
+          pip install -r scripts/requirements.txt
+          env
+          echo PATH=$PATH >> $GITHUB_ENV
+      - name: Build
+        run: |
+          env
+          source venv/bin/activate
+          scripts/ci-build.sh
+      - name: Upload install artifact
+        uses: https://gitea.com/actions/gitea-upload-artifact@v4
+        with:
+          name: troublob_release_${{ github.head_ref }}_${{ github.sha }}
+          path: ci-build/out/rom.bin
