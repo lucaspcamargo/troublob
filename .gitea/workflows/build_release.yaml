@@ -28,7 +28,7 @@ jobs:
         uses: addnab/docker-run-action@v3
         with:
             image: registry.gitlab.com/doragasu/docker-sgdk:v1.90
-            options: --rm -v ${{ github.workspace }}:/m68k
+            options: --rm -v ${{ github.workspace }}:/m68k --user 1001
             run: |
               cd /m68k
               make -f $GDK/makefile.gen
