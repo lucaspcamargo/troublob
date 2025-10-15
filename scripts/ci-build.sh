@@ -12,7 +12,7 @@ rm -rfv ./ci-build/
 mkdir ci-build
 cd ci-build
 
-docker run --rm -v $PWD/..:/m68k${VOL_SUFFIX} --user ${UID} -t registry.gitlab.com/doragasu/docker-sgdk:v1.90 clean
-docker run --rm -v $PWD/..:/m68k${VOL_SUFFIX} --user ${UID} -t registry.gitlab.com/doragasu/docker-sgdk:v1.90 release
+docker run --rm -v $PWD/..:/m68k${VOL_SUFFIX} --user ${UID} -t registry.gitlab.com/doragasu/docker-sgdk:v1.90 -d clean
+docker run --rm -v $PWD/..:/m68k${VOL_SUFFIX} --user ${UID} -t registry.gitlab.com/doragasu/docker-sgdk:v1.90 -d release
 
 mv ../out .
