@@ -33,6 +33,7 @@ jobs:
             options: --rm --mount type=bind,src=${{ github.workspace }},dst=/m68k --user 0
             run: |
               mount
+              cat /.dockerenv
               cd /m68k
               echo root is $(id -u root), my uid is $(id -u), pwd is $(pwd)
               echo files here
