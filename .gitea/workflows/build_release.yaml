@@ -20,14 +20,19 @@ jobs:
           pip install -r scripts/requirements.txt
           env
           echo PATH=$PATH >> $GITHUB_ENV
-      - name: Build
+      - name: Prepare Data
         run: |
-          env
-          . venv/bin/activate
-          ls 
-          ls src
-          ./scripts/ci-build.sh
-      - name: Upload install artifact
+          ./scripts/process_all_maps.sh
+          ./scripts/process_strings.sh
+      - name: Run the build process with Docker
+        uses: addnab/docker-run-action@v3
+        with:
+            image: registry.gitlab.com/doragasu/docker-sgdk:v1.90
+            options: --rm -v ${{ github.workspace }}:/m68k
+            run: |
+              cd /m68k
+              make -f $GDK/makefile.gen
+      - name: Upload ROM
         uses: https://gitea.com/actions/gitea-upload-artifact@v4
         with:
           name: troublob_release_${{ github.head_ref }}_${{ github.sha }}
