@@ -16,7 +16,7 @@ jobs:
       - name: "Setup Python and CMake"
         run: |
           python3 -m venv venv
-          source venv/bin/activate
+          . venv/bin/activate
           which pip && which python
           pip install --upgrade pip
           echo "Installing script deps..."
@@ -26,8 +26,8 @@ jobs:
       - name: Build
         run: |
           env
-          source venv/bin/activate
-          scripts/ci-build.sh
+          . venv/bin/activate
+          ./scripts/ci-build.sh
       - name: Upload install artifact
         uses: https://gitea.com/actions/gitea-upload-artifact@v4
         with:
