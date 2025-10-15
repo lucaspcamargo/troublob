@@ -32,4 +32,4 @@ jobs:
         uses: https://gitea.com/actions/gitea-upload-artifact@v4
         with:
           name: troublob_release_${{ github.head_ref }}_${{ github.sha }}
-          path: ci-build/out/rom.bin
+          path: out/rom.bin
