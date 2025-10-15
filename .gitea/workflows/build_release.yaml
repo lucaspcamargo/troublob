@@ -31,8 +31,13 @@ jobs:
             options: --rm -v ${{ github.workspace }}:/m68k --user 1001
             run: |
               cd /m68k
-              echo uid is $UID
-              ls -la
+              echo uid is $(id -u), pwd is $(pwd)
+              echo files here
+              ls -la .
+              echo files root
+              ls -la /
+              env
+              which make
               make -f $GDK/makefile.gen
       - name: Upload ROM
         uses: https://gitea.com/actions/gitea-upload-artifact@v4
