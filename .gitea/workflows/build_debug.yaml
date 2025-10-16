@@ -1,0 +1,51 @@
+name: MegaDrive Release Build
+run-name: ${{ gitea.actor }} is building newbase for the Mega (Release) 🎮
+on: [push]
+
+jobs:
+  Main-Build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository code
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: "Setup Python and CMake"
+        run: |
+          python3 -m venv venv
+          . venv/bin/activate
+          which pip && which python
+          pip install --upgrade pip
+          echo "Installing script deps..."
+          pip install -r scripts/requirements.txt
+          env
+          echo PATH=$PATH >> $GITHUB_ENV
+      - name: Prepare Data
+        run: |
+          ./scripts/process_all_maps.sh
+          ./scripts/process_strings.sh
+          pwd
+          echo ${{ github.workspace }}
+      - name: Run the build process with Docker
+        uses: addnab/docker-run-action@v3
+        with:
+            image: registry.gitlab.com/doragasu/docker-sgdk:v1.90
+            options: --rm --volumes-from=${{ env.JOB_CONTAINER_NAME }} --user 0
+            run: |
+              mount
+              echo .dockerenv is:
+              cat /.dockerenv
+              cd "${{ github.workspace }}"
+              echo root is $(id -u root), my uid is $(id -u), pwd is $(pwd)
+              echo files here
+              ls -la .
+              echo files root
+              ls -la /
+              env
+              which make
+              make -f $GDK/makefile.gen debug
+      - name: Upload ROM
+        uses: https://gitea.com/actions/gitea-upload-artifact@v4
+        with:
+          name: troublob_release_${{ github.head_ref }}_${{ github.sha }}
+          path: out/rom.bin
