@@ -1,6 +1,6 @@
 # Troublob
 
-[![Build Status](https://jenkins.camargo.eng.br/buildStatus/icon?job=troublob)](https://jenkins.camargo.eng.br/job/troublob/)
+[![Build Status](https://gt.camargo.eng.br/camargo/troublob/actions/workflows/build_release.yaml/badge.svg?)](https://gt.camargo.eng.br/camargo/troublob/actions/)
 
 A puzzle game for the Sega MegaDrive.
 This was started as a demake of [Dweep](https://en.wikipedia.org/wiki/Dweep).
