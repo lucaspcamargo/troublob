@@ -9,7 +9,7 @@ This was started as a demake of [Dweep](https://en.wikipedia.org/wiki/Dweep).
 
 ## About
 
-(To be filled-in, project is being restructured as an original game).
+(To be filled-in, project is being restructured as an original game). Brb :)
 
 <!--ENGBR_SECTION
 ## Try it Out
@@ -28,23 +28,24 @@ Mouse support is enabled, and mouse will be captured on first init. Click to sta
 
 
 ```{nostalgistjs}
-    :rom_url: "https://jenkins.camargo.eng.br/job/troublob/lastSuccessfulBuild/artifact/ci-build/out/Troublob_(latest).bin"
+    :rom_file: troublob_latest.bin
     :core_id: genesis_plus_gx
     {
         "nostalgist_options": {
             "retroarchConfig": {
-                "video_smooth": true,
+                "video_smooth": false,
                 "input_auto_mouse_grab": true
             }
         },
-        "before_launch_preamble": "let efs = nostalgist.getEmscriptenFS(); efs.mkdirTree('/home/web_user/retroarch/userdata/config/remaps/Genesis Plus GX'); efs.writeFile('/home/web_user/retroarch/userdata/config/remaps/Genesis Plus GX/Dweep_Genesis_(latest).rmp',  'input_libretro_device_p1 = \"1\"\\ninput_libretro_device_p2 = \"2\"');"
+        "before_launch_preamble": "let efs = nostalgist.getEmscriptenFS(); efs.mkdirTree('/home/web_user/retroarch/userdata/config/remaps/Genesis Plus GX'); efs.writeFile('/home/web_user/retroarch/userdata/config/remaps/Genesis Plus GX/troublob_latest.rmp',  'input_libretro_device_p1 = \"1\"\\ninput_libretro_device_p2 = \"2\"');"
     }
 ```
 ENGBR_SECTION-->
 
+
 ## Download
 
-Download the latest build [here](https://jenkins.camargo.eng.br/job/troublob/lastSuccessfulBuild/artifact/ci-build/out/Troublob_(latest).bin).
+Download the latest build [here](./troublob_latest.bin).
 
 
 ## Building
